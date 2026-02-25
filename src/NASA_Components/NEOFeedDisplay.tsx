@@ -4,6 +4,7 @@ import { NEOObjectDisplay } from "./NEOObjectDisplay";
 import  { NEOSearch } from '../NASA_Components/NEOSearch';
 import { NEODateFilter } from "./NEODateFilter";
 import { NEOHazardousFilter } from "./NEOHazardousFilter";
+import { NEODiameterSort } from './NEODiameterSort';
 import { NEOObjectModal } from "./Modals/NEOObjectModal ";
 
 import Stack from '@mui/material/Stack';
@@ -26,6 +27,8 @@ export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, setLoadingNEOSELF} 
     const [hazardous, setHazardous] = useState<boolean | null>(null);
     const [selectedNEOObject, setSelectedNEOObject] = useState<NEOObject | null>(null);
     const [neoSELF, setNEOSELF] = useState<NEOObject | null>(null);
+    const [selectedNEODiameterSort, setSelectedNEODiameterSort] = useState<string>('desc');
+    const neoDiameterSortOptions = ['Biggest to smallest', 'Smallest to biggest'];
 
     const openNEOModal = Boolean(selectedNEOObject);
 
@@ -42,13 +45,23 @@ export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, setLoadingNEOSELF} 
         ? neoFeedResponse.near_earth_objects[selectedDate] ?? []
         : Object.values(neoFeedResponse.near_earth_objects).flat();
 
+    const getDiameter = (neo: NEOObject) => 
+        (neo.estimated_diameter.kilometers.estimated_diameter_min + 
+        neo.estimated_diameter.kilometers.estimated_diameter_max) / 2;
+
     const filteredNeos = useMemo(() => {
-        return neosForSelectedDate.filter(neo => {
+        const filtered = neosForSelectedDate.filter(neo => {
             return neo.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
                    (neo.is_potentially_hazardous_asteroid == hazardous ||
                     hazardous === null);
-        })
-    }, [neosForSelectedDate, searchTerm, hazardous]);
+        });
+
+        if (selectedNEODiameterSort === 'asc') {
+            return filtered.sort((a, b) => getDiameter(a) - getDiameter(b))
+        } else {
+            return filtered.sort((a, b) => getDiameter(b) - getDiameter(a))
+        }
+    }, [neosForSelectedDate, searchTerm, hazardous, selectedNEODiameterSort]);
 
     function handleNEOClick(neoObject: NEOObject) {
         setSelectedNEOObject(prev =>
@@ -107,6 +120,10 @@ export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, setLoadingNEOSELF} 
         }
     }
 
+    function sortByDiameter(value: string) {
+        setSelectedNEODiameterSort(value);
+    }
+
     function onModalClose() {
         setSelectedNEOObject(null);
         setNEOSELF(null);
@@ -123,6 +140,7 @@ export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, setLoadingNEOSELF} 
                 <NEOSearch searchTerm={searchTerm} searchNEO={searchNEO} />
                 <NEODateFilter dates={dates} selectedDate={selectedDate} setSelectedDate={sortByDate} />
                 <NEOHazardousFilter hazardousOptions={hazardousOptions} hazardous={hazardous} selectedHazardous={sortByHazardous} />
+                <NEODiameterSort sortOptions={neoDiameterSortOptions} selectedOption={selectedNEODiameterSort} sortByDiameter={sortByDiameter} />
             </Stack>
             <Box sx={{ flexGrow: 1 }}>
                 <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>

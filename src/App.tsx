@@ -16,6 +16,8 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 
 function App() {
+  const NASA_API_KEY = import.meta.env.VITE_NASA_API_KEY;
+
   // APOD
   const [apod, setApod] = useState<APOD | null>(null);
   const [loadingAPOD, setLoadingAPOD] = useState<boolean>(false);
@@ -27,7 +29,6 @@ function App() {
   const [loadingNEOSELF, setLoadingNEOSELF] = useState<boolean>(false);
   const [errorNEO, setErrorNEO] = useState<string>('');
 
-  const NASA_API_KEY = import.meta.env.VITE_NASA_API_KEY;
   const today = new Date();
   const localDate = today.toLocaleDateString('en-CA');
   const date7DaysOut = addDays(today, 7).toLocaleDateString('en-CA');
@@ -85,16 +86,6 @@ function App() {
 
   return (
     <>
-      {/* <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1> */}
-
       {loadingAPOD || loadingNEO && (
         <Box
           sx={{
