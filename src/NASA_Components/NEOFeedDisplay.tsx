@@ -1,0 +1,137 @@
+import type { NEOFeedResponse, NEOObject } from "../types/NASA/NEOFeedResponse";
+import { NASAServiceDisplay } from '../NASA_Components/NASAServiceDisplay'
+import { NEOObjectDisplay } from "./NEOObjectDisplay";
+import  { NEOSearch } from '../NASA_Components/NEOSearch';
+import { NEODateFilter } from "./NEODateFilter";
+import { NEOHazardousFilter } from "./NEOHazardousFilter";
+import { NEOObjectModal } from "./Modals/NEOObjectModal ";
+
+import Stack from '@mui/material/Stack';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import { Typography } from "@mui/material";
+
+import { useState, useEffect, useMemo } from 'react';
+
+type NEOFeedDisplayProps = {
+    neoFeedResponse: NEOFeedResponse;
+    neoNavLink: (link: string) => void;
+    setLoadingNEOSELF: (loadinNEOSELF: boolean) => void;
+}
+
+export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, setLoadingNEOSELF} : NEOFeedDisplayProps) => {
+    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [selectedDate, setSelectedDate] = useState<string>('');
+    const [hazardous, setHazardous] = useState<boolean | null>(null);
+    const [selectedNEOObject, setSelectedNEOObject] = useState<NEOObject | null>(null);
+    const [neoSELF, setNEOSELF] = useState<NEOObject | null>(null);
+
+    const openNEOModal = Boolean(selectedNEOObject);
+
+    function handleNeoNavLink(link: string) {
+        neoNavLink(link);
+    }
+
+    useEffect(() => {
+        setSelectedDate('');
+    }, [neoFeedResponse]);
+
+    // Flatten all NEOObject[] from all dates into a single array of NEOObjectDisplay components
+    const neosForSelectedDate = selectedDate
+        ? neoFeedResponse.near_earth_objects[selectedDate] ?? []
+        : Object.values(neoFeedResponse.near_earth_objects).flat();
+
+    const filteredNeos = useMemo(() => {
+        return neosForSelectedDate.filter(neo => {
+            return neo.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+                   (neo.is_potentially_hazardous_asteroid == hazardous ||
+                    hazardous === null);
+        })
+    }, [neosForSelectedDate, searchTerm, hazardous]);
+
+    function handleNEOClick(neoObject: NEOObject) {
+        setSelectedNEOObject(prev =>
+            prev === neoObject ? null : neoObject
+        );
+    }
+
+    function fetchNEOObject(neo: NEOObject) {
+        setLoadingNEOSELF(true);
+        fetch(neo.links.self)
+        .then(res => res.json())
+        .then(data => setNEOSELF(data))
+        .catch(err => console.log(err))
+        .finally(() => {
+            setLoadingNEOSELF(false);
+        });
+    }
+
+    useEffect(() => {
+        if (selectedNEOObject !== null) {
+            console.log(selectedNEOObject?.links.self)
+            fetchNEOObject(selectedNEOObject);
+        }
+    }, [selectedNEOObject]);
+
+    // Map NEOs to Grid items, inserting Collapse inline for selected NEO
+    const neoDisplays = filteredNeos.flatMap(neo => {
+        return (
+            <Grid key={neo.id} size={2}>
+                <div onClick={() => handleNEOClick(neo)}>
+                    <NEOObjectDisplay neoObject={neo} />
+                </div>
+            </Grid>
+        );
+    });
+
+    const dates = Object.keys(neoFeedResponse.near_earth_objects).sort();
+    const dateRange = `${dates[0]} to ${dates[dates.length - 1]}`;
+
+    const hazardousOptions = ['HAZARDOUS', 'Not Hazardous'];
+
+    function searchNEO(search: string) {
+        setSearchTerm(search);
+    }
+
+    function sortByDate(date: string) {
+        setSelectedDate(date);
+    }
+
+    function sortByHazardous(selectedSortHazardous: string) {
+        switch (selectedSortHazardous) {
+            case 'All': setHazardous(null); break;
+            case 'HAZARDOUS': setHazardous(true); break;
+            case 'Not Hazardous': setHazardous(false); break;
+            default: setHazardous(null);
+        }
+    }
+
+    function onModalClose() {
+        setSelectedNEOObject(null);
+        setNEOSELF(null);
+    }
+
+    return (
+        <>
+            <NASAServiceDisplay serviceAcronym="ASTEROIDS - NEOWS" serviceName="Near Earth Object Web Service" />
+            <Typography>{dateRange}</Typography>
+            <Stack direction='row' spacing={2} alignItems="center" mb={2}>
+                <span>Element Count: {filteredNeos.length}</span>
+                <Button variant="outlined" onClick={() => handleNeoNavLink(neoFeedResponse.links.previous)}>Previous</Button>
+                <Button variant="outlined" onClick={() => handleNeoNavLink(neoFeedResponse.links.next)}>Next</Button>
+                <NEOSearch searchTerm={searchTerm} searchNEO={searchNEO} />
+                <NEODateFilter dates={dates} selectedDate={selectedDate} setSelectedDate={sortByDate} />
+                <NEOHazardousFilter hazardousOptions={hazardousOptions} hazardous={hazardous} selectedHazardous={sortByHazardous} />
+            </Stack>
+            <Box sx={{ flexGrow: 1 }}>
+                <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+                    {neoDisplays}
+                </Grid>
+            </Box>
+            { openNEOModal && (
+                <NEOObjectModal neoObject={neoSELF} onClose={onModalClose} />
+            )}
+        </>
+    );
+}
