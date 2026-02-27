@@ -22,14 +22,21 @@ type NEOFeedDisplayProps = {
 }
 
 export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, setLoadingNEOSELF} : NEOFeedDisplayProps) => {
+    // search
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [selectedDate, setSelectedDate] = useState<string>('');
-    const [hazardous, setHazardous] = useState<boolean | null>(null);
     const [selectedNEOObject, setSelectedNEOObject] = useState<NEOObject | null>(null);
     const [neoSELF, setNEOSELF] = useState<NEOObject | null>(null);
+    
+    // hazardous filter
+    const [hazardous, setHazardous] = useState<boolean | null>(null);
+    const hazardousOptions = ['HAZARDOUS', 'Not Hazardous'];
+
+    // diameter sort
     const [selectedNEODiameterSort, setSelectedNEODiameterSort] = useState<string>('desc');
     const neoDiameterSortOptions = ['Biggest to smallest', 'Smallest to biggest'];
 
+    // modal
     const openNEOModal = Boolean(selectedNEOObject);
 
     function handleNeoNavLink(link: string) {
@@ -101,8 +108,6 @@ export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, setLoadingNEOSELF} 
     const dates = Object.keys(neoFeedResponse.near_earth_objects).sort();
     const dateRange = `${dates[0]} to ${dates[dates.length - 1]}`;
 
-    const hazardousOptions = ['HAZARDOUS', 'Not Hazardous'];
-
     function searchNEO(search: string) {
         setSearchTerm(search);
     }
@@ -133,8 +138,8 @@ export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, setLoadingNEOSELF} 
         <>
             <NASAServiceDisplay serviceAcronym="ASTEROIDS - NEOWS" serviceName="Near Earth Object Web Service" />
             <Typography>{dateRange}</Typography>
-            <Stack direction='row' spacing={2} alignItems="center" mb={2}>
-                <span>Element Count: {filteredNeos.length}</span>
+            <Typography>Element Count: {filteredNeos.length}</Typography>
+            <Stack direction="row" spacing={2} alignItems="center" justifyContent="center" mb={2}>
                 <Button variant="outlined" onClick={() => handleNeoNavLink(neoFeedResponse.links.previous)}>Previous</Button>
                 <Button variant="outlined" onClick={() => handleNeoNavLink(neoFeedResponse.links.next)}>Next</Button>
                 <NEOSearch searchTerm={searchTerm} searchNEO={searchNEO} />
