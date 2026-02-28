@@ -12,7 +12,8 @@ export const APODDisplay = ({apod} : APODDisplayProps) => {
             <p>{apod.title}</p>
             <p>{apod.date}</p>
             <img src={apod.hdurl} alt={apod.title}
-                style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}  />
+                style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }} 
+                className="apod-image" />
             <br />
             {apod.explanation}
         </>
