@@ -9,7 +9,14 @@ export const NASAServiceDisplay = ({serviceAcronym, serviceName} : NASAServiceDi
     return (
         <>
             <Typography variant="h3" fontWeight="bold" gutterBottom
-                sx={{ textAlign: 'center' }}
+                sx={{ 
+                    textAlign: 'center',
+                    fontSize: {
+                        xs: '1.8rem', // mobile
+                        sm: '2.5rem', // tablet
+                        md: '3rem',   // laptop
+                    }
+                 }}
             >
                 {serviceAcronym}
             </Typography>
