@@ -16,10 +16,10 @@ export const APODDisplay = ({apod} : APODDisplayProps) => {
                 className="apod-image" />
             <br />
             <p style={{
-                textAlign: 'center',
+                textAlign: 'left',
                 maxWidth: '800px',
                 margin: '0 auto',
-                padding: '0 1rem'
+                padding: '0'
             }}>
                 {apod.explanation}
             </p>
