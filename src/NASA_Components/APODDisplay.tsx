@@ -11,7 +11,8 @@ export const APODDisplay = ({apod} : APODDisplayProps) => {
             <NASAServiceDisplay serviceAcronym='APOD' serviceName='Astronomy Picture of the Day' />
             <p>{apod.title}</p>
             <p>{apod.date}</p>
-            <img src={apod.hdurl} width={800} />
+            <img src={apod.hdurl} alt={apod.title}
+                style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}  />
             <br />
             {apod.explanation}
         </>
