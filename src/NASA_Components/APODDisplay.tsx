@@ -16,8 +16,8 @@ export const APODDisplay = ({apod} : APODDisplayProps) => {
                 className="apod-image" />
             <br />
             <p style={{
-                textAlign: 'left',
-                maxWidth: '800px',
+                textAlign: 'center',
+                maxWidth: '100%',
                 margin: '0 auto',
                 padding: '0'
             }}>
