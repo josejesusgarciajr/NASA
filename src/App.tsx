@@ -61,8 +61,9 @@ function App() {
 
   function fetchNeoFeedResponse(link: string) {
     setLoadingNEO(true);
+    const secureLink = link.replace('http://', 'https://');
 
-    fetch(link)
+    fetch(secureLink)
     .then(res => res.json())
     .then(data => setNeoFeedResponse(data))
     .catch(err => {
