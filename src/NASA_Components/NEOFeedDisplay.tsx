@@ -40,7 +40,8 @@ export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, setLoadingNEOSELF} 
     const openNEOModal = Boolean(selectedNEOObject);
 
     function handleNeoNavLink(link: string) {
-        neoNavLink(link);
+        const secureLink = link.replace('http://', 'https://');
+        neoNavLink(secureLink);
     }
 
     useEffect(() => {
