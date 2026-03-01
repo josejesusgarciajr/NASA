@@ -79,7 +79,9 @@ export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, setLoadingNEOSELF} 
 
     function fetchNEOObject(neo: NEOObject) {
         setLoadingNEOSELF(true);
-        fetch(neo.links.self)
+        const secureLink = neo.links.self.replace('http://', 'https://');
+
+        fetch(secureLink)
         .then(res => res.json())
         .then(data => setNEOSELF(data))
         .catch(err => console.log(err))
@@ -90,7 +92,6 @@ export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, setLoadingNEOSELF} 
 
     useEffect(() => {
         if (selectedNEOObject !== null) {
-            console.log(selectedNEOObject?.links.self)
             fetchNEOObject(selectedNEOObject);
         }
     }, [selectedNEOObject]);
