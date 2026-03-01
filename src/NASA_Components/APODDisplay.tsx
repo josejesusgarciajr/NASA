@@ -7,8 +7,8 @@ type APODDisplayProps = {
 
 export const APODDisplay = ({apod} : APODDisplayProps) => {
     const video = apod.media_type === 'video';
-    const secureVideoLink = apod.url.replace('http://', 'https://');
-    const secureImageLink = apod.hdurl.replace('http://', 'https://');
+    const secureVideoLink = apod.url?.replace('http://', 'https://');
+    const secureImageLink = apod.hdurl?.replace('http://', 'https://');
 
     return (
         <>
