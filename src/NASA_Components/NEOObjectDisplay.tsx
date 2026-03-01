@@ -16,7 +16,14 @@ export const NEOObjectDisplay = ({neoObject} : NEOObjectDisplayProps) => {
                     Magnitude: {neoObject.absolute_magnitude_h}
                 </Typography>
                 {neoObject.is_potentially_hazardous_asteroid && (
-                    <Typography color="error">HAZARDOUS</Typography>
+                    <Typography 
+                        color="error"
+                        sx={{
+                            textAlign: { xs: 'center' },
+                            wordBreak: 'break-word',
+                            fontSize: { sx: '0.75rem', md: '1rem'}
+                        }}
+                    >HAZARDOUS</Typography>
                 )}
             </CardContent>
         </Card>
