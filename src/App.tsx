@@ -62,13 +62,12 @@ function App() {
   function fetchNeoFeedResponse(link: string) {
     setLoadingNEO(true);
     const secureLink = link.replace('http://', 'https://');
-    console.log('fetchNEOFeedResponse: ' + link);
 
     fetch(secureLink)
     .then(res => res.json())
     .then(data => setNeoFeedResponse(data))
     .catch(err => {
-      console.log(err);
+      console.log(`ERROR FETCHING NASA API ASTERIODS - NEOWS ENDPOINT: ${err}`);
       setErrorNEO('Error loading Near Earth Object from NASA');
     })
     .finally(() => {
@@ -86,7 +85,7 @@ function App() {
 
   return (
     <>
-      {loadingAPOD || loadingNEO && (
+      { (loadingAPOD || loadingNEO || loadingNEOSELF) && (
         <Box
           sx={{
             position: "fixed",
@@ -106,19 +105,6 @@ function App() {
         <APODDisplay apod={apod} />
       )}
 
-      {loadingNEOSELF && (
-        <Box
-          sx={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            zIndex: 2000, // make sure it's above content
-          }}
-        >
-          <LinearProgress />
-        </Box>
-      )}
       {loadingNEO && <p>Loading NEO...</p>}
       {errorNEO && errorNEO}
       {neoFeedResponse && (
