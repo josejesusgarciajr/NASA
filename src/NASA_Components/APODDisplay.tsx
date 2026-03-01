@@ -6,14 +6,21 @@ type APODDisplayProps = {
 }
 
 export const APODDisplay = ({apod} : APODDisplayProps) => {
+    const video = apod.media_type === 'video';
+    console.log(apod.url);
+
     return (
         <>
             <NASAServiceDisplay serviceAcronym='APOD' serviceName='Astronomy Picture of the Day' />
             <p style={{ textAlign: 'center' }}>{apod.title}</p>
             <p style={{ textAlign: 'center' }}>{apod.date}</p>
-            <img src={apod.hdurl} alt={apod.title}
-                style={{ width: '100%', maxWidth: '800px', margin: '0 auto', display: 'block' }} 
-                className="apod-image" />
+            { video ? (
+                <video src={apod.url} controls width='100%'/>
+            ) : (
+                <img src={apod.hdurl} alt={apod.title}
+                    style={{ width: '100%', maxWidth: '800px', margin: '0 auto', display: 'block' }} 
+                    className="apod-image" />
+            )}
             <br />
             <p style={{
                 textAlign: 'center',
