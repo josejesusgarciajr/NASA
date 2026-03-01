@@ -142,7 +142,15 @@ export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, setLoadingNEOSELF} 
             <NASAServiceDisplay serviceAcronym="ASTEROIDS - NEOWS" serviceName="Near Earth Object Web Service" />
             <Typography>{dateRange}</Typography>
             <Typography>Element Count: {filteredNeos.length}</Typography>
-            <Stack direction="row" spacing={2} alignItems="center" justifyContent="center" mb={2}>
+            <Stack 
+                direction="row" 
+                spacing={2} 
+                alignItems="center" 
+                justifyContent="center" 
+                mb={2}
+                sx={{ flexWrap: { xs: 'wrap', md: 'nowrap' }, gap: 1 }}
+                useFlexGap
+            >
                 <Button variant="outlined" onClick={() => handleNeoNavLink(neoFeedResponse.links.previous)}>Previous</Button>
                 <Button variant="outlined" onClick={() => handleNeoNavLink(neoFeedResponse.links.next)}>Next</Button>
                 <NEOSearch searchTerm={searchTerm} searchNEO={searchNEO} />
@@ -151,7 +159,7 @@ export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, setLoadingNEOSELF} 
                 <NEODiameterSort sortOptions={neoDiameterSortOptions} selectedOption={selectedNEODiameterSort} sortByDiameter={sortByDiameter} />
             </Stack>
             <Box sx={{ flexGrow: 1 }}>
-                <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+                <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 6, sm: 8, md: 12 }}>
                     {neoDisplays}
                 </Grid>
             </Box>
