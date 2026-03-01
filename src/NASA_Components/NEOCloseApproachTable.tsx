@@ -68,8 +68,8 @@ export const NEOCloseApproachTable = ({closeApproaches}: NEOCloseApproachTablePr
                     key={column.id}
                     align={column.align}
                     sx={{ 
-                        minWidth: { xs: 80, md: column.minWidth },
-                        fontSize: { xs: '0.7rem', md: '0.875rem' }
+                        minWidth: { xs: 70, md: column.minWidth },
+                        fontSize: { xs: '0.6rem', md: '0.875rem' }
                     }}
                 >
                     {column.label}
@@ -88,7 +88,7 @@ export const NEOCloseApproachTable = ({closeApproaches}: NEOCloseApproachTablePr
 
                     return (
                       <TableCell key={column.id} align={column.align}
-                          sx={{ fontSize: { xs: '0.7rem', md: '0.875rem' } }}
+                          sx={{ fontSize: { xs: '0.6rem', md: '0.875rem' } }}
                       >
                           {typeof value === "number" ? value.toLocaleString() : value}
                       </TableCell>
