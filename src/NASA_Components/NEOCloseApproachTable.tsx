@@ -59,17 +59,20 @@ export const NEOCloseApproachTable = ({closeApproaches}: NEOCloseApproachTablePr
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
-      <TableContainer sx={{ maxHeight: 400 }}>
+      <TableContainer sx={{ maxHeight: { xs: '60vh', md: 400 } }}>
         <Table stickyHeader>
           <TableHead>
             <TableRow>
               {columns.map((column) => (
                 <TableCell
-                  key={column.id}
-                  align={column.align}
-                  sx={{ minWidth: column.minWidth }}
+                    key={column.id}
+                    align={column.align}
+                    sx={{ 
+                        minWidth: { xs: 80, md: column.minWidth },
+                        fontSize: { xs: '0.7rem', md: '0.875rem' }
+                    }}
                 >
-                  {column.label}
+                    {column.label}
                 </TableCell>
               ))}
             </TableRow>
@@ -84,10 +87,10 @@ export const NEOCloseApproachTable = ({closeApproaches}: NEOCloseApproachTablePr
                     const value = row[column.id];
 
                     return (
-                      <TableCell key={column.id} align={column.align}>
-                        {typeof value === "number"
-                          ? value.toLocaleString()
-                          : value}
+                      <TableCell key={column.id} align={column.align}
+                          sx={{ fontSize: { xs: '0.7rem', md: '0.875rem' } }}
+                      >
+                          {typeof value === "number" ? value.toLocaleString() : value}
                       </TableCell>
                     );
                   })}
