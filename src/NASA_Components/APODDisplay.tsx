@@ -7,7 +7,8 @@ type APODDisplayProps = {
 
 export const APODDisplay = ({apod} : APODDisplayProps) => {
     const video = apod.media_type === 'video';
-    console.log(apod.url);
+    const secureVideoLink = apod.url.replace('http://', 'https://');
+    const secureImageLink = apod.hdurl.replace('http://', 'https://');
 
     return (
         <>
@@ -15,9 +16,9 @@ export const APODDisplay = ({apod} : APODDisplayProps) => {
             <p style={{ textAlign: 'center' }}>{apod.title}</p>
             <p style={{ textAlign: 'center' }}>{apod.date}</p>
             { video ? (
-                <video src={apod.url} controls width='100%'/>
+                <video src={secureVideoLink} controls width='100%'/>
             ) : (
-                <img src={apod.hdurl} alt={apod.title}
+                <img src={secureImageLink} alt={apod.title}
                     style={{ width: '100%', maxWidth: '800px', margin: '0 auto', display: 'block' }} 
                     className="apod-image" />
             )}
