@@ -100,7 +100,8 @@ export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, setLoadingNEOSELF} 
     const neoDisplays = filteredNeos.flatMap(neo => {
         return (
             <Grid key={neo.id} size={2}>
-                <div onClick={() => handleNEOClick(neo)}>
+                <div onClick={() => handleNEOClick(neo)}
+                    style={{ height: '100%' }}>
                     <NEOObjectDisplay neoObject={neo} />
                 </div>
             </Grid>
