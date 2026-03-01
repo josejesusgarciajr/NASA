@@ -11,6 +11,8 @@ import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from '@mui/icons-material/Close';
 
+import { useMediaQuery, useTheme } from '@mui/material';
+
 import { useState } from 'react';
 
 type NEOObjectModalprops = {
@@ -20,6 +22,8 @@ type NEOObjectModalprops = {
 
 export const NEOObjectModal = ({neoObject, onClose} : NEOObjectModalprops) => {
     const open = Boolean(neoObject);
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     const orbitingOptions = [... new Set(neoObject?.close_approach_data.map(item => item.orbiting_body))];
     const [selectedOrbitingOption, setSelectedOrbitingOption] = useState<string>('');
@@ -41,7 +45,7 @@ export const NEOObjectModal = ({neoObject, onClose} : NEOObjectModalprops) => {
 
     return (
         <>
-            <Dialog open={open} onClose={onModalClose} maxWidth="md" fullWidth>
+            <Dialog open={open} onClose={onModalClose} maxWidth="md" fullWidth fullScreen={fullScreen}>
                 <DialogTitle>
                     <Box
                         sx={{
