@@ -111,6 +111,22 @@ export const NEOCloseApproachTable = ({closeApproaches}: NEOCloseApproachTablePr
           setRowsPerPage(+e.target.value);
           setPage(0);
         }}
+        sx={{
+          '.MuiTablePagination-toolbar': {
+              fontSize: { xs: '0.6rem', md: '0.875rem' },
+              paddingLeft: { xs: '8px', md: '16px' },
+              paddingRight: { xs: '4px', md: '8px' },
+          },
+          '.MuiTablePagination-selectLabel': {
+              fontSize: { xs: '0.6rem', md: '0.875rem' },
+          },
+          '.MuiTablePagination-displayedRows': {
+              fontSize: { xs: '0.6rem', md: '0.875rem' },
+          },
+          '.MuiTablePagination-select': {
+              fontSize: { xs: '0.6rem', md: '0.875rem' },
+          },
+      }}
       />
     </Paper>
   );
