@@ -25,7 +25,7 @@ export const APODDisplay = ({apod} : APODDisplayProps) => {
             <p style={{ textAlign: 'center' }}>{apod.title}</p>
             <p style={{ textAlign: 'center' }}>{apod.date}</p>
             { video ? (
-                <video ref={videoRef} src={secureVideoLink} controls width='100%' muted autoPlay playsInline />
+                <video ref={videoRef} src={secureVideoLink} controls width='100%' muted autoPlay playsInline loop />
             ) : (
                 <img src={secureImageLink} alt={apod.title}
                     style={{ width: '100%', maxWidth: '800px', margin: '0 auto', display: 'block' }} 
