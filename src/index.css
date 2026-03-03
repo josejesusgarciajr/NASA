@@ -35,6 +35,11 @@ img {
   margin: 0 auto;
 }
 
+.apod-image:hover {
+  transform: scale(1.02);
+  transition: transform 0.2s ease;
+}
+
 body {
   margin: 0;
   min-width: 100%;
