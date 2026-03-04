@@ -1,4 +1,4 @@
-import type { NEOObject, NEOCloseApproachData } from "../../types/NASA/NEOFeedResponse"
+import type { NEOObject } from "../../types/NASA/NEOFeedResponse"
 
 import { NEOCloseApproachTable } from '../NEOCloseApproachTable'
 import { OrbitingBodySelect } from '../Modals/OrbitingBodySelect'
