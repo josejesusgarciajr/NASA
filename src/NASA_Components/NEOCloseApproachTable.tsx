@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -14,6 +14,12 @@ import type { NEOCloseApproachData } from "../types/NASA/NEOFeedResponse";
 
 type NEOCloseApproachTableProps = {
   closeApproaches: NEOCloseApproachData[];
+  page: number;
+  setPage: (page: number) => void;
+  rowsPerPage: number;
+  setRowsPerPage: (rowsPerPage: number) => void;
+  sortBy: (sortColumn: string, desc: boolean) => void;
+  desc: boolean;
 }
 
 interface Column {
@@ -44,10 +50,7 @@ interface Column {
   align?: "right";
 }
 
-export const NEOCloseApproachTable = ({closeApproaches}: NEOCloseApproachTableProps) => {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
+export const NEOCloseApproachTable = ({closeApproaches, page, setPage, rowsPerPage, setRowsPerPage, sortBy, desc}: NEOCloseApproachTableProps) => {
   const rows: RowData[] = useMemo(() => {
     return closeApproaches.map((approach) => ({
       date: approach.close_approach_date_full,
@@ -56,6 +59,11 @@ export const NEOCloseApproachTable = ({closeApproaches}: NEOCloseApproachTablePr
       missDistance: Number(approach.miss_distance.kilometers),
     }));
   }, [closeApproaches]);
+
+  function handleSortBy(sortColumn: string) {
+    const sortDesc = !desc;
+    sortBy(sortColumn, sortDesc);
+  }
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
@@ -71,6 +79,7 @@ export const NEOCloseApproachTable = ({closeApproaches}: NEOCloseApproachTablePr
                         minWidth: { xs: 70, md: column.minWidth },
                         fontSize: { xs: '0.6rem', md: '0.875rem' }
                     }}
+                    onClick={() => handleSortBy(column.id)}
                 >
                     {column.label}
                 </TableCell>
