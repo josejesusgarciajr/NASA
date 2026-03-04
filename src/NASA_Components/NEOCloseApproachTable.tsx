@@ -9,6 +9,7 @@ import {
   TablePagination,
   Paper,
 } from "@mui/material";
+import TableSortLabel from '@mui/material/TableSortLabel';
 
 import type { NEOCloseApproachData } from "../types/NASA/NEOFeedResponse";
 
@@ -19,6 +20,7 @@ type NEOCloseApproachTableProps = {
   rowsPerPage: number;
   setRowsPerPage: (rowsPerPage: number) => void;
   sortBy: (sortColumn: string, desc: boolean) => void;
+  sortByColumn: string;
   desc: boolean;
 }
 
@@ -50,7 +52,7 @@ interface Column {
   align?: "right";
 }
 
-export const NEOCloseApproachTable = ({closeApproaches, page, setPage, rowsPerPage, setRowsPerPage, sortBy, desc}: NEOCloseApproachTableProps) => {
+export const NEOCloseApproachTable = ({closeApproaches, page, setPage, rowsPerPage, setRowsPerPage, sortBy, sortByColumn, desc}: NEOCloseApproachTableProps) => {
   const rows: RowData[] = useMemo(() => {
     return closeApproaches.map((approach) => ({
       date: approach.close_approach_date_full,
@@ -81,7 +83,12 @@ export const NEOCloseApproachTable = ({closeApproaches, page, setPage, rowsPerPa
                     }}
                     onClick={() => handleSortBy(column.id)}
                 >
-                    {column.label}
+                  <TableSortLabel
+                      active={sortByColumn === column.id}
+                      direction={sortByColumn === column.id ? (desc ? 'desc' : 'asc') : 'desc'}
+                  >
+                      {column.label}
+                  </TableSortLabel>
                 </TableCell>
               ))}
             </TableRow>

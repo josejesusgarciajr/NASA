@@ -134,7 +134,7 @@ export const NEOObjectModal = ({neoObject, onClose} : NEOObjectModalprops) => {
                             <NEOCloseApproachTable closeApproaches={closeApproachFilteredData} 
                                 page={page} setPage={setPage}
                                 rowsPerPage={rowsPerPage} setRowsPerPage={setRowsPerPage}
-                                sortBy={sortBy} desc={sortingDesc}/>
+                                sortBy={sortBy} sortByColumn={sortByColumn} desc={sortingDesc}/>
                         </>
                     )}
                 </DialogContent>
