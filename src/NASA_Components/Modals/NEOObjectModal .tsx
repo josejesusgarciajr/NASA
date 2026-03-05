@@ -2,11 +2,12 @@ import type { NEOObject } from "../../types/NASA/NEOFeedResponse"
 
 import { NEOCloseApproachTable } from '../NEOCloseApproachTable'
 import { OrbitingBodySelect } from '../Modals/OrbitingBodySelect'
+import { EstimatedDiameterNEO } from '../Modals/EstimatedDiameterNEO'
 
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
-import { Typography } from "@mui/material";
+import { Button, ButtonGroup, Typography } from "@mui/material";
 import Stack from '@mui/material/Stack';
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
@@ -29,9 +30,11 @@ export const NEOObjectModal = ({neoObject, onClose} : NEOObjectModalprops) => {
     // hazardous
     const hazardous = neoObject?.is_potentially_hazardous_asteroid;
 
-    // estimated diameter
-    const estimatedDiameterMin = neoObject?.estimated_diameter.kilometers.estimated_diameter_min.toFixed(2);
-    const estimatedDiameterMax = neoObject?.estimated_diameter.kilometers.estimated_diameter_max.toFixed(2);
+    // units
+    const [units, setUnits] = useState<string>('kilometers');
+    //const kilometerUnits = units === 'kilometers';
+    // const estimatedDiameterMin = neoObject?.estimated_diameter.kilometers.estimated_diameter_min.toFixed(2);
+    // const estimatedDiameterMax = neoObject?.estimated_diameter.kilometers.estimated_diameter_max.toFixed(2);
 
     // sorting and filters
     const orbitingOptions = [... new Set(neoObject?.close_approach_data.map(item => item.orbiting_body))];
@@ -93,14 +96,12 @@ export const NEOObjectModal = ({neoObject, onClose} : NEOObjectModalprops) => {
         if (sortByColumn !== sortColumn) {
             setSortByColumn(sortColumn);
             setSortingDesc(true);
-            console.log(`handleSortBy - ${sortColumn} - ${true}`);
 
             return;
         }
 
         setSortByColumn(sortColumn);
         setSortingDesc(desc);
-        console.log(`handleSortBy - ${sortColumn} - ${desc}`);
     }
 
     function onModalClose() {
@@ -130,14 +131,7 @@ export const NEOObjectModal = ({neoObject, onClose} : NEOObjectModalprops) => {
                 </DialogTitle>
                 <DialogContent dividers>
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography
-                            sx={{
-                                wordBreak: 'break-word',
-                                fontSize: { xs: '0.6rem', md: '1rem' }
-                            }}
-                        >
-                            Estimated Diameter: {estimatedDiameterMin} - {estimatedDiameterMax} km
-                        </Typography>
+                        <EstimatedDiameterNEO neoObject={neoObject} units={units} />
                         {orbitingOptions.length > 1 && (
                             <OrbitingBodySelect options={orbitingOptions} selectedOption={selectedOrbitingOption} onSelectedOption={filterOrbitingOption} />
                         )}
@@ -153,6 +147,10 @@ export const NEOObjectModal = ({neoObject, onClose} : NEOObjectModalprops) => {
                                 >
                                     Close Approaches
                                 </Typography>
+                                <ButtonGroup>
+                                    <Button onClick={() => setUnits('miles')}>Miles</Button>
+                                    <Button autoFocus onClick={() => setUnits('kilometers')}>Kilometers</Button>
+                                </ButtonGroup>
                                 {hazardous && (
                                     <Typography 
                                         color="error"
@@ -168,7 +166,8 @@ export const NEOObjectModal = ({neoObject, onClose} : NEOObjectModalprops) => {
                             <NEOCloseApproachTable closeApproaches={closeApproachFilteredData} 
                                 page={page} setPage={setPage}
                                 rowsPerPage={rowsPerPage} setRowsPerPage={setRowsPerPage}
-                                sortBy={sortBy} sortByColumn={sortByColumn} desc={sortingDesc}/>
+                                sortBy={sortBy} sortByColumn={sortByColumn} desc={sortingDesc}
+                                units={units} />
                         </>
                     )}
                 </DialogContent>

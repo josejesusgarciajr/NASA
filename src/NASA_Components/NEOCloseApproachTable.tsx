@@ -22,6 +22,7 @@ type NEOCloseApproachTableProps = {
   sortBy: (sortColumn: string, desc: boolean) => void;
   sortByColumn: string;
   desc: boolean;
+  units: string;
 }
 
 interface Column {
@@ -52,19 +53,43 @@ interface Column {
   align?: "right";
 }
 
-export const NEOCloseApproachTable = ({closeApproaches, page, setPage, rowsPerPage, setRowsPerPage, sortBy, sortByColumn, desc}: NEOCloseApproachTableProps) => {
+export const NEOCloseApproachTable = ({closeApproaches, page, setPage, rowsPerPage, setRowsPerPage, sortBy, sortByColumn, desc, units}: NEOCloseApproachTableProps) => {
   const rows: RowData[] = useMemo(() => {
+    if (units === 'miles') {
+      return closeApproaches.map((approach) => ({
+        date: approach.close_approach_date_full,
+        orbitingBody: approach.orbiting_body,
+        velocity: Number(approach.relative_velocity.miles_per_hour),
+        missDistance: Number(approach.miss_distance.miles),
+      }));
+    }
+
     return closeApproaches.map((approach) => ({
       date: approach.close_approach_date_full,
       orbitingBody: approach.orbiting_body,
       velocity: Number(approach.relative_velocity.kilometers_per_hour),
       missDistance: Number(approach.miss_distance.kilometers),
     }));
-  }, [closeApproaches]);
+  }, [closeApproaches, units]);
 
   function handleSortBy(sortColumn: string) {
     const sortDesc = !desc;
     sortBy(sortColumn, sortDesc);
+  }
+
+  function generateColumnHeader(column: Column) {
+    switch(units) {
+      case 'miles' :
+        if (column.id === 'velocity') {
+          return 'Velocity (mph)';
+        } else if (column.id === 'missDistance') {
+          return 'Miss Distance (mi)';
+        } else {
+          return column.label;
+        }
+      default:
+        return column.label;
+    }
   }
 
   return (
@@ -94,7 +119,7 @@ export const NEOCloseApproachTable = ({closeApproaches, page, setPage, rowsPerPa
                           fontSize: { xs: '0.55rem', md: '0.875rem' }
                       }}
                   >
-                      {column.label}
+                      {generateColumnHeader(column)}
                   </TableSortLabel>
                 </TableCell>
               ))}
