@@ -108,7 +108,20 @@ export const NEOObjectModal = ({neoObject, onClose} : NEOObjectModalprops) => {
 
     return (
         <>
-            <Dialog open={open} onClose={onModalClose} maxWidth="md" fullWidth fullScreen={fullScreen}>
+            <Dialog 
+                open={open} 
+                onClose={onModalClose} 
+                maxWidth="md" 
+                fullWidth 
+                fullScreen={fullScreen}
+                scroll="paper"
+                sx={{
+                    '& .MuiDialog-paper': {
+                        margin: { xs: 0, md: '32px' },
+                        maxHeight: { xs: '100%', md: 'calc(100% - 64px)' },
+                    }
+                }}
+            >
                 <DialogTitle>
                     <Box
                         sx={{
@@ -145,8 +158,22 @@ export const NEOObjectModal = ({neoObject, onClose} : NEOObjectModalprops) => {
                                     Close Approaches
                                 </Typography>
                                 <Stack direction='row' sx={{ flexWrap: { xs: 'wrap', md: 'nowrap' }, gap: 1 }} useFlexGap>
-                                    <Button variant='outlined' onClick={() => setUnits('miles')}>Miles</Button>
-                                    <Button variant='outlined' onClick={() => setUnits('kilometers')} autoFocus>Kilometers</Button>
+                                    <Button 
+                                        size="small"
+                                        variant='outlined'
+                                        onClick={() => setUnits('miles')}
+                                        sx={{ fontSize: { xs: '0.55rem', md: '0.875rem' }, padding: { xs: '2px 6px', md: '6px 16px' } }}
+                                    >
+                                        Miles
+                                    </Button>
+                                    <Button 
+                                        size="small"
+                                        variant='outlined'
+                                        onClick={() => setUnits('kilometers')}
+                                        sx={{ fontSize: { xs: '0.55rem', md: '0.875rem' }, padding: { xs: '2px 6px', md: '6px 16px' } }}
+                                    >
+                                        Kilometers
+                                    </Button>
                                 </Stack>
                                 {hazardous && (
                                     <Typography 
