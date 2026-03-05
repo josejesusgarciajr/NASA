@@ -130,7 +130,12 @@ export const NEOObjectModal = ({neoObject, onClose} : NEOObjectModalprops) => {
                 </DialogTitle>
                 <DialogContent dividers>
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography>
+                        <Typography
+                            sx={{
+                                wordBreak: 'break-word',
+                                fontSize: { xs: '0.6rem', md: '1rem' }
+                            }}
+                        >
                             Estimated Diameter: {estimatedDiameterMin} - {estimatedDiameterMax} km
                         </Typography>
                         {orbitingOptions.length > 1 && (
@@ -140,7 +145,14 @@ export const NEOObjectModal = ({neoObject, onClose} : NEOObjectModalprops) => {
                     { neoObject && (
                         <>
                             <Stack direction='row' justifyContent='space-between' alignItems='center' width='100%' mb={1}>
-                                <Typography>Close Approaches</Typography>
+                                <Typography
+                                    sx={{
+                                        wordBreak: 'break-word',
+                                        fontSize: { xs: '0.6rem', md: '1rem' }
+                                    }}
+                                >
+                                    Close Approaches
+                                </Typography>
                                 {hazardous && (
                                     <Typography 
                                         color="error"
