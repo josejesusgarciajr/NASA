@@ -113,7 +113,7 @@ export const NEOCloseApproachTable = ({closeApproaches, page, setPage, rowsPerPa
                       <TableCell key={column.id} align={column.align}
                           sx={{ fontSize: { xs: '0.6rem', md: '0.875rem' } }}
                       >
-                          {typeof value === "number" ? value.toLocaleString() : value}
+                          {typeof value === "number" ? Number(value.toFixed(2)).toLocaleString() : value}
                       </TableCell>
                     );
                   })}

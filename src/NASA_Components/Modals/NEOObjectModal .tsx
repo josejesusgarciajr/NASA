@@ -29,6 +29,10 @@ export const NEOObjectModal = ({neoObject, onClose} : NEOObjectModalprops) => {
     // hazardous
     const hazardous = neoObject?.is_potentially_hazardous_asteroid;
 
+    // estimated diameter
+    const estimatedDiameterMin = neoObject?.estimated_diameter.kilometers.estimated_diameter_min.toFixed(2);
+    const estimatedDiameterMax = neoObject?.estimated_diameter.kilometers.estimated_diameter_max.toFixed(2);
+
     // sorting and filters
     const orbitingOptions = [... new Set(neoObject?.close_approach_data.map(item => item.orbiting_body))];
     const [selectedOrbitingOption, setSelectedOrbitingOption] = useState<string>('');
@@ -127,7 +131,7 @@ export const NEOObjectModal = ({neoObject, onClose} : NEOObjectModalprops) => {
                 <DialogContent dividers>
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
                         <Typography>
-                            Estimated Diameter in miles: {neoObject?.estimated_diameter.miles.estimated_diameter_min} - {neoObject?.estimated_diameter.miles.estimated_diameter_max}
+                            Estimated Diameter: {estimatedDiameterMin} - {estimatedDiameterMax} km
                         </Typography>
                         {orbitingOptions.length > 1 && (
                             <OrbitingBodySelect options={orbitingOptions} selectedOption={selectedOrbitingOption} onSelectedOption={filterOrbitingOption} />
