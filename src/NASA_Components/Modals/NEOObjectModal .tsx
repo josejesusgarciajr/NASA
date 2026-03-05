@@ -7,6 +7,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import { Typography } from "@mui/material";
+import Stack from '@mui/material/Stack';
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from '@mui/icons-material/Close';
@@ -25,6 +26,10 @@ export const NEOObjectModal = ({neoObject, onClose} : NEOObjectModalprops) => {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
+    // hazardous
+    const hazardous = neoObject?.is_potentially_hazardous_asteroid;
+
+    // sorting and filters
     const orbitingOptions = [... new Set(neoObject?.close_approach_data.map(item => item.orbiting_body))];
     const [selectedOrbitingOption, setSelectedOrbitingOption] = useState<string>('');
     const [sortByColumn, setSortByColumn] = useState<string>('date');
@@ -130,7 +135,20 @@ export const NEOObjectModal = ({neoObject, onClose} : NEOObjectModalprops) => {
                     </Box>
                     { neoObject && (
                         <>
-                            <Typography>Close Approaches</Typography>
+                            <Stack direction='row' justifyContent='space-between' alignItems='center' width='100%' mb={1}>
+                                <Typography>Close Approaches</Typography>
+                                {hazardous && (
+                                    <Typography 
+                                        color="error"
+                                        sx={{
+                                            wordBreak: 'break-word',
+                                            fontSize: { xs: '0.6rem', md: '1rem' }
+                                        }}
+                                    >
+                                        HAZARDOUS
+                                    </Typography>
+                                )}
+                            </Stack>
                             <NEOCloseApproachTable closeApproaches={closeApproachFilteredData} 
                                 page={page} setPage={setPage}
                                 rowsPerPage={rowsPerPage} setRowsPerPage={setRowsPerPage}

@@ -86,6 +86,13 @@ export const NEOCloseApproachTable = ({closeApproaches, page, setPage, rowsPerPa
                   <TableSortLabel
                       active={sortByColumn === column.id}
                       direction={sortByColumn === column.id ? (desc ? 'desc' : 'asc') : 'desc'}
+                      sx={{
+                          '& .MuiTableSortLabel-icon': {
+                              display: { xs: sortByColumn === column.id ? 'block' : 'none', md: 'block' },
+                              fontSize: { xs: '0.6rem', md: '1rem' }
+                          },
+                          fontSize: { xs: '0.55rem', md: '0.875rem' }
+                      }}
                   >
                       {column.label}
                   </TableSortLabel>
