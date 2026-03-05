@@ -7,7 +7,7 @@ import { EstimatedDiameterNEO } from '../Modals/EstimatedDiameterNEO'
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
-import { Button, ButtonGroup, Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import Stack from '@mui/material/Stack';
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
@@ -32,9 +32,6 @@ export const NEOObjectModal = ({neoObject, onClose} : NEOObjectModalprops) => {
 
     // units
     const [units, setUnits] = useState<string>('kilometers');
-    //const kilometerUnits = units === 'kilometers';
-    // const estimatedDiameterMin = neoObject?.estimated_diameter.kilometers.estimated_diameter_min.toFixed(2);
-    // const estimatedDiameterMax = neoObject?.estimated_diameter.kilometers.estimated_diameter_max.toFixed(2);
 
     // sorting and filters
     const orbitingOptions = [... new Set(neoObject?.close_approach_data.map(item => item.orbiting_body))];
@@ -138,7 +135,7 @@ export const NEOObjectModal = ({neoObject, onClose} : NEOObjectModalprops) => {
                     </Box>
                     { neoObject && (
                         <>
-                            <Stack direction='row' justifyContent='space-between' alignItems='center' width='100%' mb={1}>
+                            <Stack direction='row' justifyContent='space-between' alignItems='center' width='100%' mb={1} sx={{ flexWrap: { xs: 'wrap', md: 'nowrap' }, gap: 1 }} useFlexGap>
                                 <Typography
                                     sx={{
                                         wordBreak: 'break-word',
@@ -147,10 +144,10 @@ export const NEOObjectModal = ({neoObject, onClose} : NEOObjectModalprops) => {
                                 >
                                     Close Approaches
                                 </Typography>
-                                <ButtonGroup>
-                                    <Button onClick={() => setUnits('miles')}>Miles</Button>
-                                    <Button autoFocus onClick={() => setUnits('kilometers')}>Kilometers</Button>
-                                </ButtonGroup>
+                                <Stack direction='row' sx={{ flexWrap: { xs: 'wrap', md: 'nowrap' }, gap: 1 }} useFlexGap>
+                                    <Button variant='outlined' onClick={() => setUnits('miles')}>Miles</Button>
+                                    <Button variant='outlined' onClick={() => setUnits('kilometers')} autoFocus>Kilometers</Button>
+                                </Stack>
                                 {hazardous && (
                                     <Typography 
                                         color="error"
