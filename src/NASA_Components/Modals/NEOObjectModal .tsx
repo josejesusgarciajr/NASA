@@ -115,10 +115,14 @@ export const NEOObjectModal = ({neoObject, onClose} : NEOObjectModalprops) => {
                 fullWidth 
                 fullScreen={fullScreen}
                 scroll="paper"
+                disableScrollLock
                 sx={{
                     '& .MuiDialog-paper': {
                         margin: { xs: 0, md: '32px' },
                         maxHeight: { xs: '100%', md: 'calc(100% - 64px)' },
+                    },
+                    '& .MuiDialog-container': {
+                        alignItems: { xs: 'flex-start', md: 'center' },
                     }
                 }}
             >
