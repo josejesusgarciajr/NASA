@@ -57,7 +57,7 @@ interface Column {
 
 export const NEOCloseApproachTable = ({closeApproaches, page, setPage, rowsPerPage, setRowsPerPage, sortBy, 
   sortByColumn, desc, units, startDateRangeStr, endDateRangeStr}: NEOCloseApproachTableProps) => {
-    
+
   const rows: RowData[] = useMemo(() => {
     if (units === 'miles') {
       return closeApproaches.map((approach) => ({
@@ -98,7 +98,10 @@ export const NEOCloseApproachTable = ({closeApproaches, page, setPage, rowsPerPa
 
   function isWithinWeek(dateStr: string) {
     const date = new Date(dateStr);
-    const dateOnly = date.toLocaleDateString('en-CA'); // gives "YYYY-MM-DD"
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateOnly = `${year}-${month}-${day}`;
 
     return dateOnly >= startDateRangeStr && dateOnly <= endDateRangeStr;
   }
