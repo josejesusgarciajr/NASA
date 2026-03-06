@@ -96,15 +96,22 @@ export const NEOCloseApproachTable = ({closeApproaches, page, setPage, rowsPerPa
     }
   }
 
-  function isWithinWeek(dateStr: string) {
-    const date = new Date(dateStr);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const dateOnly = `${year}-${month}-${day}`;
+function isWithinWeek(dateStr: string) {
+    // dateStr format: "2026-Mar-11 12:19"
+    const months: Record<string, string> = {
+        'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04',
+        'May': '05', 'Jun': '06', 'Jul': '07', 'Aug': '08',
+        'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'
+    };
+
+    const [datePart] = dateStr.split(' ');        // "2026-Mar-11"
+    const [year, monthAbbr, day] = datePart.split('-'); // ["2026", "Mar", "11"]
+    const month = months[monthAbbr];
+
+    const dateOnly = `${year}-${month}-${day.padStart(2, '0')}`;
 
     return dateOnly >= startDateRangeStr && dateOnly <= endDateRangeStr;
-  }
+}
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
