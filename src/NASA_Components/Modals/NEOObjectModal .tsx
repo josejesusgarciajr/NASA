@@ -177,7 +177,6 @@ export const NEOObjectModal = ({neoObject, onClose, startDateRangeStr, endDateRa
                                         variant='outlined'
                                         onClick={() => setUnits('kilometers')}
                                         sx={{ fontSize: { xs: '0.55rem', md: '0.875rem' }, padding: { xs: '2px 6px', md: '6px 16px' } }}
-                                        autoFocus
                                     >
                                         Kilometers
                                     </Button>
