@@ -19,9 +19,11 @@ type NEOFeedDisplayProps = {
     neoFeedResponse: NEOFeedResponse;
     neoNavLink: (link: string) => void;
     setLoadingNEOSELF: (loadinNEOSELF: boolean) => void;
+    startDateRangeStr: string;
+    endDateRangeStr: string;
 }
 
-export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, setLoadingNEOSELF} : NEOFeedDisplayProps) => {
+export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, setLoadingNEOSELF, startDateRangeStr, endDateRangeStr} : NEOFeedDisplayProps) => {
     // search
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [selectedDate, setSelectedDate] = useState<string>('');
@@ -164,7 +166,8 @@ export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, setLoadingNEOSELF} 
                 </Grid>
             </Box>
             { openNEOModal && (
-                <NEOObjectModal neoObject={neoSELF} onClose={onModalClose} />
+                <NEOObjectModal neoObject={neoSELF} onClose={onModalClose} 
+                    startDateRangeStr={startDateRangeStr} endDateRangeStr={endDateRangeStr} />
             )}
         </>
     );

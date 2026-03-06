@@ -22,16 +22,19 @@ function App() {
   const [errorAPOD, setErrorAPOD] = useState<string>('');
 
   // NEO
+  const today = new Date();
+  const localDate = today.toLocaleDateString('en-CA');
+  const date7DaysOut = addDays(today, 7).toLocaleDateString('en-CA');
+  const NASA_NEO_URL = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${localDate}&end_date=${date7DaysOut}&api_key=${NASA_API_KEY}`;
+
   const [neoFeedResponse, setNeoFeedResponse] = useState<NEOFeedResponse | null>(null);
   const [loadingNEO, setLoadingNEO] = useState<boolean>(false);
   const [loadingNEOSELF, setLoadingNEOSELF] = useState<boolean>(false);
   const [errorNEO, setErrorNEO] = useState<string>('');
+  const [neoLink, setNeoLink] = useState<string>(NASA_NEO_URL);
 
-  const today = new Date();
-  const localDate = today.toLocaleDateString('en-CA');
-  const date7DaysOut = addDays(today, 7).toLocaleDateString('en-CA');
-
-  const NASA_NEO_URL = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${localDate}&end_date=${date7DaysOut}&api_key=${NASA_API_KEY}`;
+  const startDateRangeStr = new URLSearchParams(new URL(neoLink).search).get('start_date') ?? '';
+  const endDateRangeStr = new URLSearchParams(new URL(neoLink).search).get('end_date') ?? '';
 
   // run once on app mount to fetch APOD
   useEffect(() => {
@@ -62,6 +65,7 @@ function App() {
   function fetchNeoFeedResponse(link: string) {
     setLoadingNEO(true);
     const secureLink = link.replace('http://', 'https://');
+    setNeoLink(secureLink);
 
     fetch(secureLink)
     .then(res => res.json())
@@ -109,7 +113,8 @@ function App() {
       {errorNEO && errorNEO}
       {neoFeedResponse && (
         <NEOFeedDisplay neoFeedResponse={neoFeedResponse} neoNavLink={neoNavLink} 
-                        setLoadingNEOSELF={handleLoadingNEOSelf}/>
+                        setLoadingNEOSELF={handleLoadingNEOSelf} 
+                        startDateRangeStr={startDateRangeStr} endDateRangeStr={endDateRangeStr} />
       )}
     </>
   )

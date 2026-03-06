@@ -20,9 +20,11 @@ import { useState, useMemo } from 'react';
 type NEOObjectModalprops = {
     neoObject: NEOObject | null;
     onClose: () => void;
+    startDateRangeStr: string;
+    endDateRangeStr: string;
 }
 
-export const NEOObjectModal = ({neoObject, onClose} : NEOObjectModalprops) => {
+export const NEOObjectModal = ({neoObject, onClose, startDateRangeStr, endDateRangeStr} : NEOObjectModalprops) => {
     const open = Boolean(neoObject);
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -196,7 +198,7 @@ export const NEOObjectModal = ({neoObject, onClose} : NEOObjectModalprops) => {
                                 page={page} setPage={setPage}
                                 rowsPerPage={rowsPerPage} setRowsPerPage={setRowsPerPage}
                                 sortBy={sortBy} sortByColumn={sortByColumn} desc={sortingDesc}
-                                units={units} />
+                                units={units} startDateRangeStr={startDateRangeStr} endDateRangeStr={endDateRangeStr} />
                         </>
                     )}
                 </DialogContent>

@@ -23,6 +23,8 @@ type NEOCloseApproachTableProps = {
   sortByColumn: string;
   desc: boolean;
   units: string;
+  startDateRangeStr: string;
+  endDateRangeStr: string;
 }
 
 interface Column {
@@ -53,7 +55,9 @@ interface Column {
   align?: "right";
 }
 
-export const NEOCloseApproachTable = ({closeApproaches, page, setPage, rowsPerPage, setRowsPerPage, sortBy, sortByColumn, desc, units}: NEOCloseApproachTableProps) => {
+export const NEOCloseApproachTable = ({closeApproaches, page, setPage, rowsPerPage, setRowsPerPage, sortBy, 
+  sortByColumn, desc, units, startDateRangeStr, endDateRangeStr}: NEOCloseApproachTableProps) => {
+    
   const rows: RowData[] = useMemo(() => {
     if (units === 'miles') {
       return closeApproaches.map((approach) => ({
@@ -90,6 +94,13 @@ export const NEOCloseApproachTable = ({closeApproaches, page, setPage, rowsPerPa
       default:
         return column.label;
     }
+  }
+
+  function isWithinWeek(dateStr: string) {
+    const date = new Date(dateStr);
+    const dateOnly = date.toLocaleDateString('en-CA'); // gives "YYYY-MM-DD"
+
+    return dateOnly >= startDateRangeStr && dateOnly <= endDateRangeStr;
   }
 
   return (
@@ -130,7 +141,15 @@ export const NEOCloseApproachTable = ({closeApproaches, page, setPage, rowsPerPa
             {rows
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, index) => (
-                <TableRow hover key={index}>
+                <TableRow
+                  hover 
+                  key={index} 
+                  sx={{
+                    backgroundColor: isWithinWeek(row.date) 
+                        ? 'rgba(25, 118, 210, 0.15)' 
+                        : 'inherit'
+                  }}
+                >
                   {columns.map((column) => {
                     const value = row[column.id];
 
