@@ -85,8 +85,36 @@ export const APODExplorer = () => {
                 closeOnSelect
                 openTo="year"
                 views={['year', 'month', 'day']}
+                slotProps={{
+                    layout: {
+                        sx: {
+                            '.MuiPickersMonth-monthButton.Mui-selected': {
+                                backgroundColor: '#1976d2',
+                                color: 'white',
+                                border: 'none',
+                                outline: 'none',
+                            },
+                            '.MuiPickersMonth-monthButton:focus': {
+                                outline: 'none',
+                                border: 'none',
+                                boxShadow: 'none',
+                            },
+                            '.MuiPickersYear-yearButton.Mui-selected': {
+                                backgroundColor: '#1976d2',
+                                color: 'white',
+                                border: 'none',
+                                outline: 'none',
+                            },
+                            '.MuiPickersYear-yearButton:focus': {
+                                outline: 'none',
+                                border: 'none',
+                                boxShadow: 'none',
+                            },
+                        }
+                    }
+                }}
             />
-
+            
             {apod && (
                 <APODDisplay apod={apod}/>
             )}
