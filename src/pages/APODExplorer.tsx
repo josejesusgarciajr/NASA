@@ -25,13 +25,11 @@ export const APODExplorer = () => {
 
     const NASA_API_KEY = import.meta.env.VITE_NASA_API_KEY
 
-    function fetchAPODWithDate() {
+    function fetchAPODWithDate(date: Dayjs | null) {
 
-        if (!selectedDate) {
-            return;
-        }
+        if (!date) return
 
-        const selectedDateString = selectedDate!.format('YYYY-MM-DD')
+        const selectedDateString = date.format('YYYY-MM-DD')
         setLoadingAPOD(true);
         // setImageLoaded(false);
 
@@ -83,7 +81,7 @@ export const APODExplorer = () => {
                 yearsOrder='desc'
                 value={selectedDate}
                 onChange={(newDate) => setSelectedDate(newDate)}
-                onAccept={fetchAPODWithDate}
+                onAccept={(newDate) => fetchAPODWithDate(newDate)}
                 closeOnSelect
                 openTo="year"
                 views={['year', 'month', 'day']}
