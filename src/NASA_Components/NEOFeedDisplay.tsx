@@ -1,4 +1,6 @@
 import type { NEOFeedResponse, NEOObject } from "../types/NASA/NEOFeedResponse";
+
+import { buttonGlowSx } from '../types/buttonGlowSx'
 import { NASAServiceDisplay } from '../NASA_Components/NASAServiceDisplay'
 import { NEOObjectDisplay } from "./NEOObjectDisplay";
 import  { NEOSearch } from '../NASA_Components/NEOSearch';
@@ -153,8 +155,8 @@ export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, setLoadingNEOSELF, 
                 sx={{ flexWrap: { xs: 'wrap', md: 'nowrap' }, gap: 1 }}
                 useFlexGap
             >
-                <Button variant="outlined" onClick={() => handleNeoNavLink(neoFeedResponse.links.previous)}>Previous</Button>
-                <Button variant="outlined" onClick={() => handleNeoNavLink(neoFeedResponse.links.next)}>Next</Button>
+                <Button variant="outlined" sx={buttonGlowSx} onClick={() => handleNeoNavLink(neoFeedResponse.links.previous)}>Previous</Button>
+                <Button variant="outlined" sx={buttonGlowSx} onClick={() => handleNeoNavLink(neoFeedResponse.links.next)}>Next</Button>
                 <NEOSearch searchTerm={searchTerm} searchNEO={searchNEO} />
                 <NEODateFilter dates={dates} selectedDate={selectedDate} setSelectedDate={sortByDate} />
                 <NEOHazardousFilter hazardousOptions={hazardousOptions} hazardous={hazardous} selectedHazardous={sortByHazardous} />

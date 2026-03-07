@@ -3,6 +3,7 @@ import type { NEOObject } from "../../types/NASA/NEOFeedResponse"
 import { NEOCloseApproachTable } from '../NEOCloseApproachTable'
 import { OrbitingBodySelect } from '../Modals/OrbitingBodySelect'
 import { EstimatedDiameterNEO } from '../Modals/EstimatedDiameterNEO'
+import { buttonGlowSx } from "../../types/buttonGlowSx"
 
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -168,7 +169,7 @@ export const NEOObjectModal = ({neoObject, onClose, startDateRangeStr, endDateRa
                                         size="small"
                                         variant='outlined'
                                         onClick={() => setUnits('miles')}
-                                        sx={{ fontSize: { xs: '0.55rem', md: '0.875rem' }, padding: { xs: '2px 6px', md: '6px 16px' } }}
+                                        sx={{ fontSize: { xs: '0.55rem', md: '0.875rem' }, padding: { xs: '2px 6px', md: '6px 16px' }, ...buttonGlowSx }}
                                     >
                                         Miles
                                     </Button>
@@ -176,7 +177,7 @@ export const NEOObjectModal = ({neoObject, onClose, startDateRangeStr, endDateRa
                                         size="small"
                                         variant='outlined'
                                         onClick={() => setUnits('kilometers')}
-                                        sx={{ fontSize: { xs: '0.55rem', md: '0.875rem' }, padding: { xs: '2px 6px', md: '6px 16px' } }}
+                                        sx={{ fontSize: { xs: '0.55rem', md: '0.875rem' }, padding: { xs: '2px 6px', md: '6px 16px' }, ...buttonGlowSx }}
                                     >
                                         Kilometers
                                     </Button>

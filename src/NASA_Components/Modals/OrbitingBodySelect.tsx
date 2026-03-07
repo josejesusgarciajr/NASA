@@ -2,6 +2,8 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import { glowSx } from '../../types/glowSx';
+
 import type { SelectChangeEvent } from '@mui/material/Select';
 
 type OrbitingBodySelectProps = {
@@ -28,7 +30,7 @@ export const OrbitingBodySelect = ({options, selectedOption, onSelectedOption} :
 
     return (
         <>
-            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+            <FormControl sx={{ m: 1, minWidth: 120, ...glowSx }} size="small">
                 <InputLabel id="demo-select-small-label">Orbiting</InputLabel>
                 <Select
                     labelId="demo-select-small-label"
