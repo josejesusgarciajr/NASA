@@ -28,7 +28,7 @@ type NEOFeedDisplayProps = {
 export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, setLoadingNEOSELF, startDateRangeStr, endDateRangeStr} : NEOFeedDisplayProps) => {
     // search
     const [searchTerm, setSearchTerm] = useState<string>('');
-    const [selectedDate, setSelectedDate] = useState<string>('');
+    const [selectedDate, setSelectedDate] = useState<string>('All');
     const [selectedNEOObject, setSelectedNEOObject] = useState<NEOObject | null>(null);
     const [neoSELF, setNEOSELF] = useState<NEOObject | null>(null);
     
@@ -49,7 +49,7 @@ export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, setLoadingNEOSELF, 
     }
 
     useEffect(() => {
-        setSelectedDate('');
+        setSelectedDate('All');
     }, [neoFeedResponse]);
 
     // Flatten all NEOObject[] from all dates into a single array of NEOObjectDisplay components

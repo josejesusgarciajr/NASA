@@ -35,7 +35,7 @@ export const NEOHazardousFilter = ({hazardousOptions, hazardous, selectedHazardo
                 id="demo-select-small"
                 value={        
                     hazardous === null
-                    ? ''
+                    ? 'All'
                     : hazardous
                         ? 'HAZARDOUS'
                         : 'Not Hazardous'
@@ -43,7 +43,7 @@ export const NEOHazardousFilter = ({hazardousOptions, hazardous, selectedHazardo
                 label="Hazardous"
                 onChange={handleSelectedHazardous}
             >
-                <MenuItem value=''>All</MenuItem>
+                <MenuItem value='All'>All</MenuItem>
                 {menuItems}
             </Select>
         </FormControl>

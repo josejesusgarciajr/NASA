@@ -36,7 +36,7 @@ export const NEODateFilter = ({dates, selectedDate, setSelectedDate} : NEODateFi
                     label="Date"
                     onChange={handleSelectedDate}
                 >
-                    <MenuItem value=''>All</MenuItem>
+                    <MenuItem value='All'>All</MenuItem>
                     {menuItems}
                 </Select>
             </FormControl>
