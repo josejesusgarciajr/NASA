@@ -16,8 +16,8 @@ function NavButton({ to, end, children }: { to: string; end?: boolean; children:
             borderRadius: 1,
             borderBottom: isActive ? '2px solid white' : '2px solid transparent',
             minWidth: 'unset',
-            px: { xs: 1.5, sm: 2 },
-            fontSize: { xs: '0.8rem', sm: '0.875rem' },
+            px: { xs: 1.25, sm: 2 },
+            fontSize: { xs: '0.6rem', sm: '0.875rem' },
             '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' },
           }}
         >
@@ -48,7 +48,7 @@ export function NavBar() {
         sx={{
             flexGrow: 0,
             mr: { xs: 1, sm: 4 },
-            fontSize: { xs: '0.75rem', sm: '1.25rem' },
+            fontSize: { xs: '0.60rem', sm: '1.25rem' },
             whiteSpace: 'nowrap',
         }}
         >
