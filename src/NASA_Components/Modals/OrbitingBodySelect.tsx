@@ -15,10 +15,7 @@ type OrbitingBodySelectProps = {
 export const OrbitingBodySelect = ({options, selectedOption, onSelectedOption} : OrbitingBodySelectProps) => {
 
     const menuItems = options.map(option =>
-        <MenuItem key={option} value={
-            option === 'All' ?
-            '' : option
-        }>
+        <MenuItem key={option} value={option}>
             {option}
         </MenuItem>
     );
@@ -39,7 +36,7 @@ export const OrbitingBodySelect = ({options, selectedOption, onSelectedOption} :
                     label="Orbiting"
                     onChange={handleSelectedOption}
                 >
-                    <MenuItem value=''>All</MenuItem>
+                    <MenuItem value='All'>All</MenuItem>
                     {menuItems}
                 </Select>
             </FormControl>

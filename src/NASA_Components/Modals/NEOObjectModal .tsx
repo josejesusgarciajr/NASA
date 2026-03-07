@@ -38,7 +38,7 @@ export const NEOObjectModal = ({neoObject, onClose, startDateRangeStr, endDateRa
 
     // sorting and filters
     const orbitingOptions = [... new Set(neoObject?.close_approach_data.map(item => item.orbiting_body))];
-    const [selectedOrbitingOption, setSelectedOrbitingOption] = useState<string>('');
+    const [selectedOrbitingOption, setSelectedOrbitingOption] = useState<string>('All');
     const [sortByColumn, setSortByColumn] = useState<string>('date');
     const [sortingDesc, setSortingDesc] = useState<boolean>(true);
 
@@ -50,7 +50,7 @@ export const NEOObjectModal = ({neoObject, onClose, startDateRangeStr, endDateRa
         const filtered =
             neoObject?.close_approach_data.filter(cad => {
                 return (
-                    cad.orbiting_body === selectedOrbitingOption || selectedOrbitingOption === ''
+                    cad.orbiting_body === selectedOrbitingOption || selectedOrbitingOption === 'All'
                 );
             }) ?? [];
         
@@ -105,7 +105,7 @@ export const NEOObjectModal = ({neoObject, onClose, startDateRangeStr, endDateRa
     }
 
     function onModalClose() {
-        setSelectedOrbitingOption('');
+        setSelectedOrbitingOption('All');
         onClose();
     }
 
