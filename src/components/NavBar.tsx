@@ -42,19 +42,19 @@ export function NavBar() {
       }}
     >
       <Toolbar sx={{ px: { xs: 1.5, sm: 3 } }} disableGutters>
-        <RocketLaunchIcon sx={{ mr: 1, fontSize: { xs: '1.2rem', sm: '1.5rem' } }} />
+        <RocketLaunchIcon sx={{ mr: 1, fontSize: { xs: '0.75rem', sm: '1.5rem' } }} />
         <Typography
         variant="h6"
         sx={{
             flexGrow: 0,
-            mr: 4,
+            mr: { xs: 1, sm: 4 },
             fontSize: { xs: '0.75rem', sm: '1.25rem' },
             whiteSpace: 'nowrap',
         }}
         >
         NASA Explorer
         </Typography>
-        <Box sx={{ display: 'flex', gap: { xs: 0.5, sm: 1 } }}>
+        <Box sx={{ display: 'flex', gap: { xs: 0.25, sm: 0.75 } }}>
           <NavButton to="/" end>Home</NavButton>
           {/* <NavButton to="/apod-explorer">APOD Explorer</NavButton> */}
         </Box>
