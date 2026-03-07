@@ -60,8 +60,19 @@ export const APODExplorer = () => {
             {errorAPOD && errorAPOD}
 
             <NASAServiceDisplay serviceAcronym='APOD' serviceName='Astronomy Picture of the Day' />
-            <Typography>
-                Select a date from June 16, 1995 to see the Astromoney Picture of the Day that day!
+            <Typography
+                variant="body1"
+                sx={{
+                    maxWidth: '600px',
+                    color: 'text.secondary',
+                    mb: 3,
+                    mt: 1,
+                    lineHeight: 1.7,
+                    textAlign: 'center',
+                    mx: 'auto',
+                }}
+            >
+                Every day, NASA captures something extraordinary. Choose a date to travel back and see what the universe looked like on that day.
             </Typography>
             <DatePicker
                 minDate={dayjs('1995-06-16')}
