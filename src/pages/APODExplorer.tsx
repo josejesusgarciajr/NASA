@@ -84,6 +84,7 @@ export const APODExplorer = () => {
                 value={selectedDate}
                 onChange={(newDate) => setSelectedDate(newDate)}
                 onAccept={fetchAPODWithDate}
+                closeOnSelect
                 openTo="year"
                 views={['year', 'month', 'day']}
             />
