@@ -48,7 +48,7 @@ export function NavBar() {
         sx={{
             flexGrow: 0,
             mr: 4,
-            fontSize: { xs: '1rem', sm: '1.25rem' },
+            fontSize: { xs: '0.75rem', sm: '1.25rem' },
             whiteSpace: 'nowrap',
         }}
         >
