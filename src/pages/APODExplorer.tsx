@@ -20,6 +20,7 @@ export const APODExplorer = () => {
     const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
     const [apod, setApod] = useState<APOD | null>(null);
     const [loadingAPOD, setLoadingAPOD] = useState<boolean>(false);
+    // const [imageLoaded, setImageLoaded] = useState(false)
     const [errorAPOD, setErrorAPOD] =useState<string>('');
 
     const NASA_API_KEY = import.meta.env.VITE_NASA_API_KEY
@@ -31,7 +32,9 @@ export const APODExplorer = () => {
         }
 
         const selectedDateString = selectedDate!.format('YYYY-MM-DD')
-        setLoadingAPOD(true)
+        setLoadingAPOD(true);
+        // setImageLoaded(false);
+
         const NASA_APOD_URL = `https://api.nasa.gov/planetary/apod?api_key=${NASA_API_KEY}&date=${selectedDateString}`
 
         fetch(NASA_APOD_URL)
@@ -79,7 +82,9 @@ export const APODExplorer = () => {
                 maxDate={dayjs()}
                 yearsOrder='desc'
                 value={selectedDate}
-                onChange={(newDate) => setSelectedDate(newDate)}
+                onAccept={(newDate) => setSelectedDate(newDate)}
+                openTo="year"
+                views={['year', 'month', 'day']}
             />
 
             {apod && (
