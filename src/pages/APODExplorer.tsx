@@ -20,7 +20,7 @@ export const APODExplorer = () => {
     const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
     const [apod, setApod] = useState<APOD | null>(null);
     const [loadingAPOD, setLoadingAPOD] = useState<boolean>(false);
-    // const [imageLoaded, setImageLoaded] = useState(false)
+    const [imageLoaded, setImageLoaded] = useState(false)
     const [errorAPOD, setErrorAPOD] =useState<string>('');
 
     const NASA_API_KEY = import.meta.env.VITE_NASA_API_KEY
@@ -31,7 +31,7 @@ export const APODExplorer = () => {
 
         const selectedDateString = date.format('YYYY-MM-DD')
         setLoadingAPOD(true);
-        // setImageLoaded(false);
+        setImageLoaded(false);
 
         const NASA_APOD_URL = `https://api.nasa.gov/planetary/apod?api_key=${NASA_API_KEY}&date=${selectedDateString}`
 
@@ -51,13 +51,13 @@ export const APODExplorer = () => {
 
     return (
         <>
-            {loadingAPOD && (
+            {(loadingAPOD && !imageLoaded) && (
                 <Box sx={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 2000 }}>
                     <LinearProgress />
                 </Box>
             )}
 
-            {loadingAPOD && <p>Loading APOD...</p>}
+            {(loadingAPOD && !imageLoaded) && <p>Loading APOD...</p>}
             {errorAPOD && errorAPOD}
 
             <NASAServiceDisplay serviceAcronym='APOD' serviceName='Astronomy Picture of the Day' />
@@ -116,7 +116,7 @@ export const APODExplorer = () => {
             />
             
             {apod && (
-                <APODDisplay apod={apod}/>
+                <APODDisplay apod={apod} setImageLoaded={setImageLoaded} />
             )}
         </>
     );

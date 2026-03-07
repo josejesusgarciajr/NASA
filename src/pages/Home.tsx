@@ -26,6 +26,7 @@ export function Home() {
   // APOD
   const [apod, setApod] = useState<APOD | null>(null)
   const [loadingAPOD, setLoadingAPOD] = useState<boolean>(false)
+  const [imageLoaded, setImageLoaded] = useState(false)
   const [errorAPOD, setErrorAPOD] = useState<string>('')
 
   // NEO
@@ -44,7 +45,8 @@ export function Home() {
   const endDateRangeStr = new URLSearchParams(new URL(neoLink).search).get('end_date') ?? ''
 
   useEffect(() => {
-    setLoadingAPOD(true)
+    setLoadingAPOD(true);
+    setImageLoaded(false);
     const NASA_APOD_URL = `https://api.nasa.gov/planetary/apod?api_key=${NASA_API_KEY}`
 
     fetch(NASA_APOD_URL)
@@ -80,18 +82,18 @@ export function Home() {
 
   return (
     <>
-      {(loadingAPOD || loadingNEO || loadingNEOSELF) && (
+      {((loadingAPOD && !imageLoaded) || loadingNEO || loadingNEOSELF) && (
         <Box sx={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 2000 }}>
           <LinearProgress />
         </Box>
       )}
 
-      {loadingAPOD && <p>Loading APOD...</p>}
+      {(loadingAPOD && !imageLoaded) && <p>Loading APOD...</p>}
       {errorAPOD && errorAPOD}
       {apod && (
         <>
           <NASAServiceDisplay serviceAcronym='APOD' serviceName='Astronomy Picture of the Day' />
-          <APODDisplay apod={apod} />
+          <APODDisplay apod={apod} setImageLoaded={setImageLoaded} />
         </>
       )}
 
