@@ -16,7 +16,7 @@ export const NEODateFilter = ({dates, selectedDate, setSelectedDate} : NEODateFi
 
     function handleSelectedDate(e: SelectChangeEvent) {
         const date = e.target.value;
-        setSelectedDate(date)
+        setSelectedDate(date === 'All' ? 'All' : date);
     }
 
     const menuItems = dates.map(date => {

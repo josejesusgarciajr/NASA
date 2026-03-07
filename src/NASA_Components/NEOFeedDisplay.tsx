@@ -53,9 +53,9 @@ export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, setLoadingNEOSELF, 
     }, [neoFeedResponse]);
 
     // Flatten all NEOObject[] from all dates into a single array of NEOObjectDisplay components
-    const neosForSelectedDate = selectedDate
-        ? neoFeedResponse.near_earth_objects[selectedDate] ?? []
-        : Object.values(neoFeedResponse.near_earth_objects).flat();
+    const neosForSelectedDate = selectedDate === 'All' || selectedDate === ''
+        ? Object.values(neoFeedResponse.near_earth_objects).flat()
+        : neoFeedResponse.near_earth_objects[selectedDate] ?? [];
 
     const getDiameter = (neo: NEOObject) => 
         (neo.estimated_diameter.kilometers.estimated_diameter_min + 
