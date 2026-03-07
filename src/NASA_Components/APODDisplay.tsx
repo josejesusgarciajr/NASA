@@ -1,4 +1,3 @@
-import { NASAServiceDisplay } from '../NASA_Components/NASAServiceDisplay'
 import type { APOD } from '../types/NASA/APOD'
 import { useRef, useEffect } from 'react'
 
@@ -21,7 +20,6 @@ export const APODDisplay = ({apod} : APODDisplayProps) => {
 
     return (
         <>
-            <NASAServiceDisplay serviceAcronym='APOD' serviceName='Astronomy Picture of the Day' />
             <p style={{ textAlign: 'center' }}>{apod.title}</p>
             <p style={{ textAlign: 'center' }}>{apod.date}</p>
             { video ? (

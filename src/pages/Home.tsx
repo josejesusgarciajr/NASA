@@ -11,6 +11,7 @@ import { NEOFeedDisplay } from '../NASA_Components/NEOFeedDisplay'
 // MATERIAL UI
 import LinearProgress from '@mui/material/LinearProgress'
 import Box from '@mui/material/Box'
+import { NASAServiceDisplay } from '../NASA_Components/NASAServiceDisplay'
 
 // Function to add days to a date
 function addDays(date: Date, days: number) {
@@ -87,7 +88,12 @@ export function Home() {
 
       {loadingAPOD && <p>Loading APOD...</p>}
       {errorAPOD && errorAPOD}
-      {apod && <APODDisplay apod={apod} />}
+      {apod && (
+        <>
+          <NASAServiceDisplay serviceAcronym='APOD' serviceName='Astronomy Picture of the Day' />
+          <APODDisplay apod={apod} />
+        </>
+      )}
 
       {loadingNEO && <p>Loading NEO...</p>}
       {errorNEO && errorNEO}
