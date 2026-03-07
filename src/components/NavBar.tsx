@@ -56,7 +56,7 @@ export function NavBar() {
         </Typography>
         <Box sx={{ display: 'flex', gap: { xs: 0.25, sm: 0.75 } }}>
           <NavButton to="/" end>Home</NavButton>
-          {/* <NavButton to="/apod-explorer">APOD Explorer</NavButton> */}
+          <NavButton to="/apod-explorer">APOD Explorer</NavButton>
         </Box>
       </Toolbar>
     </AppBar>

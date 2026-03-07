@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import { NavBar } from './components/NavBar'
 import { Home } from './pages/Home'
-//import { APODExplorer } from './pages/APODExplorer'
+import { APODExplorer } from './pages/APODExplorer'
 import './App.css'
 import { Box } from '@mui/material'
 
@@ -12,7 +12,7 @@ function App() {
       <NavBar />
       <Routes>
         <Route path="/" element={<Home />} />
-        {/* <Route path="/apod-explorer" element={<APODExplorer />} /> */}
+        <Route path="/apod-explorer" element={<APODExplorer />} />
       </Routes>
     </Box>
     </>

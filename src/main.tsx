@@ -7,6 +7,9 @@ import { BrowserRouter } from 'react-router-dom'
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 
+import { LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+
 const theme = createTheme({
   palette: {
     mode: "dark", // 👈 if you want the darker Vite look
@@ -49,10 +52,12 @@ const theme = createTheme({
 });
 
 createRoot(document.getElementById('root')!).render(
-  <BrowserRouter>
+    <BrowserRouter>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <App />
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <App />
+      </LocalizationProvider>
     </ThemeProvider>
   </BrowserRouter>
 )
