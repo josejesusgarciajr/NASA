@@ -8,7 +8,7 @@ import { NASAServiceDisplay } from '../NASA_Components/NASAServiceDisplay';
 import type { APOD } from '../types/NASA/APOD';
 
 // REACT
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 // MATERIAL UI
 import LinearProgress from '@mui/material/LinearProgress'
@@ -47,9 +47,9 @@ export const APODExplorer = () => {
         .finally(() => setLoadingAPOD(false))
     }
 
-    useEffect(() => {
-        fetchAPODWithDate();
-    }, [selectedDate]);
+    // useEffect(() => {
+    //     fetchAPODWithDate();
+    // }, [selectedDate]);
 
     return (
         <>
@@ -82,7 +82,8 @@ export const APODExplorer = () => {
                 maxDate={dayjs()}
                 yearsOrder='desc'
                 value={selectedDate}
-                onAccept={(newDate) => setSelectedDate(newDate)}
+                onChange={(newDate) => setSelectedDate(newDate)}
+                onAccept={fetchAPODWithDate}
                 openTo="year"
                 views={['year', 'month', 'day']}
             />
