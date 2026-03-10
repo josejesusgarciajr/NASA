@@ -14,6 +14,7 @@ import { useState } from 'react';
 import LinearProgress from '@mui/material/LinearProgress'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { Typography } from '@mui/material';
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box'
 
 export const APODExplorer = () => {
@@ -36,17 +37,19 @@ export const APODExplorer = () => {
 
         fetch(NASA_APOD_URL)
         .then(res => res.json())
-        .then(data => setApod(data))
+        .then(data => {
+            if (data.code === 404) {
+                setErrorAPOD(data.msg)
+            } else {
+                setApod(data)
+            }
+        })
         .catch(err => {
             console.log(`ERROR FETCHING NASA API APOD ENDPOINT: ${err}`)
             setErrorAPOD('ERROR FETCHING NASA API APOD ENDPOINT')
         })
         .finally(() => setLoadingAPOD(false))
     }
-
-    // useEffect(() => {
-    //     fetchAPODWithDate();
-    // }, [selectedDate]);
 
     return (
         <>
@@ -56,8 +59,7 @@ export const APODExplorer = () => {
                 </Box>
             )}
 
-            {loadingAPOD && <p>Loading APOD...</p>}
-            {errorAPOD && errorAPOD}
+            {loadingAPOD && <p>Fetching Cosmic Data...</p>}
 
             <NASAServiceDisplay serviceAcronym='APOD' serviceName='Astronomy Picture of the Day' />
             <Typography
@@ -113,6 +115,12 @@ export const APODExplorer = () => {
                     }
                 }}
             />
+
+            {errorAPOD && (
+                <Alert variant="outlined" severity="error" sx={{ maxWidth: '600px', mx: 'auto', mt: 2 }}>
+                    {errorAPOD}
+                </Alert>
+            )}
             
             {apod && (
                 <APODDisplay apod={apod} />

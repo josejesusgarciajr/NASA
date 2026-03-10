@@ -4,6 +4,7 @@ import { NEOFeedDisplay } from '../NASA_Components/NEOFeedDisplay'
 // MATERIAL UI
 import LinearProgress from '@mui/material/LinearProgress'
 import Box from '@mui/material/Box'
+import Alert from '@mui/material/Alert';
 
 import type { NEOFeedResponse } from '../types/NASA/NEOFeedResponse'
 
@@ -63,8 +64,12 @@ export const NEOWS = () => {
                 </Box>
             )}
 
-            {loadingNEO && <p>Loading NEO...</p>}
-            {errorNEO && errorNEO}
+            {loadingNEO && <p>Fetching Cosmic Data...</p>}
+            {errorNEO && (
+                <Alert variant="outlined" severity="error" sx={{ maxWidth: '600px', mx: 'auto', mt: 2 }}>
+                    {errorNEO}
+                </Alert>
+            )}
             {neoFeedResponse && (
                 <NEOFeedDisplay
                     neoFeedResponse={neoFeedResponse}
