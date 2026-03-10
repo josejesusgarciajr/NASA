@@ -7,6 +7,7 @@ type APODDisplayProps = {
 
 export const APODDisplay = ({apod} : APODDisplayProps) => {
     const video = apod.media_type === 'video';
+    const youtubeVideo = (apod.url?.includes('youtube') || apod.url?.includes('youtu.be')) ?? false;
     const secureVideoLink = apod.url?.replace('http://', 'https://');
     const secureImageLink = apod.hdurl?.replace('http://', 'https://');
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -14,7 +15,9 @@ export const APODDisplay = ({apod} : APODDisplayProps) => {
     // play video on app mount
     useEffect(() => {
         if (video && videoRef.current) {
-            videoRef.current.play();
+            if (!youtubeVideo) {
+                videoRef.current.play();
+            }
         }
     }, [apod]);
 
@@ -23,8 +26,19 @@ export const APODDisplay = ({apod} : APODDisplayProps) => {
             <p style={{ textAlign: 'center' }}>{apod.title}</p>
             <p style={{ textAlign: 'center' }}>{apod.date}</p>
             { video ? (
-                <video ref={videoRef} src={secureVideoLink} controls width='100%'
-                    muted autoPlay playsInline loop />
+                 youtubeVideo ? (
+                        <iframe 
+                            width='100%'
+                            style={{ aspectRatio: '16/9', border: 'none' }}
+                            src={secureVideoLink}
+                            allowFullScreen
+                        >
+                        </iframe>
+                    )
+                    : (
+                        <video ref={videoRef} src={secureVideoLink} controls width='100%'
+                            muted autoPlay playsInline loop />
+                    )
             ) : (
                 <img src={secureImageLink} alt={apod.title}
                     style={{ width: '100%', maxWidth: '800px', margin: '0 auto', display: 'block' }} 
