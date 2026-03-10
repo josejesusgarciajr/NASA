@@ -17,12 +17,11 @@ export function Home() {
   // APOD
   const [apod, setApod] = useState<APOD | null>(null)
   const [loadingAPOD, setLoadingAPOD] = useState<boolean>(false)
-  const [imageLoaded, setImageLoaded] = useState(false)
   const [errorAPOD, setErrorAPOD] = useState<string>('')
 
   useEffect(() => {
     setLoadingAPOD(true);
-    setImageLoaded(false);
+    setErrorAPOD('');
     const NASA_APOD_URL = `https://api.nasa.gov/planetary/apod?api_key=${NASA_API_KEY}`
 
     fetch(NASA_APOD_URL)
@@ -37,18 +36,18 @@ export function Home() {
 
   return (
     <>
-      {(loadingAPOD && !imageLoaded) && (
+      {loadingAPOD && (
         <Box sx={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 2000 }}>
           <LinearProgress />
         </Box>
       )}
 
-      {(loadingAPOD && !imageLoaded) && <p>Loading APOD...</p>}
+      {loadingAPOD && <p>Loading APOD...</p>}
       {errorAPOD && errorAPOD}
       {apod && (
         <>
           <NASAServiceDisplay serviceAcronym='APOD' serviceName='Astronomy Picture of the Day' />
-          <APODDisplay apod={apod} setImageLoaded={setImageLoaded} />
+          <APODDisplay apod={apod} />
         </>
       )}
     </>

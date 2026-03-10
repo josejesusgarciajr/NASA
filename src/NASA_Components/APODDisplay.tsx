@@ -3,10 +3,9 @@ import { useRef, useEffect } from 'react'
 
 type APODDisplayProps = {
     apod: APOD;
-    setImageLoaded: (imageLoad: boolean) => void;
 }
 
-export const APODDisplay = ({apod, setImageLoaded} : APODDisplayProps) => {
+export const APODDisplay = ({apod} : APODDisplayProps) => {
     const video = apod.media_type === 'video';
     const secureVideoLink = apod.url?.replace('http://', 'https://');
     const secureImageLink = apod.hdurl?.replace('http://', 'https://');
@@ -24,10 +23,10 @@ export const APODDisplay = ({apod, setImageLoaded} : APODDisplayProps) => {
             <p style={{ textAlign: 'center' }}>{apod.title}</p>
             <p style={{ textAlign: 'center' }}>{apod.date}</p>
             { video ? (
-                <video ref={videoRef} src={secureVideoLink} controls width='100%' onLoadedData={() => setImageLoaded(true)}
+                <video ref={videoRef} src={secureVideoLink} controls width='100%'
                     muted autoPlay playsInline loop />
             ) : (
-                <img src={secureImageLink} alt={apod.title} onLoad={() => setImageLoaded(true)}
+                <img src={secureImageLink} alt={apod.title}
                     style={{ width: '100%', maxWidth: '800px', margin: '0 auto', display: 'block' }} 
                     className="apod-image" />
             )}
