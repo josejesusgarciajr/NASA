@@ -65,7 +65,6 @@ export const NEOWS = () => {
                 </Box>
             )}
 
-            {loadingNEO && <p>Fetching Cosmic Data...</p>}
             {errorNEO && (
                 <Alert variant="outlined" severity="error" sx={{ maxWidth: '600px', mx: 'auto', mt: 2 }}>
                     {errorNEO}
@@ -85,6 +84,8 @@ export const NEOWS = () => {
                     />
                 </>
             )}
+
+            {loadingNEO && <p>Fetching Cosmic Data...</p>}
         </>
     );
 }

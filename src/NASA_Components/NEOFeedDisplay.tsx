@@ -161,11 +161,13 @@ export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, loadingNEO, setLoad
                 <NEOHazardousFilter hazardousOptions={hazardousOptions} hazardous={hazardous} selectedHazardous={sortByHazardous} loadingNEO={loadingNEO} />
                 <NEODiameterSort sortOptions={neoDiameterSortOptions} selectedOption={selectedNEODiameterSort} sortByDiameter={sortByDiameter} loadingNEO={loadingNEO}/>
             </Stack>
-            <Box sx={{ flexGrow: 1 }}>
-                <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 6, sm: 8, md: 12 }}>
-                    {neoDisplays}
-                </Grid>
-            </Box>
+            {!loadingNEO && (
+                <Box sx={{ flexGrow: 1 }}>
+                    <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 6, sm: 8, md: 12 }}>
+                        {neoDisplays}
+                    </Grid>
+                </Box>
+            )}
             { openNEOModal && (
                 <NEOObjectModal neoObject={neoSELF} onClose={onModalClose} 
                     startDateRangeStr={startDateRangeStr} endDateRangeStr={endDateRangeStr} />
