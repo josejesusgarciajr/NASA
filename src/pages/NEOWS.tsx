@@ -78,6 +78,7 @@ export const NEOWS = () => {
                     <NEOFeedDisplay
                         neoFeedResponse={neoFeedResponse}
                         neoNavLink={fetchNeoFeedResponse}
+                        loadingNEO={loadingNEO}
                         setLoadingNEOSELF={handleLoadingNEOSelf}
                         startDateRangeStr={startDateRangeStr}
                         endDateRangeStr={endDateRangeStr}

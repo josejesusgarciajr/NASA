@@ -10,9 +10,10 @@ type NEOHazardousFilterProps = {
     hazardousOptions: string[];
     hazardous: boolean | null;
     selectedHazardous: (selectedHazardous: string) => void;
+    loadingNEO: boolean;
 }
 
-export const NEOHazardousFilter = ({hazardousOptions, hazardous, selectedHazardous} : NEOHazardousFilterProps) => {
+export const NEOHazardousFilter = ({hazardousOptions, hazardous, selectedHazardous, loadingNEO} : NEOHazardousFilterProps) => {
 
     const menuItems = hazardousOptions.map(option => {
         return (
@@ -28,7 +29,7 @@ export const NEOHazardousFilter = ({hazardousOptions, hazardous, selectedHazardo
     }
 
     return (
-        <FormControl sx={{ m: 1, minWidth: 120, ...glowSx }} size="small">
+        <FormControl sx={{ m: 1, minWidth: 120, ...glowSx }} size="small" disabled={loadingNEO}>
             <InputLabel id="demo-select-small-label">Hazardous</InputLabel>
             <Select
                 labelId="demo-select-small-label"

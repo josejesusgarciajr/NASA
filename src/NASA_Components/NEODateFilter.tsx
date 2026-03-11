@@ -10,9 +10,10 @@ type NEODateFilterProps = {
     dates: string[];
     selectedDate: string;
     setSelectedDate: (date: string) => void;
+    loadingNEO: boolean;
 }
 
-export const NEODateFilter = ({dates, selectedDate, setSelectedDate} : NEODateFilterProps) => {
+export const NEODateFilter = ({dates, selectedDate, setSelectedDate, loadingNEO} : NEODateFilterProps) => {
 
     function handleSelectedDate(e: SelectChangeEvent) {
         const date = e.target.value;
@@ -27,7 +28,7 @@ export const NEODateFilter = ({dates, selectedDate, setSelectedDate} : NEODateFi
 
     return (
         <>
-            <FormControl sx={{ m: 1, minWidth: 120, ...glowSx }} size="small">
+            <FormControl sx={{ m: 1, minWidth: 120, ...glowSx }} size="small" disabled={loadingNEO}>
                 <InputLabel id="demo-select-small-label">Date</InputLabel>
                 <Select
                     labelId="demo-select-small-label"

@@ -3,9 +3,10 @@ import { TextField } from "@mui/material";
 type NEOSearchProps = {
     searchTerm: string;
     searchNEO: (searchTerm: string) => void;
+    loadingNEO: boolean;
 }
 
-export const NEOSearch = ({searchTerm, searchNEO} : NEOSearchProps) => { 
+export const NEOSearch = ({searchTerm, searchNEO, loadingNEO} : NEOSearchProps) => { 
 
     function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
         const search = e.target.value;
@@ -15,7 +16,7 @@ export const NEOSearch = ({searchTerm, searchNEO} : NEOSearchProps) => {
     return (
         <>
             <TextField label="Search" variant="outlined" size="small"
-                value={searchTerm} onChange={handleSearchChange} 
+                value={searchTerm} onChange={handleSearchChange} disabled={loadingNEO}
                   sx={{
                         "& .MuiOutlinedInput-root": {
                         "& fieldset": {

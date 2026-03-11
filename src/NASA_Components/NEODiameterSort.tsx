@@ -10,9 +10,10 @@ type NEODiameterSortProps = {
     sortOptions: string[];
     selectedOption: string;
     sortByDiameter: (value: string) => void;
+    loadingNEO: boolean;
 }
 
-export const NEODiameterSort = ({sortOptions, selectedOption, sortByDiameter} : NEODiameterSortProps) => {
+export const NEODiameterSort = ({sortOptions, selectedOption, sortByDiameter, loadingNEO} : NEODiameterSortProps) => {
     
     function handleSortDiameter(e: SelectChangeEvent) {
         const sort = e.target.value;
@@ -31,7 +32,7 @@ export const NEODiameterSort = ({sortOptions, selectedOption, sortByDiameter} : 
 
     return (
         <>
-            <FormControl sx={{ m: 1, minWidth: 120, ...glowSx }} size="small">
+            <FormControl sx={{ m: 1, minWidth: 120, ...glowSx }} size="small" disabled={loadingNEO}>
                 <InputLabel id="demo-select-small-label">Diameter</InputLabel>
                 <Select
                     labelId="demo-select-small-label"

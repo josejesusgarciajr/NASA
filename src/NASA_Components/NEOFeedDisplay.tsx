@@ -19,12 +19,13 @@ import { useState, useEffect, useMemo } from 'react';
 type NEOFeedDisplayProps = {
     neoFeedResponse: NEOFeedResponse;
     neoNavLink: (link: string) => void;
+    loadingNEO: boolean;
     setLoadingNEOSELF: (loadinNEOSELF: boolean) => void;
     startDateRangeStr: string;
     endDateRangeStr: string;
 }
 
-export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, setLoadingNEOSELF, startDateRangeStr, endDateRangeStr} : NEOFeedDisplayProps) => {
+export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, loadingNEO, setLoadingNEOSELF, startDateRangeStr, endDateRangeStr} : NEOFeedDisplayProps) => {
     // search
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [selectedDate, setSelectedDate] = useState<string>('All');
@@ -153,12 +154,12 @@ export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, setLoadingNEOSELF, 
                 sx={{ flexWrap: { xs: 'wrap', md: 'nowrap' }, gap: 1 }}
                 useFlexGap
             >
-                <Button variant="outlined" sx={buttonGlowSx} onClick={() => handleNeoNavLink(neoFeedResponse.links.previous)}>Previous</Button>
-                <Button variant="outlined" sx={buttonGlowSx} onClick={() => handleNeoNavLink(neoFeedResponse.links.next)}>Next</Button>
-                <NEOSearch searchTerm={searchTerm} searchNEO={searchNEO} />
-                <NEODateFilter dates={dates} selectedDate={selectedDate} setSelectedDate={sortByDate} />
-                <NEOHazardousFilter hazardousOptions={hazardousOptions} hazardous={hazardous} selectedHazardous={sortByHazardous} />
-                <NEODiameterSort sortOptions={neoDiameterSortOptions} selectedOption={selectedNEODiameterSort} sortByDiameter={sortByDiameter} />
+                <Button variant="outlined" sx={buttonGlowSx} disabled={loadingNEO} onClick={() => handleNeoNavLink(neoFeedResponse.links.previous)}>Previous</Button>
+                <Button variant="outlined" sx={buttonGlowSx} disabled={loadingNEO} onClick={() => handleNeoNavLink(neoFeedResponse.links.next)}>Next</Button>
+                <NEOSearch searchTerm={searchTerm} searchNEO={searchNEO} loadingNEO={loadingNEO} />
+                <NEODateFilter dates={dates} selectedDate={selectedDate} setSelectedDate={sortByDate} loadingNEO={loadingNEO} />
+                <NEOHazardousFilter hazardousOptions={hazardousOptions} hazardous={hazardous} selectedHazardous={sortByHazardous} loadingNEO={loadingNEO} />
+                <NEODiameterSort sortOptions={neoDiameterSortOptions} selectedOption={selectedNEODiameterSort} sortByDiameter={sortByDiameter} loadingNEO={loadingNEO}/>
             </Stack>
             <Box sx={{ flexGrow: 1 }}>
                 <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 6, sm: 8, md: 12 }}>
