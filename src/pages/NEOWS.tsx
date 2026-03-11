@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { NEOFeedDisplay } from '../NASA_Components/NEOFeedDisplay'
+import { NASAServiceDisplay } from '../NASA_Components/NASAServiceDisplay'
 
 // MATERIAL UI
 import LinearProgress from '@mui/material/LinearProgress'
@@ -70,14 +71,18 @@ export const NEOWS = () => {
                     {errorNEO}
                 </Alert>
             )}
+
             {neoFeedResponse && (
-                <NEOFeedDisplay
-                    neoFeedResponse={neoFeedResponse}
-                    neoNavLink={fetchNeoFeedResponse}
-                    setLoadingNEOSELF={handleLoadingNEOSelf}
-                    startDateRangeStr={startDateRangeStr}
-                    endDateRangeStr={endDateRangeStr}
-                />
+                <>
+                    <NASAServiceDisplay serviceAcronym="ASTEROIDS - NEOWS" serviceName="Near Earth Object Web Service" />
+                    <NEOFeedDisplay
+                        neoFeedResponse={neoFeedResponse}
+                        neoNavLink={fetchNeoFeedResponse}
+                        setLoadingNEOSELF={handleLoadingNEOSelf}
+                        startDateRangeStr={startDateRangeStr}
+                        endDateRangeStr={endDateRangeStr}
+                    />
+                </>
             )}
         </>
     );

@@ -1,7 +1,6 @@
 import type { NEOFeedResponse, NEOObject } from "../types/NASA/NEOFeedResponse";
 
 import { buttonGlowSx } from '../types/buttonGlowSx'
-import { NASAServiceDisplay } from '../NASA_Components/NASAServiceDisplay'
 import { NEOObjectDisplay } from "./NEOObjectDisplay";
 import  { NEOSearch } from '../NASA_Components/NEOSearch';
 import { NEODateFilter } from "./NEODateFilter";
@@ -143,7 +142,6 @@ export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, setLoadingNEOSELF, 
 
     return (
         <>
-            <NASAServiceDisplay serviceAcronym="ASTEROIDS - NEOWS" serviceName="Near Earth Object Web Service" />
             <Typography>{dateRange}</Typography>
             <Typography>Element Count: {filteredNeos.length}</Typography>
             <Stack 
