@@ -59,8 +59,6 @@ export const APODExplorer = () => {
                 </Box>
             )}
 
-            {loadingAPOD && <p>Fetching Cosmic Data...</p>}
-
             <NASAServiceDisplay serviceAcronym='APOD' serviceName='Astronomy Picture of the Day' />
             <Typography
                 variant="body1"
@@ -125,6 +123,8 @@ export const APODExplorer = () => {
             {apod && (
                 <APODDisplay apod={apod} />
             )}
+
+            {loadingAPOD && <p>Fetching Cosmic Data...</p>}
         </>
     );
 }
