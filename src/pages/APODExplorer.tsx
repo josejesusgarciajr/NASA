@@ -38,8 +38,12 @@ export const APODExplorer = () => {
         fetch(NASA_APOD_URL)
         .then(res => res.json())
         .then(data => {
-            if (data.code === 404) {
-                setErrorAPOD(data.msg)
+            if (data.code) {
+                // any error code from NASA (404, 500, etc.)
+                setErrorAPOD(data.code === 500
+                    ? 'NASA\'s APOD service is temporarily unavailable. Please try again later.'
+                    : data.msg
+                )
             } else {
                 setApod(data)
             }
