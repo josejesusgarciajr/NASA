@@ -1,59 +1,21 @@
-import dayjs, { Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
 
 // NASA COMPONENTS
 import { APODDisplay } from '../NASA_Components/APODDisplay';
 import { NASAServiceDisplay } from '../NASA_Components/NASAServiceDisplay';
-
-// NASA TYPES
-import type { APOD } from '../types/NASA/APOD';
-
-// REACT
-import { useState } from 'react';
 
 // MATERIAL UI
 import LinearProgress from '@mui/material/LinearProgress'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { Typography } from '@mui/material';
 import Alert from '@mui/material/Alert';
-import Box from '@mui/material/Box'
+import Box from '@mui/material/Box';
+
+// APOD
+import { useAPOD } from '../hooks/useAPOD';
 
 export const APODExplorer = () => {
-    const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
-    const [apod, setApod] = useState<APOD | null>(null);
-    const [loadingAPOD, setLoadingAPOD] = useState<boolean>(false);
-    const [errorAPOD, setErrorAPOD] =useState<string>('');
-
-    const NASA_API_KEY = import.meta.env.VITE_NASA_API_KEY
-
-    function fetchAPODWithDate(date: Dayjs | null) {
-        if (!date) return
-
-        setApod(null);
-        setLoadingAPOD(true);
-        setErrorAPOD('');
-        const selectedDateString = date.format('YYYY-MM-DD')
-
-        const NASA_APOD_URL = `https://api.nasa.gov/planetary/apod?api_key=${NASA_API_KEY}&date=${selectedDateString}`
-
-        fetch(NASA_APOD_URL)
-        .then(res => res.json())
-        .then(data => {
-            if (data.code) {
-                // any error code from NASA (404, 500, etc.)
-                setErrorAPOD(data.code === 500
-                    ? 'NASA\'s APOD service is temporarily unavailable. Please try again later.'
-                    : data.msg
-                )
-            } else {
-                setApod(data)
-            }
-        })
-        .catch(err => {
-            console.log(`ERROR FETCHING NASA API APOD ENDPOINT: ${err}`)
-            setErrorAPOD('ERROR FETCHING NASA API APOD ENDPOINT')
-        })
-        .finally(() => setLoadingAPOD(false))
-    }
+    const { apod, loadingAPOD, errorAPOD, selectedDate, setSelectedDate, fetchAPODWithDate } = useAPOD();
 
     return (
         <>

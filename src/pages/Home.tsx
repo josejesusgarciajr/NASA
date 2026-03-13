@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react'
 
-// NASA types
-import type { APOD } from '../types/NASA/APOD'
+// react
+import { useEffect } from 'react'
 
 // NASA Components
 import { APODDisplay } from '../NASA_Components/APODDisplay'
@@ -10,40 +9,17 @@ import { NASAServiceDisplay } from '../NASA_Components/NASAServiceDisplay'
 // MATERIAL UI
 import LinearProgress from '@mui/material/LinearProgress'
 import Box from '@mui/material/Box'
-import Alert from '@mui/material/Alert';
+import Alert from '@mui/material/Alert'
+
+// APOD
+import { useAPOD } from '../hooks/useAPOD'
 
 export function Home() {
-  const NASA_API_KEY = import.meta.env.VITE_NASA_API_KEY
-
-  // APOD
-  const [apod, setApod] = useState<APOD | null>(null)
-  const [loadingAPOD, setLoadingAPOD] = useState<boolean>(false)
-  const [errorAPOD, setErrorAPOD] = useState<string>('')
+  const { apod, loadingAPOD, fetchAPOD, errorAPOD } = useAPOD();
 
   useEffect(() => {
-    setLoadingAPOD(true);
-    setErrorAPOD('');
-    const NASA_APOD_URL = `https://api.nasa.gov/planetary/apod?api_key=${NASA_API_KEY}`
-
-    fetch(NASA_APOD_URL)
-      .then(res => res.json())
-      .then(data => {
-        if (data.code) {
-            // any error code from NASA (404, 500, etc.)
-            setErrorAPOD(data.code === 500
-                ? 'NASA\'s APOD service is temporarily unavailable. Please try again later.'
-                : data.msg
-            )
-        } else {
-            setApod(data)
-        }
-      })
-      .catch(err => {
-        console.log(`ERROR FETCHING NASA API APOD ENDPOINT: ${err}`)
-        setErrorAPOD('ERROR FETCHING NASA API APOD ENDPOINT')
-      })
-      .finally(() => setLoadingAPOD(false))
-  }, [])
+    fetchAPOD();
+  }, []);
 
   return (
     <>
