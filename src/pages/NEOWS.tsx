@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react'
+// react
+import { useEffect } from 'react'
+
 import { NEOFeedDisplay } from '../NASA_Components/NEOFeedDisplay'
 import { NASAServiceDisplay } from '../NASA_Components/NASAServiceDisplay'
 
@@ -7,7 +9,8 @@ import LinearProgress from '@mui/material/LinearProgress'
 import Box from '@mui/material/Box'
 import Alert from '@mui/material/Alert';
 
-import type { NEOFeedResponse } from '../types/NASA/NEOFeedResponse'
+// Near Earth Object Web Service
+import { useNEOWS } from '../hooks/useNEOWS';
 
 // Function to add days to a date
 function addDays(date: Date, days: number) {
@@ -17,6 +20,14 @@ function addDays(date: Date, days: number) {
 }
 
 export const NEOWS = () => {
+    
+    const 
+    { 
+        neoFeedResponse, loadingNEO, loadingNEOSELF, errorNEO,
+        startDateRangeStr, endDateRangeStr, 
+        fetchNeoFeedResponse, handleLoadingNEOSelf
+    } = useNEOWS();
+    
     const NASA_API_KEY = import.meta.env.VITE_NASA_API_KEY
 
     // NEO
@@ -25,37 +36,9 @@ export const NEOWS = () => {
     const date7DaysOut = addDays(today, 7).toLocaleDateString('en-CA')
     const NASA_NEO_URL = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${localDate}&end_date=${date7DaysOut}&api_key=${NASA_API_KEY}`
 
-    const [neoFeedResponse, setNeoFeedResponse] = useState<NEOFeedResponse | null>(null)
-    const [loadingNEO, setLoadingNEO] = useState<boolean>(false)
-    const [loadingNEOSELF, setLoadingNEOSELF] = useState<boolean>(false)
-    const [errorNEO, setErrorNEO] = useState<string>('')
-    const [neoLink, setNeoLink] = useState<string>(NASA_NEO_URL)
-
-    const startDateRangeStr = new URLSearchParams(new URL(neoLink).search).get('start_date') ?? ''
-    const endDateRangeStr = new URLSearchParams(new URL(neoLink).search).get('end_date') ?? ''
-
     useEffect(() => {
-        fetchNeoFeedResponse(NASA_NEO_URL)
+        fetchNeoFeedResponse(NASA_NEO_URL);
     }, []);
-
-    function fetchNeoFeedResponse(link: string) {
-        setLoadingNEO(true)
-        const secureLink = link.replace('http://', 'https://')
-        setNeoLink(secureLink)
-
-        fetch(secureLink)
-        .then(res => res.json())
-        .then(data => setNeoFeedResponse(data))
-        .catch(err => {
-            console.log(`ERROR FETCHING NASA API ASTERIODS - NEOWS ENDPOINT: ${err}`)
-            setErrorNEO('Error loading Near Earth Object from NASA')
-        })
-        .finally(() => setLoadingNEO(false))
-    }
-
-    function handleLoadingNEOSelf(value: boolean) {
-        setLoadingNEOSELF(value)
-    }
 
     return (
         <>
