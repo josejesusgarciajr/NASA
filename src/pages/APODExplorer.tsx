@@ -41,6 +41,7 @@ export const APODExplorer = () => {
                 Every day, NASA captures something extraordinary. Choose a date to travel back and see what the universe looked like on that day.
             </Typography>
             <DatePicker
+                disabled={loadingAPOD}
                 minDate={dayjs('1995-06-16')}
                 maxDate={dayjs()}
                 yearsOrder='desc'
