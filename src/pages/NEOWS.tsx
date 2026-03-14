@@ -12,12 +12,8 @@ import Alert from '@mui/material/Alert';
 // Near Earth Object Web Service
 import { useNEOWS } from '../hooks/useNEOWS';
 
-// Function to add days to a date
-function addDays(date: Date, days: number) {
-    const newDate = new Date(date)
-    newDate.setDate(date.getDate() + days)
-    return newDate
-}
+// utils
+import { addDays } from '../utils/dateUtils'
 
 export const NEOWS = () => {
     
