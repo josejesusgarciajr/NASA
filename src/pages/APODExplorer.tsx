@@ -25,7 +25,7 @@ export const APODExplorer = () => {
                 </Box>
             )}
 
-            <NASAServiceDisplay serviceAcronym='APOD' serviceName='Astronomy Picture of the Day' />
+            <NASAServiceDisplay serviceAcronym='APOD EXPLORER' serviceName='Astronomy Picture of the Day' />
             <Typography
                 variant="body1"
                 sx={{
