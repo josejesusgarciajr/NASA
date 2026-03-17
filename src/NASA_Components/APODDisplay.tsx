@@ -7,7 +7,13 @@ type APODDisplayProps = {
 
 export const APODDisplay = ({apod} : APODDisplayProps) => {
     const video = apod.media_type === 'video';
-    const youtubeVideo = (apod.url?.includes('youtube') || apod.url?.includes('youtu.be')) ?? false;
+    const isIframe = 
+        (
+            apod.url?.includes('youtube') || 
+            apod.url?.includes('youtu.be') ||
+            apod.url?.includes('solarsystem.nasa.gov') ||
+            apod.url?.includes('vimeo.com')
+        ) ?? false;
     const secureVideoLink = apod.url?.replace('http://', 'https://');
     const secureImageLink = apod.hdurl?.replace('http://', 'https://');
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -15,7 +21,7 @@ export const APODDisplay = ({apod} : APODDisplayProps) => {
     // play video on app mount
     useEffect(() => {
         if (video && videoRef.current) {
-            if (!youtubeVideo) {
+            if (!isIframe) {
                 videoRef.current.play();
             }
         }
@@ -26,7 +32,7 @@ export const APODDisplay = ({apod} : APODDisplayProps) => {
             <p style={{ textAlign: 'center' }}>{apod.title}</p>
             <p style={{ textAlign: 'center' }}>{apod.date}</p>
             { video ? (
-                 youtubeVideo ? (
+                 isIframe ? (
                         <iframe 
                             width='100%'
                             style={{ aspectRatio: '16/9', border: 'none' }}
