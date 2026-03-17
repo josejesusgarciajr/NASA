@@ -37,6 +37,7 @@ export const APODDisplay = ({apod} : APODDisplayProps) => {
                             width='100%'
                             style={{ aspectRatio: '16/9', border: 'none' }}
                             src={secureVideoLink}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                             allowFullScreen
                         >
                         </iframe>
