@@ -5,6 +5,7 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
+import HomeIcon from '@mui/icons-material/Home';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch'
 
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -75,7 +76,9 @@ export const NavBar =() => {
         NASA Explorer
         </Typography>
         <Box sx={{ display: 'flex', gap: { xs: 0.25, sm: 0.75 } }}>
-          <NavButton to="/" end>Home</NavButton>
+          <NavButton to="/" end>
+            <HomeIcon />
+          </NavButton>
           <NavButton to="/apod-explorer">APOD X</NavButton>
           <NavButton to='/neows'>NEOWS</NavButton>
           <NavButton to="/exoplanets">Exoplanets</NavButton>
