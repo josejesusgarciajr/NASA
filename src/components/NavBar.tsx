@@ -77,7 +77,7 @@ export const NavBar =() => {
         </Typography>
         <Box sx={{ display: 'flex', gap: { xs: 0.25, sm: 0.75 } }}>
           <NavButton to="/" end>
-            <HomeIcon />
+            <HomeIcon sx={{ fontSize: { xs: '0.875rem', sm: '1.25rem' }, display: 'block' }} />
           </NavButton>
           <NavButton to="/apod-explorer">APOD X</NavButton>
           <NavButton to='/neows'>NEOWS</NavButton>
