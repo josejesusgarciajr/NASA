@@ -42,7 +42,6 @@ export const NavBar =() => {
   const navigate = useNavigate();
 
   function handleRocketLaunch() {
-    console.log(location.pathname);
     if (location.pathname === '/apod-explorer') {
       navigate('/apod-explorer?random=true');
     }
@@ -79,6 +78,7 @@ export const NavBar =() => {
           <NavButton to="/" end>Home</NavButton>
           <NavButton to="/apod-explorer">APOD Explorer</NavButton>
           <NavButton to='/neows'>NEOWS</NavButton>
+          <NavButton to="/exoplanets">Exoplanets</NavButton>
         </Box>
       </Toolbar>
     </AppBar>

@@ -15,6 +15,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/apod-explorer" element={<APODExplorer />} />
           <Route path="/neows" element={<NEOWS />} />
+          <Route path="/exoplanets" />
         </Routes>
       </Box>
     </>
