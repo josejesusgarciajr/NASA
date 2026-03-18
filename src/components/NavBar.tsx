@@ -4,9 +4,18 @@ import Toolbar from '@mui/material/Toolbar'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch'
 
-function NavButton({ to, end, children }: { to: string; end?: boolean; children: React.ReactNode }) {
+import { useLocation, useNavigate } from 'react-router-dom'
+
+type NavButtonProps = {
+  to: string;
+  end?: boolean;
+  children: React.ReactNode;
+}
+
+export const NavButton = ({ to, end, children }: NavButtonProps) => {
   return (
     <NavLink to={to} end={end}>
       {({ isActive }: { isActive: boolean }) => (
@@ -28,7 +37,17 @@ function NavButton({ to, end, children }: { to: string; end?: boolean; children:
   )
 }
 
-export function NavBar() {
+export const NavBar =() => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  function handleRocketLaunch() {
+    console.log(location.pathname);
+    if (location.pathname === '/apod-explorer') {
+      navigate('/apod-explorer?random=true');
+    }
+  }
+
   return (
     <AppBar
       position="fixed"
@@ -42,7 +61,9 @@ export function NavBar() {
       }}
     >
       <Toolbar sx={{ px: { xs: 1.5, sm: 3 } }} disableGutters>
-        <RocketLaunchIcon sx={{ mr: 1, fontSize: { xs: '0.75rem', sm: '1.5rem' } }} />
+        <IconButton onClick={handleRocketLaunch}>
+          <RocketLaunchIcon sx={{ mr: 1, fontSize: { xs: '0.75rem', sm: '1.5rem' } }} />
+        </IconButton>
         <Typography
         variant="h6"
         sx={{

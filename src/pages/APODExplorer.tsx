@@ -5,17 +5,31 @@ import { APODDisplay } from '../NASA_Components/APODDisplay';
 import { NASAServiceDisplay } from '../NASA_Components/NASAServiceDisplay';
 
 // MATERIAL UI
-import LinearProgress from '@mui/material/LinearProgress'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import LinearProgress from '@mui/material/LinearProgress';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Typography } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 
+// react
+import { useEffect } from 'react';
+import { useSearchParams} from 'react-router-dom';
+
 // APOD
 import { useAPOD } from '../hooks/useAPOD';
+import { getRandomAPODDate } from '../utils/dateUtils'
 
 export const APODExplorer = () => {
     const { apod, loadingAPOD, errorAPOD, selectedDate, setSelectedDate, fetchAPODWithDate } = useAPOD();
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    useEffect(() => {
+        if (searchParams.get('random') === 'true') {
+            const randomDate = getRandomAPODDate();
+            fetchAPODWithDate(randomDate);
+            setSearchParams({});
+        }
+    }, [searchParams]);
 
     return (
         <>
