@@ -6,7 +6,7 @@ export function useExoplanets() {
     const [loadingExoplanets, setLoadingExoplanets] = useState<boolean>(false);
     const [errorExoplanets, setErrorExoplanets] = useState<string>('');
 
-    const exoplanetUrl = 'http://nasa-api.runasp.net/api/nasa/exoplanets';
+    const exoplanetUrl = 'https://nasa-api.runasp.net/api/nasa/exoplanets';
 
     function fetchExoplanets() {
         setLoadingExoplanets(true);
