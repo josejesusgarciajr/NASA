@@ -5,6 +5,7 @@ import { APODExplorer } from './pages/APODExplorer'
 import { NEOWS } from './pages/NEOWS'
 import './App.css'
 import { Box } from '@mui/material'
+import { Exoplanets } from './pages/Exoplanets'
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/apod-explorer" element={<APODExplorer />} />
           <Route path="/neows" element={<NEOWS />} />
-          <Route path="/exoplanets" />
+          <Route path="/exoplanets" element={<Exoplanets />} />
         </Routes>
       </Box>
     </>
