@@ -8,6 +8,7 @@ import { useEffect } from 'react'
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
+import { GalaxyCanvas } from "../NASA_Components/Galaxy/GalaxyCanvas";
 
 export const Exoplanets = () => {
     const { exoplanets, loadingExoplanets, errorExoplanets, fetchExoplanets } = useExoplanets();
@@ -28,7 +29,9 @@ export const Exoplanets = () => {
                 </Box>
             )}
 
-            {exoplanets.length > 0 && <p>EXOPLANETS COMING SOON</p>}
+            {exoplanets.length > 0 &&  (
+                <GalaxyCanvas exoplanets={exoplanets} />
+            )}
 
             {errorExoplanets && (
                 <Alert variant="outlined" severity="error" sx={{ maxWidth: '600px', mx: 'auto', mt: 2 }}>
