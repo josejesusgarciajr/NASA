@@ -23,11 +23,13 @@ export const GalaxyCanvas = ({ exoplanets } : GalaxyCanvasProps) => {
         >
             <ambientLight intensity={0.5} />
             <StarField exoplanets={exoplanets} />
-            <OrbitControls 
+            <OrbitControls
                 enableZoom={true}
                 enablePan={true}
                 enableRotate={true}
                 zoomSpeed={2}
+                minDistance={5}
+                maxDistance={5000}
             />
 
         </Canvas>

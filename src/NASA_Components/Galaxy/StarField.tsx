@@ -23,39 +23,82 @@ function createCircleTexture() {
     return new THREE.CanvasTexture(canvas)
 }
 
+// Convert stellar temperature in Kelvin to RGB color
+// Based on real blackbody radiation physics
+function tempToColor(teff: number | null): THREE.Color {
+    if (!teff) return new THREE.Color(1, 1, 1) // default white
+
+    if (teff > 30000) return new THREE.Color(0.6, 0.7, 1.0)   // O — blue
+    if (teff > 10000) return new THREE.Color(0.7, 0.8, 1.0)   // B — blue-white
+    if (teff > 7500)  return new THREE.Color(1.0, 1.0, 1.0)   // A — white
+    if (teff > 6000)  return new THREE.Color(1.0, 1.0, 0.8)   // F — yellow-white
+    if (teff > 5200)  return new THREE.Color(1.0, 0.9, 0.6)   // G — yellow (like our Sun)
+    if (teff > 3700)  return new THREE.Color(1.0, 0.6, 0.3)   // K — orange
+    return new THREE.Color(1.0, 0.3, 0.1)                     // M — red
+}
+
 export const StarField = ({ exoplanets } : StarFieldProps) => {
-    const positions = useMemo(() => {
-        const coordinates = new Float32Array(exoplanets.length * 3);
+    // Deduplicate by hostname — one point per star system
+    const uniqueStars = useMemo(() => {
+        const seen = new Set<string>()
+        const stars = exoplanets.filter(e => {
+            if (seen.has(e.hostname)) return false
+            seen.add(e.hostname)
+            return true
+        })
+        
+        return stars
+    }, [exoplanets])
 
-        exoplanets.forEach((exoplanet, i) => {
-            const { x, y, z } = toCartesian(exoplanet);
-            coordinates[i * 3] = x;
-            coordinates[i * 3 + 1] = y;
-            coordinates[i * 3 + 2] = z;
-        });
+    const { positions, colors } = useMemo(() => {
+        const positions = new Float32Array(uniqueStars.length * 3)
+        const colors = new Float32Array(uniqueStars.length * 3)
+        //const sizes = new Float32Array(uniqueStars.length)
 
-        return coordinates;
-    }, [exoplanets]);
+        uniqueStars.forEach((star, i) => {
+            // Position
+            const { x, y, z } = toCartesian(star)
+            positions[i * 3] = x
+            positions[i * 3 + 1] = y
+            positions[i * 3 + 2] = z
+
+            // Color by temperature
+            const color = tempToColor(star.st_teff)
+            colors[i * 3] = color.r
+            colors[i * 3 + 1] = color.g
+            colors[i * 3 + 2] = color.b
+
+            // Size by stellar radius — clamp between 1 and 8
+            // const radius = star.st_rad ?? 1
+            // sizes[i] = Math.min(Math.max(radius * 2, 1), 8)
+        })
+
+        return { positions, colors }
+    }, [uniqueStars])
 
     const texture = useMemo(() => createCircleTexture(), []);
 
     return (
         <points>
-            <bufferGeometry>
-                <bufferAttribute
-                    attach="attributes-position"
-                    args={[positions, 3]}
-                />
-            </bufferGeometry>
-            <pointsMaterial
-                color="white"
-                size={3}
-                sizeAttenuation={true}
-                map={texture}
-                transparent={true}
-                alphaTest={0.01}
-                depthWrite={false}
+        <bufferGeometry>
+            <bufferAttribute
+                attach="attributes-position"
+                args={[positions, 3]}
             />
-        </points>
+            <bufferAttribute
+                attach="attributes-color"
+                args={[colors, 3]}
+            />
+        </bufferGeometry>
+        <pointsMaterial
+            vertexColors={true}
+            size={1.5}
+            sizeAttenuation={true}
+            map={texture}
+            transparent={true}
+            alphaTest={0.05}
+            depthWrite={false}
+        />
+    </points>
     )
 }
