@@ -52,8 +52,8 @@ export const NavButton = ({ to, end, children }: NavButtonProps) => {
 }
 
 const apodLinks = [
-  { to: '/apod-explorer', label: 'APOD Explorer' },
-  { to: '/apod-gallery', label: 'APOD Gallery' },
+  { to: '/apod-explorer', label: 'Explorer' },
+  { to: '/apod-gallery', label: 'Gallery' },
 ]
 
 const navLinks = [
