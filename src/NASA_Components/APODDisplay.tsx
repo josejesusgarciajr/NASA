@@ -1,11 +1,19 @@
 import type { APOD } from '../types/NASA/APOD'
 import { useRef, useEffect } from 'react'
 
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
+import FavoriteIcon from '@mui/icons-material/Favorite'
+import { IconButton } from '@mui/material'
+import { useFavoriteAPODS } from '../hooks/useFavoriteAPODS'
+
 type APODDisplayProps = {
     apod: APOD;
 }
 
 export const APODDisplay = ({apod} : APODDisplayProps) => {
+    // saved favorite apods
+    const { savedAPOD, saveAPOD, removeAPOD } = useFavoriteAPODS(apod);
+
     const video = apod.media_type === 'video';
     const isIframe = 
         (
@@ -29,7 +37,18 @@ export const APODDisplay = ({apod} : APODDisplayProps) => {
 
     return (
         <>
-            <p style={{ textAlign: 'center' }}>{apod.title}</p>
+            <p style={{ textAlign: 'center' }}>
+                {apod.title}
+                {!savedAPOD ? (
+                    <IconButton onClick={saveAPOD}>
+                        <FavoriteBorderIcon />
+                    </IconButton>
+                ) : (
+                    <IconButton onClick={removeAPOD}>
+                        <FavoriteIcon />
+                    </IconButton>
+                )}
+            </p>
             <p style={{ textAlign: 'center' }}>{apod.date}</p>
             { video ? (
                  isIframe ? (
