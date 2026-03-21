@@ -122,7 +122,7 @@ export const NavBar = () => {
 
       {/* Mobile Drawer */}
       <Drawer
-        anchor="right"
+        anchor="left"
         open={drawerOpen}
         onClose={handleDrawerClose}
         PaperProps={{
