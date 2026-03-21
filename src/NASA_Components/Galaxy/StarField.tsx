@@ -1,11 +1,13 @@
 import type { Exoplanet } from '../../types/NASA/Exoplanets'
 
-import { useMemo } from 'react'
+import { useMemo, useEffect, useRef } from 'react'
 import { toCartesian } from '../../utils/coordinateUtils'
 import * as THREE from 'three'
+import { useThree } from '@react-three/fiber'
 
 type StarFieldProps = {
     exoplanets: Exoplanet[];
+    onHover: (exoplanet: Exoplanet | null) => void;
 }
 
 // Creates a circular sprite texture so stars look round not square
@@ -39,7 +41,12 @@ function tempToColor(teff: number | null): THREE.Color {
     return new THREE.Color(1.0, 0.3, 0.1)                     // M — red
 }
 
-export const StarField = ({ exoplanets } : StarFieldProps) => {
+export const StarField = ({ exoplanets, onHover } : StarFieldProps) => {
+    const pointsRef = useRef<THREE.Points>(null)
+    const { camera, gl } = useThree()
+    const raycaster = useRef(new THREE.Raycaster())
+    const mouse = useRef(new THREE.Vector2())
+
     // Deduplicate by hostname — one point per star system
     const uniqueStars = useMemo(() => {
         const seen = new Set<string>()
@@ -77,8 +84,37 @@ export const StarField = ({ exoplanets } : StarFieldProps) => {
 
     const texture = useMemo(() => createCircleTexture(), []);
 
+    useEffect(() => {
+        const canvas = gl.domElement
+
+        function onMouseMove(e: MouseEvent) {
+            const rect = canvas.getBoundingClientRect()
+            mouse.current.x = ((e.clientX - rect.left) / rect.width) * 2 - 1
+            mouse.current.y = -((e.clientY - rect.top) / rect.height) * 2 + 1
+
+            raycaster.current.setFromCamera(mouse.current, camera)
+            
+            // Scale threshold by camera distance so hover works at any zoom level
+            const distance = camera.position.length()
+            raycaster.current.params.Points!.threshold = distance * 0.01
+
+            if (pointsRef.current) {
+                const intersects = raycaster.current.intersectObject(pointsRef.current)
+                if (intersects.length > 0) {
+                    const index = intersects[0].index!
+                    onHover(uniqueStars[index])
+                } else {
+                    onHover(null)
+                }
+            }
+        }
+
+        canvas.addEventListener('mousemove', onMouseMove)
+        return () => canvas.removeEventListener('mousemove', onMouseMove)
+    }, [uniqueStars, camera, gl])
+
     return (
-        <points>
+        <points ref={pointsRef}>
             <bufferGeometry>
                 <bufferAttribute attach="attributes-position" args={[positions, 3]} />
                 <bufferAttribute attach="attributes-color" args={[colors, 3]} />
