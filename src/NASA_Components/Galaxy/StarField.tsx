@@ -3,7 +3,7 @@ import type { Exoplanet } from '../../types/NASA/Exoplanets'
 import { useMemo, useEffect, useRef } from 'react'
 import { toCartesian } from '../../utils/coordinateUtils'
 import * as THREE from 'three'
-import { useThree } from '@react-three/fiber'
+import { useThree, useFrame } from '@react-three/fiber'
 
 type StarFieldProps = {
     exoplanets: Exoplanet[];
@@ -84,6 +84,8 @@ export const StarField = ({ exoplanets, onHover } : StarFieldProps) => {
 
     const texture = useMemo(() => createCircleTexture(), []);
 
+    const hoveredIndexRef = useRef<number | null>(null)
+
     useEffect(() => {
         const canvas = gl.domElement
 
@@ -91,27 +93,35 @@ export const StarField = ({ exoplanets, onHover } : StarFieldProps) => {
             const rect = canvas.getBoundingClientRect()
             mouse.current.x = ((e.clientX - rect.left) / rect.width) * 2 - 1
             mouse.current.y = -((e.clientY - rect.top) / rect.height) * 2 + 1
-
-            raycaster.current.setFromCamera(mouse.current, camera)
-            
-            // Scale threshold by camera distance so hover works at any zoom level
-            const distance = camera.position.length()
-            raycaster.current.params.Points!.threshold = distance * 0.01
-
-            if (pointsRef.current) {
-                const intersects = raycaster.current.intersectObject(pointsRef.current)
-                if (intersects.length > 0) {
-                    const index = intersects[0].index!
-                    onHover(uniqueStars[index])
-                } else {
-                    onHover(null)
-                }
-            }
         }
 
         canvas.addEventListener('mousemove', onMouseMove)
         return () => canvas.removeEventListener('mousemove', onMouseMove)
-    }, [uniqueStars, camera, gl])
+    }, [gl])
+
+    useFrame(() => {
+        raycaster.current.setFromCamera(mouse.current, camera)
+        
+        const distance = camera.position.length()
+        raycaster.current.params.Points!.threshold = Math.min(Math.max(distance * 0.01, 0.5), 8)
+        
+        if (pointsRef.current) {
+            const intersects = raycaster.current.intersectObject(pointsRef.current)
+            
+            if (intersects.length > 0) {
+                const index = intersects[0].index!
+                if (hoveredIndexRef.current !== index) {
+                    hoveredIndexRef.current = index
+                    onHover(uniqueStars[index])
+                }
+            } else {
+                if (hoveredIndexRef.current !== null) {
+                    hoveredIndexRef.current = null
+                    onHover(null)
+                }
+            }
+        }
+    })
 
     return (
         <points ref={pointsRef}>

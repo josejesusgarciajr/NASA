@@ -2,7 +2,7 @@ import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import { StarField } from './StarField'
 import type { Exoplanet } from '../../types/NASA/Exoplanets'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 
 type GalaxyCanvasProps = {
     exoplanets: Exoplanet[]
@@ -11,13 +11,19 @@ type GalaxyCanvasProps = {
 export const GalaxyCanvas = ({ exoplanets }: GalaxyCanvasProps) => {
     const [hoveredStar, setHoveredStar] = useState<Exoplanet | null>(null)
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+    const lastMouseUpdate = useRef(0)
 
     function handleMouseMove(e: React.MouseEvent) {
-        setMousePos({ x: e.clientX, y: e.clientY })
+        const now = Date.now()
+        if (now - lastMouseUpdate.current > 16) {
+            setMousePos({ x: e.clientX, y: e.clientY })
+            lastMouseUpdate.current = now
+        }
     }
 
     return (
-        <div style={{ width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0 }}
+        <div
+            style={{ width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0 }}
             onMouseMove={handleMouseMove}
         >
             <Canvas
@@ -39,7 +45,6 @@ export const GalaxyCanvas = ({ exoplanets }: GalaxyCanvasProps) => {
                 />
             </Canvas>
 
-            {/* Tooltip */}
             {hoveredStar && (
                 <div style={{
                     position: 'fixed',
