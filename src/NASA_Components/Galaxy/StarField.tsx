@@ -65,9 +65,6 @@ export const StarField = ({ exoplanets, onHover } : StarFieldProps) => {
         const sizes = new Float32Array(uniqueStars.length)
 
         uniqueStars.forEach((star, i) => {
-            if (star.st_rad && star.st_rad > 10) {
-                console.log(`Giant star: ${star.hostname}, radius: ${star.st_rad}`)
-            }
             const { x, y, z } = toCartesian(star)
             positions[i * 3] = x
             positions[i * 3 + 1] = y
@@ -79,7 +76,7 @@ export const StarField = ({ exoplanets, onHover } : StarFieldProps) => {
             colors[i * 3 + 2] = color.b
 
             const radius = star.st_rad ?? 1
-            sizes[i] = Math.min(Math.max(radius * 1.5, 0.5), 12) // increase max from 4 to 12
+            sizes[i] = radius
         })
 
         return { positions, colors, sizes }

@@ -51,7 +51,7 @@ export const GalaxyCanvas = ({ exoplanets }: GalaxyCanvasProps) => {
                     enablePan={true}
                     enableRotate={true}
                     zoomSpeed={2}
-                    minDistance={5}
+                    minDistance={1}
                     maxDistance={4000}
                 />
             </Canvas>
