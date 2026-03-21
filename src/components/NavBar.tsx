@@ -76,46 +76,46 @@ export const NavBar = () => {
       >
         <Toolbar sx={{ px: { xs: 1.5, sm: 3 } }} disableGutters>
 
-          {/* Title */}
-          <Typography
-            variant="h6"
-            sx={{
-              flexGrow: 0,
-              mr: { xs: 1, sm: 4 },
-              fontSize: { xs: '0.75rem', sm: '1.25rem' },
-              whiteSpace: 'nowrap',
-            }}
-          >
-            NASA Explorer
-          </Typography>
+            {/* Hamburger — visible on mobile only, far left */}
+            <IconButton
+                sx={{ display: { xs: 'flex', sm: 'none' }, color: 'white', mr: 1 }}
+                onClick={() => setDrawerOpen(true)}
+            >
+                <MenuIcon />
+            </IconButton>
 
-          {/* Desktop nav — hidden on mobile */}
-          <Box sx={{ display: { xs: 'none', sm: 'flex' }, gap: 0.75 }}>
-            <NavButton to="/" end>
-              <HomeIcon sx={{ fontSize: '1.25rem', display: 'block' }} />
-            </NavButton>
-            {navLinks.slice(1).map(link => (
-              <NavButton key={link.to} to={link.to} end={link.end}>
-                {link.label}
-              </NavButton>
-            ))}
-          </Box>
+            {/* Title */}
+            <Typography
+                variant="h6"
+                sx={{
+                    flexGrow: 0,
+                    mr: { xs: 'auto', sm: 4 },
+                    fontSize: { xs: '0.75rem', sm: '1.25rem' },
+                    whiteSpace: 'nowrap',
+                }}
+            >
+                NASA Explorer
+            </Typography>
 
-          {/* Spacer */}
-          <Box sx={{ flexGrow: 1 }} />
+            {/* Desktop nav — hidden on mobile */}
+            <Box sx={{ display: { xs: 'none', sm: 'flex' }, gap: 0.75 }}>
+                <NavButton to="/" end>
+                    <HomeIcon sx={{ fontSize: '1.25rem', display: 'block' }} />
+                </NavButton>
+                {navLinks.slice(1).map(link => (
+                    <NavButton key={link.to} to={link.to} end={link.end}>
+                        {link.label}
+                    </NavButton>
+                ))}
+            </Box>
 
-          {/* Hamburger — visible on mobile only */}
-          <IconButton
-            sx={{ display: { xs: 'flex', sm: 'none' }, color: 'white' }}
-            onClick={() => setDrawerOpen(true)}
-          >
-            <MenuIcon />
-          </IconButton>
+            {/* Spacer — pushes rocket to far right on desktop */}
+            <Box sx={{ flexGrow: 1 }} />
 
-          {/* Rocket icon — far right */}
-          <IconButton onClick={handleRocketLaunch} sx={{ ml: 0.5 }}>
-            <RocketLaunchIcon sx={{ fontSize: { xs: '0.75rem', sm: '1.5rem' } }} />
-          </IconButton>
+            {/* Rocket icon — far right */}
+            <IconButton onClick={handleRocketLaunch} sx={{ ml: 0.5 }}>
+                <RocketLaunchIcon sx={{ fontSize: { xs: '0.75rem', sm: '1.5rem' } }} />
+            </IconButton>
 
         </Toolbar>
       </AppBar>
