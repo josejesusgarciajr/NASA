@@ -10,7 +10,7 @@ type GalaxyCanvasProps = {
 export const GalaxyCanvas = ({ exoplanets } : GalaxyCanvasProps) => {
     return (
         <Canvas
-            camera={{ position: [0, 0, 500], fov: 75, near: 0.1, far: 100000 }}
+            camera={{ position: [0, 0, 2000], fov: 75, near: 0.1, far: 100000 }}
             style={{ 
                 width: '100vw', 
                 height: '100vh',
@@ -29,7 +29,7 @@ export const GalaxyCanvas = ({ exoplanets } : GalaxyCanvasProps) => {
                 enableRotate={true}
                 zoomSpeed={2}
                 minDistance={5}
-                maxDistance={5000}
+                maxDistance={4000}
             />
 
         </Canvas>

@@ -50,55 +50,62 @@ export const StarField = ({ exoplanets } : StarFieldProps) => {
         return stars
     }, [exoplanets])
 
-    const { positions, colors } = useMemo(() => {
+    const { positions, colors, sizes } = useMemo(() => {
         const positions = new Float32Array(uniqueStars.length * 3)
         const colors = new Float32Array(uniqueStars.length * 3)
-        //const sizes = new Float32Array(uniqueStars.length)
+        const sizes = new Float32Array(uniqueStars.length)
 
         uniqueStars.forEach((star, i) => {
-            // Position
             const { x, y, z } = toCartesian(star)
             positions[i * 3] = x
             positions[i * 3 + 1] = y
             positions[i * 3 + 2] = z
 
-            // Color by temperature
             const color = tempToColor(star.st_teff)
             colors[i * 3] = color.r
             colors[i * 3 + 1] = color.g
             colors[i * 3 + 2] = color.b
 
-            // Size by stellar radius — clamp between 1 and 8
-            // const radius = star.st_rad ?? 1
-            // sizes[i] = Math.min(Math.max(radius * 2, 1), 8)
+            const radius = star.st_rad ?? 1
+            sizes[i] = Math.min(Math.max(radius * 1.5, 0.5), 4) // tighter clamp
         })
 
-        return { positions, colors }
+        return { positions, colors, sizes }
     }, [uniqueStars])
 
     const texture = useMemo(() => createCircleTexture(), []);
 
     return (
         <points>
-        <bufferGeometry>
-            <bufferAttribute
-                attach="attributes-position"
-                args={[positions, 3]}
+            <bufferGeometry>
+                <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+                <bufferAttribute attach="attributes-color" args={[colors, 3]} />
+                <bufferAttribute attach="attributes-size" args={[sizes, 1]} />
+            </bufferGeometry>
+            <shaderMaterial
+                vertexShader={`
+                    attribute float size;
+                    attribute vec3 color;
+                    varying vec3 vColor;
+                    void main() {
+                        vColor = color;
+                        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                        gl_PointSize = size * (150.0 / -mvPosition.z);
+                        gl_Position = projectionMatrix * mvPosition;
+                    }
+                `}
+                fragmentShader={`
+                    uniform sampler2D pointTexture;
+                    varying vec3 vColor;
+                    void main() {
+                        gl_FragColor = vec4(vColor, 1.0) * texture2D(pointTexture, gl_PointCoord);
+                        if (gl_FragColor.a < 0.05) discard;
+                    }
+                `}
+                uniforms={{ pointTexture: { value: texture } }}
+                transparent={true}
+                depthWrite={false}
             />
-            <bufferAttribute
-                attach="attributes-color"
-                args={[colors, 3]}
-            />
-        </bufferGeometry>
-        <pointsMaterial
-            vertexColors={true}
-            size={1.5}
-            sizeAttenuation={true}
-            map={texture}
-            transparent={true}
-            alphaTest={0.05}
-            depthWrite={false}
-        />
-    </points>
+        </points>
     )
 }
