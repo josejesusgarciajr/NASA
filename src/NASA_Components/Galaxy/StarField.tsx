@@ -15,9 +15,11 @@ function createCircleTexture() {
     canvas.height = 64
     const ctx = canvas.getContext('2d')!
     const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32)
-    gradient.addColorStop(0, 'rgba(255,255,255,1)')
-    gradient.addColorStop(0.3, 'rgba(255,255,255,0.8)')
-    gradient.addColorStop(1, 'rgba(255,255,255,0)')
+    gradient.addColorStop(0,    'rgba(255,255,255,1)')
+    gradient.addColorStop(0.45, 'rgba(255,255,255,1)')   // solid fill to near edge
+    gradient.addColorStop(0.65, 'rgba(255,255,255,0.5)') // quick falloff
+    gradient.addColorStop(0.85, 'rgba(255,255,255,0.1)') // tiny glow
+    gradient.addColorStop(1,    'rgba(255,255,255,0)')
     ctx.fillStyle = gradient
     ctx.fillRect(0, 0, 64, 64)
     return new THREE.CanvasTexture(canvas)
