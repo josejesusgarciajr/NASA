@@ -10,10 +10,12 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Typography } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 
 // react
 import { useEffect } from 'react';
-import { useSearchParams} from 'react-router-dom';
+import { useNavigate, useSearchParams} from 'react-router-dom';
 
 // APOD
 import { useAPOD } from '../hooks/useAPOD';
@@ -22,6 +24,7 @@ import { getRandomAPODDate } from '../utils/dateUtils'
 export const APODExplorer = () => {
     const { apod, loadingAPOD, errorAPOD, selectedDate, setSelectedDate, fetchAPODWithDate } = useAPOD();
     const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (searchParams.get('random') === 'true') {
@@ -39,7 +42,15 @@ export const APODExplorer = () => {
                 </Box>
             )}
 
-            <NASAServiceDisplay serviceAcronym='APOD EXPLORER' serviceName='Astronomy Picture of the Day' />
+            <NASAServiceDisplay 
+                serviceAcronym='APOD EXPLORER' 
+                serviceName='Astronomy Picture of the Day'
+                icon={
+                    <IconButton onClick={() => navigate('/apod-gallery')}>
+                        <PhotoLibraryIcon />
+                    </IconButton>
+                }
+            />
             <Typography
                 variant="body1"
                 sx={{

@@ -3,9 +3,10 @@ import Typography from '@mui/material/Typography';
 type NASAServiceDisplayProps = {
     serviceAcronym: string
     serviceName: string;
+    icon?: React.ReactNode;
 }
 
-export const NASAServiceDisplay = ({serviceAcronym, serviceName} : NASAServiceDisplayProps) => {
+export const NASAServiceDisplay = ({serviceAcronym, serviceName, icon} : NASAServiceDisplayProps) => {
     return (
         <>
             <Typography variant="h3" fontWeight="bold" gutterBottom
@@ -23,7 +24,7 @@ export const NASAServiceDisplay = ({serviceAcronym, serviceName} : NASAServiceDi
             <Typography variant="subtitle1" color="common.white"
                 sx={{ textAlign: 'center' }}
             >
-                {serviceName}
+                {serviceName} {icon}
             </Typography>
         </>
     );

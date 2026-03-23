@@ -1,16 +1,33 @@
+// nasa
 import { APODCard } from '../NASA_Components/APOD_Components/APODCard'
 import { NASAServiceDisplay } from '../NASA_Components/NASAServiceDisplay'
 import { useAPODGallery } from '../hooks/useAPODGallery'
+
+// material ui
 import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton'
+import LibraryAddIcon from '@mui/icons-material/LibraryAdd'
+
+// react
+import { useNavigate } from 'react-router-dom'
 
 export const APODGallery = () => {
     const { savedAPODS } = useAPODGallery()
+    const navigate = useNavigate();
 
     return (
         <>
-            <NASAServiceDisplay serviceAcronym='APOD Gallery' serviceName='View your saved APODs!' />
+            <NASAServiceDisplay 
+                serviceAcronym='APOD Gallery' 
+                serviceName='Your saved APODs!'
+                icon={
+                    <IconButton onClick={() => navigate('/apod-explorer')}>
+                        <LibraryAddIcon />
+                    </IconButton>
+                }
+            />
 
             {savedAPODS.length === 0 ? (
                 <Typography
