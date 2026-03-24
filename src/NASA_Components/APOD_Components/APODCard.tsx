@@ -1,9 +1,12 @@
+// nasa
 import type { APOD } from '../../types/NASA/APOD'
+
+// material ui
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-import CardMedia from '@mui/material/CardMedia'
 import Typography from '@mui/material/Typography'
 import CardActionArea from '@mui/material/CardActionArea'
+import { APODMediaContent } from './APODMediaContent'
 
 type APODCardProps = {
     apod: APOD;
@@ -17,13 +20,7 @@ export const APODCard = ({ apod }: APODCardProps) => {
     return (
         <Card sx={{ backgroundColor: 'background.paper', height: '100%' }}>
             <CardActionArea sx={{ height: '100%' }}>
-                <CardMedia
-                    component='img'
-                    height='160'
-                    image={apod.hdurl ?? apod.url}
-                    alt={apod.title}
-                    sx={{ objectFit: 'cover' }}
-                />
+            <APODMediaContent apod={apod} />
                 <CardContent>
                     <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                         {apod.date}
