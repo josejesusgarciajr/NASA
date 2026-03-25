@@ -1,7 +1,7 @@
 import type { NEOObject } from "../../../types/NASA/NEOFeedResponse"
 
 import { NEOCloseApproachTable } from '../NEOCloseApproachTable'
-import { OrbitingBodySelect } from '../../Modals/OrbitingBodySelect'
+import { OrbitingBodySelect } from './OrbitingBodySelect'
 import { EstimatedDiameterNEO } from './EstimatedDiameterNEO'
 import { buttonGlowSx } from "../../../types/buttonGlowSx"
 
