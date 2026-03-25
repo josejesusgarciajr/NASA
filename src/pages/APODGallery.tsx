@@ -1,7 +1,7 @@
 // nasa
 import { APODCard } from '../NASA_Components/APOD/APODCard'
 import { NASAServiceDisplay } from '../NASA_Components/NASAServiceDisplay'
-import { useAPODGallery } from '../hooks/useAPODGallery'
+import { useAPODGallery } from '../hooks/APOD/useAPODGallery'
 
 // material ui
 import Grid from '@mui/material/Grid'

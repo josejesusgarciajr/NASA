@@ -18,7 +18,7 @@ import { useEffect } from 'react';
 import { useNavigate, useSearchParams} from 'react-router-dom';
 
 // APOD
-import { useAPOD } from '../hooks/useAPOD';
+import { useAPOD } from '../hooks/APOD/useAPOD';
 import { getRandomAPODDate } from '../utils/dateUtils'
 
 export const APODExplorer = () => {

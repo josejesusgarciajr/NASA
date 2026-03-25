@@ -1,5 +1,5 @@
 // nasa
-import { useAPODMedia } from '../../hooks/useAPODMedia';
+import { useAPODMedia } from '../../hooks/APOD/useAPODMedia';
 import type { APOD } from '../../types/NASA/APOD'
 
 type APODMediaContentProps = {

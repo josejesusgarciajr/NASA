@@ -12,7 +12,7 @@ import Box from '@mui/material/Box'
 import Alert from '@mui/material/Alert'
 
 // APOD
-import { useAPOD } from '../hooks/useAPOD'
+import { useAPOD } from '../hooks/APOD/useAPOD'
 
 export function Home() {
   const { apod, loadingAPOD, fetchAPOD, errorAPOD } = useAPOD();

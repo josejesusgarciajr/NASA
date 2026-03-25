@@ -1,6 +1,6 @@
 // nasa
-import { getSavedAPODS } from "../utils/apods";
-import type { APOD } from "../types/NASA/APOD";
+import { getSavedAPODS } from "../../utils/apods";
+import type { APOD } from "../../types/NASA/APOD";
 
 // react
 import { useState } from 'react'

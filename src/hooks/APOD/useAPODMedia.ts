@@ -1,5 +1,5 @@
 // nasa
-import type { APOD } from "../types/NASA/APOD"
+import type { APOD } from "../../types/NASA/APOD"
 
 // react
 import { useEffect, useRef } from 'react'

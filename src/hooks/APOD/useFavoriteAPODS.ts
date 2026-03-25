@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import type { APOD } from '../types/NASA/APOD'
-import { STORAGE_KEY, getSavedAPODS } from '.././utils/apods'
+import type { APOD } from '../../types/NASA/APOD'
+import { STORAGE_KEY, getSavedAPODS } from '../../utils/apods'
 
 export function useFavoriteAPODS(apod: APOD) {
     const isSavedAPOD = getSavedAPODS().some(a => a.date === apod.date)

@@ -1,5 +1,5 @@
 import { useState } from 'react' 
-import type { APOD } from '../types/NASA/APOD'
+import type { APOD } from '../../types/NASA/APOD'
 
 import { Dayjs } from 'dayjs'
 
