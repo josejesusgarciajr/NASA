@@ -1,4 +1,4 @@
-import type { NEOObject } from "../../types/NASA/NEOFeedResponse"
+import type { NEOObject } from "../../../types/NASA/NEOFeedResponse"
 import { Typography } from "@mui/material";
 
 type EstimatedDiameterNEOProps = {

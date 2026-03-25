@@ -1,8 +1,8 @@
-import type { NEOFeedResponse, NEOObject } from "../types/NASA/NEOFeedResponse";
+import type { NEOFeedResponse, NEOObject } from "../../types/NASA/NEOFeedResponse";
 
-import { buttonGlowSx } from '../types/buttonGlowSx'
+import { buttonGlowSx } from '../../types/buttonGlowSx'
 import { NEOObjectDisplay } from "./NEOObjectDisplay";
-import  { NEOSearch } from '../NASA_Components/NEOSearch';
+import  { NEOSearch } from './NEOSearch';
 import { NEODateFilter } from "./NEODateFilter";
 import { NEOHazardousFilter } from "./NEOHazardousFilter";
 import { NEODiameterSort } from './NEODiameterSort';

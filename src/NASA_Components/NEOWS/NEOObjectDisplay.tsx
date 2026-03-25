@@ -1,4 +1,4 @@
-import type { NEOObject } from '../types/NASA/NEOFeedResponse'
+import type { NEOObject } from '../../types/NASA/NEOFeedResponse'
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';

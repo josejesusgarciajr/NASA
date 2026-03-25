@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import TableSortLabel from '@mui/material/TableSortLabel';
 
-import type { NEOCloseApproachData } from "../types/NASA/NEOFeedResponse";
+import type { NEOCloseApproachData } from "../../types/NASA/NEOFeedResponse";
 
 type NEOCloseApproachTableProps = {
   closeApproaches: NEOCloseApproachData[];

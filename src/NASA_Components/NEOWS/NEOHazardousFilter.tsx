@@ -2,7 +2,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import { glowSx } from '../types/glowSx';
+import { glowSx } from '../../types/glowSx';
 
 import type { SelectChangeEvent } from '@mui/material/Select';
 

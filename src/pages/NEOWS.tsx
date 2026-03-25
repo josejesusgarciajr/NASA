@@ -1,7 +1,7 @@
 // react
 import { useEffect } from 'react'
 
-import { NEOFeedDisplay } from '../NASA_Components/NEOFeedDisplay'
+import { NEOFeedDisplay } from '../NASA_Components/NEOWS/NEOFeedDisplay'
 import { NASAServiceDisplay } from '../NASA_Components/NASAServiceDisplay'
 
 // MATERIAL UI

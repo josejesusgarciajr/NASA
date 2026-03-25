@@ -1,9 +1,9 @@
-import type { NEOObject } from "../../types/NASA/NEOFeedResponse"
+import type { NEOObject } from "../../../types/NASA/NEOFeedResponse"
 
 import { NEOCloseApproachTable } from '../NEOCloseApproachTable'
-import { OrbitingBodySelect } from '../Modals/OrbitingBodySelect'
-import { EstimatedDiameterNEO } from '../Modals/EstimatedDiameterNEO'
-import { buttonGlowSx } from "../../types/buttonGlowSx"
+import { OrbitingBodySelect } from '../../Modals/OrbitingBodySelect'
+import { EstimatedDiameterNEO } from './EstimatedDiameterNEO'
+import { buttonGlowSx } from "../../../types/buttonGlowSx"
 
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
