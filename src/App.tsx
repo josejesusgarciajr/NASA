@@ -5,7 +5,7 @@ import { APODExplorer } from './pages/APODExplorer'
 import { APODGallery } from './pages/APODGallery'
 import { NEOWS } from './pages/NEOWS'
 import { Box } from '@mui/material'
-import { Exoplanets } from './pages/Exoplanets'
+import { DOME } from './pages/DOME'
 
 import './App.css'
 
@@ -19,7 +19,7 @@ function App() {
           <Route path="/apod-explorer" element={<APODExplorer />} />
           <Route path="/apod-gallery" element={<APODGallery />} />
           <Route path="/neows" element={<NEOWS />} />
-          <Route path="/exoplanets" element={<Exoplanets />} />
+          <Route path="/dome" element={<DOME />} />
         </Routes>
       </Box>
     </>

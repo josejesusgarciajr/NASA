@@ -59,7 +59,7 @@ const apodLinks = [
 const navLinks = [
   { to: '/', label: 'Home', end: true },
   { to: '/neows', label: 'NEOWS' },
-  { to: '/exoplanets', label: 'Exoplanets' },
+  { to: '/dome', label: 'DOME' },
 ]
 
 export const NavBar = () => {

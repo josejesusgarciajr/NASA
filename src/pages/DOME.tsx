@@ -10,7 +10,7 @@ import Alert from '@mui/material/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import { GalaxyCanvas } from "../NASA_Components/Galaxy/GalaxyCanvas";
 
-export const Exoplanets = () => {
+export const DOME = () => {
     const { exoplanets, loadingExoplanets, errorExoplanets, fetchExoplanets } = useExoplanets();
 
     useEffect(() => {
