@@ -1,7 +1,7 @@
 // nasa
-import type { APOD } from '../types/NASA/APOD'
-import { APODMediaContent } from './APOD_Components/APODMediaContent'
-import { useFavoriteAPODS } from '../hooks/useFavoriteAPODS'
+import type { APOD } from '../../types/NASA/APOD'
+import { APODMediaContent } from './APODMediaContent'
+import { useFavoriteAPODS } from '../../hooks/useFavoriteAPODS'
 
 // material ui
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'

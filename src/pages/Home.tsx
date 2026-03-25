@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 
 // NASA Components
-import { APODDisplay } from '../NASA_Components/APODDisplay'
+import { APODDisplay } from '../NASA_Components/APOD/APODDisplay'
 import { NASAServiceDisplay } from '../NASA_Components/NASAServiceDisplay'
 
 // MATERIAL UI

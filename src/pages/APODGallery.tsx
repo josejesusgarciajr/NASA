@@ -1,5 +1,5 @@
 // nasa
-import { APODCard } from '../NASA_Components/APOD_Components/APODCard'
+import { APODCard } from '../NASA_Components/APOD/APODCard'
 import { NASAServiceDisplay } from '../NASA_Components/NASAServiceDisplay'
 import { useAPODGallery } from '../hooks/useAPODGallery'
 

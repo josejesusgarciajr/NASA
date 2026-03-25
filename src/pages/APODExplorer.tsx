@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 
 // NASA COMPONENTS
-import { APODDisplay } from '../NASA_Components/APODDisplay';
+import { APODDisplay } from '../NASA_Components/APOD/APODDisplay';
 import { NASAServiceDisplay } from '../NASA_Components/NASAServiceDisplay';
 
 // MATERIAL UI
