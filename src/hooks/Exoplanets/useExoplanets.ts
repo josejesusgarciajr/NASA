@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { Exoplanet } from '../types/NASA/Exoplanets';
+import type { Exoplanet } from '../../types/NASA/Exoplanets';
 
 export function useExoplanets() {
     const [exoplanets, setExoplanets] = useState<Exoplanet[]>([]);

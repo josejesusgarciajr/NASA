@@ -10,7 +10,7 @@ import Box from '@mui/material/Box'
 import Alert from '@mui/material/Alert';
 
 // Near Earth Object Web Service
-import { useNEOWS } from '../hooks/useNEOWS';
+import { useNEOWS } from '../hooks/NEOWS/useNEOWS';
 
 // utils
 import { addDays } from '../utils/dateUtils'

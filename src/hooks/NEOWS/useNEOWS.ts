@@ -1,4 +1,4 @@
-import type { NEOFeedResponse } from '../types/NASA/NEOFeedResponse'
+import type { NEOFeedResponse } from '../../types/NASA/NEOFeedResponse'
 import { useState } from 'react'
 
 export function useNEOWS() {

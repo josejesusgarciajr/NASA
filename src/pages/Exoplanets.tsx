@@ -1,5 +1,5 @@
 // nasa
-import { useExoplanets } from "../hooks/useExoplanets";
+import { useExoplanets } from "../hooks/Exoplanets/useExoplanets";
 
 // react
 import { useEffect } from 'react'
