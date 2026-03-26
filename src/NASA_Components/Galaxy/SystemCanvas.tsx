@@ -16,7 +16,13 @@ function tempToColor(teff: number | null): THREE.Color {
     return new THREE.Color(1.0, 0.3, 0.1)
 }
 
-function planetConfig(rade: number | null): { color: THREE.Color; emissive: THREE.Color; roughness: number; hasRings: boolean; ringColor: THREE.Color } {
+function planetConfig(rade: number | null): {
+    color: THREE.Color
+    emissive: THREE.Color
+    roughness: number
+    hasRings: boolean
+    ringColor: THREE.Color
+} {
     const r = rade ?? 1
     if (r > 10) return {
         color: new THREE.Color(0.75, 0.58, 0.35),
@@ -50,11 +56,52 @@ function planetConfig(rade: number | null): { color: THREE.Color; emissive: THRE
 
 const AU = 60
 
+// Creates a smooth radial gradient texture for the glow sprite
+function makeGlowTexture(color: THREE.Color): THREE.Texture {
+    const size = 256
+    const canvas = document.createElement('canvas')
+    canvas.width = size
+    canvas.height = size
+    const ctx = canvas.getContext('2d')!
+    const cx = size / 2
+    const gradient = ctx.createRadialGradient(cx, cx, 0, cx, cx, cx)
+    const r = Math.round(color.r * 255)
+    const g = Math.round(color.g * 255)
+    const b = Math.round(color.b * 255)
+    gradient.addColorStop(0,   `rgba(${r},${g},${b},0.9)`)
+    gradient.addColorStop(0.15,`rgba(${r},${g},${b},0.5)`)
+    gradient.addColorStop(0.4, `rgba(${r},${g},${b},0.15)`)
+    gradient.addColorStop(0.7, `rgba(${r},${g},${b},0.04)`)
+    gradient.addColorStop(1,   `rgba(${r},${g},${b},0)`)
+    ctx.fillStyle = gradient
+    ctx.fillRect(0, 0, size, size)
+    const tex = new THREE.CanvasTexture(canvas)
+    return tex
+}
+
+type StarGlowProps = { starSize: number; starColor: THREE.Color }
+
+const StarGlow = ({ starSize, starColor }: StarGlowProps) => {
+    const texture = useMemo(() => makeGlowTexture(starColor), [starColor])
+    const spriteSize = starSize * 10
+
+    return (
+        <sprite scale={[spriteSize, spriteSize, 1]}>
+            <spriteMaterial
+                map={texture}
+                blending={THREE.AdditiveBlending}
+                depthWrite={false}
+                transparent
+            />
+        </sprite>
+    )
+}
+
 type OrbitRingProps = { orbitRadius: number }
 
 const OrbitRing = ({ orbitRadius }: OrbitRingProps) => {
     const line = useMemo(() => {
-        const points = []
+        const points: THREE.Vector3[] = []
         const segments = 128
         for (let i = 0; i <= segments; i++) {
             const angle = (i / segments) * Math.PI * 2
@@ -71,25 +118,23 @@ const OrbitRing = ({ orbitRadius }: OrbitRingProps) => {
 type PlanetRingsProps = { planetSize: number; ringColor: THREE.Color }
 
 const PlanetRings = ({ planetSize, ringColor }: PlanetRingsProps) => {
-    const ringRef = useRef<THREE.Mesh>(null)
-
     const geometry = useMemo(() => {
-        return new THREE.RingGeometry(planetSize * 1.4, planetSize * 2.4, 64)
-    }, [planetSize])
-
-    // Fix UV mapping for RingGeometry so texture looks correct
-    useMemo(() => {
-        const pos = geometry.attributes.position
-        const uv = geometry.attributes.uv
+        const geo = new THREE.RingGeometry(planetSize * 1.4, planetSize * 2.4, 64)
+        // Fix UV mapping so the ring fades correctly
+        const pos = geo.attributes.position
+        const uv = geo.attributes.uv
         const v3 = new THREE.Vector3()
+        const inner = planetSize * 1.4
+        const outer = planetSize * 2.4
         for (let i = 0; i < pos.count; i++) {
             v3.fromBufferAttribute(pos, i)
-            uv.setXY(i, v3.length() / (planetSize * 2.4), 0)
+            uv.setXY(i, (v3.length() - inner) / (outer - inner), 0)
         }
-    }, [geometry, planetSize])
+        return geo
+    }, [planetSize])
 
     return (
-        <mesh ref={ringRef} rotation={[-Math.PI / 2.5, 0.1, 0]} geometry={geometry}>
+        <mesh rotation={[-Math.PI / 2.5, 0.1, 0]} geometry={geometry}>
             <meshBasicMaterial
                 color={ringColor}
                 side={THREE.DoubleSide}
@@ -103,11 +148,16 @@ const PlanetRings = ({ planetSize, ringColor }: PlanetRingsProps) => {
 type OrbitingPlanetProps = {
     planet: Exoplanet
     index: number
+    minOrbitRadius: number
 }
 
-const OrbitingPlanet = ({ planet, index }: OrbitingPlanetProps) => {
+const OrbitingPlanet = ({ planet, index, minOrbitRadius }: OrbitingPlanetProps) => {
     const groupRef = useRef<THREE.Group>(null)
-    const orbitRadius = (planet.pl_orbsmax ?? (index + 1) * 0.5) * AU
+
+    const rawOrbit = (planet.pl_orbsmax ?? (index + 1) * 0.5) * AU
+    // Never let a planet orbit inside or clipping the star
+    const orbitRadius = Math.max(rawOrbit, minOrbitRadius)
+
     const planetSize = Math.min(Math.max((planet.pl_rade ?? 1) * 0.4, 0.8), 8)
     const speed = 0.3 / ((planet.pl_orbsmax ?? (index + 1) * 0.5) * 5)
     const offset = (index / 8) * Math.PI * 2
@@ -147,35 +197,16 @@ const SystemScene = ({ planets }: SystemSceneProps) => {
     const star = planets[0]
     const starColor = tempToColor(star.st_teff)
     const starSize = Math.min(Math.max((star.st_rad ?? 1) * 2, 4), 25)
+    // Planets must orbit at least this far: star surface + planet max size + padding
+    const minOrbitRadius = starSize + 8 + 10
 
     return (
         <>
             <pointLight position={[0, 0, 0]} intensity={2} distance={8000} color={starColor} />
             <ambientLight intensity={0.04} />
 
-            {/* Outer diffuse corona */}
-            <mesh>
-                <sphereGeometry args={[starSize * 1.6, 32, 32]} />
-                <meshBasicMaterial
-                    color={starColor}
-                    opacity={0.06}
-                    transparent
-                    blending={THREE.AdditiveBlending}
-                    depthWrite={false}
-                />
-            </mesh>
-
-            {/* Mid glow */}
-            <mesh>
-                <sphereGeometry args={[starSize * 1.3, 32, 32]} />
-                <meshBasicMaterial
-                    color={starColor}
-                    opacity={0.18}
-                    transparent
-                    blending={THREE.AdditiveBlending}
-                    depthWrite={false}
-                />
-            </mesh>
+            {/* Smooth glow sprite — no hard edges */}
+            <StarGlow starSize={starSize} starColor={starColor} />
 
             {/* Star surface */}
             <mesh>
@@ -190,7 +221,12 @@ const SystemScene = ({ planets }: SystemSceneProps) => {
             </mesh>
 
             {planets.map((planet, i) => (
-                <OrbitingPlanet key={planet.pl_name} planet={planet} index={i} />
+                <OrbitingPlanet
+                    key={planet.pl_name}
+                    planet={planet}
+                    index={i}
+                    minOrbitRadius={minOrbitRadius}
+                />
             ))}
         </>
     )
