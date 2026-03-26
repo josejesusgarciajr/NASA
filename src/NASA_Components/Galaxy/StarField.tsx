@@ -8,6 +8,7 @@ import { useThree, useFrame } from '@react-three/fiber'
 type StarFieldProps = {
     exoplanets: Exoplanet[];
     onHover: (exoplanet: Exoplanet | null) => void;
+    onClick: (exoplanet: Exoplanet) => void;
 }
 
 // Creates a circular sprite texture so stars look round not square
@@ -41,7 +42,7 @@ function tempToColor(teff: number | null): THREE.Color {
     return new THREE.Color(1.0, 0.3, 0.1)                     // M — red
 }
 
-export const StarField = ({ exoplanets, onHover } : StarFieldProps) => {
+export const StarField = ({ exoplanets, onHover, onClick } : StarFieldProps) => {
     const pointsRef = useRef<THREE.Points>(null)
     const { camera, gl } = useThree()
     const raycaster = useRef(new THREE.Raycaster())
@@ -122,6 +123,29 @@ export const StarField = ({ exoplanets, onHover } : StarFieldProps) => {
             }
         }
     })
+
+    useEffect(() => {
+        const canvas = gl.domElement
+
+        function onMouseMove(e: MouseEvent) {
+            const rect = canvas.getBoundingClientRect()
+            mouse.current.x = ((e.clientX - rect.left) / rect.width) * 2 - 1
+            mouse.current.y = -((e.clientY - rect.top) / rect.height) * 2 + 1
+        }
+
+        function onMouseClick() {
+            if (hoveredIndexRef.current !== null) {
+                onClick(uniqueStars[hoveredIndexRef.current])
+            }
+        }
+
+        canvas.addEventListener('mousemove', onMouseMove)
+        canvas.addEventListener('click', onMouseClick)
+        return () => {
+            canvas.removeEventListener('mousemove', onMouseMove)
+            canvas.removeEventListener('click', onMouseClick)
+        }
+    }, [gl, uniqueStars, onClick])
 
     return (
         <points ref={pointsRef}>

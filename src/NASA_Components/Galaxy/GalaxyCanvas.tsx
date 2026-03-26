@@ -3,12 +3,14 @@ import { OrbitControls } from '@react-three/drei'
 import { StarField } from './StarField'
 import type { Exoplanet } from '../../types/NASA/Exoplanets'
 import { useRef, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 type GalaxyCanvasProps = {
     exoplanets: Exoplanet[]
 }
 
 export const GalaxyCanvas = ({ exoplanets }: GalaxyCanvasProps) => {
+    const navigate = useNavigate();
     const tooltipRef = useRef<HTMLDivElement>(null)
     const tooltipNameRef = useRef<HTMLSpanElement>(null)
     const tooltipPlanetsRef = useRef<HTMLSpanElement>(null)
@@ -35,6 +37,10 @@ export const GalaxyCanvas = ({ exoplanets }: GalaxyCanvasProps) => {
         }
     }, [])
 
+    const handleClick = useCallback((star: Exoplanet) => {
+        navigate(`/dome?system=${encodeURIComponent(star.hostname)}`)
+    }, [navigate])
+
     return (
         <div
             style={{ width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0 }}
@@ -45,7 +51,7 @@ export const GalaxyCanvas = ({ exoplanets }: GalaxyCanvasProps) => {
                 style={{ width: '100%', height: '100%', background: 'black' }}
             >
                 <ambientLight intensity={0.5} />
-                <StarField exoplanets={exoplanets} onHover={handleHover} />
+                <StarField exoplanets={exoplanets} onHover={handleHover} onClick={handleClick} />
                 <OrbitControls
                     enableZoom={true}
                     enablePan={true}

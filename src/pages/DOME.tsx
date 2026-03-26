@@ -1,25 +1,30 @@
 // nasa
-import { useExoplanets } from "../hooks/Exoplanets/useExoplanets";
+import { useExoplanets } from '../hooks/Exoplanets/useExoplanets'
+import { GalaxyCanvas } from '../NASA_Components/Galaxy/GalaxyCanvas'
+import { SystemCanvas } from '../NASA_Components/Galaxy/SystemCanvas'
 
 // react
 import { useEffect } from 'react'
+import { useSearchParams } from "react-router-dom"
 
 // material ui
-import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
-import LinearProgress from '@mui/material/LinearProgress';
-import { GalaxyCanvas } from "../NASA_Components/Galaxy/GalaxyCanvas";
+import Box from '@mui/material/Box'
+import Alert from '@mui/material/Alert'
+import LinearProgress from '@mui/material/LinearProgress'
 
 export const DOME = () => {
     const { exoplanets, loadingExoplanets, errorExoplanets, fetchExoplanets } = useExoplanets();
+    const [searchParams] = useSearchParams();
+    const selectedSystem = searchParams.get('system')
 
     useEffect(() => {
         fetchExoplanets();
     }, []);
 
-    useEffect(() => {
-        console.log(exoplanets);
-    }, [exoplanets]);
+        // Get all planets for the selected system
+    const systemPlanets = selectedSystem
+        ? exoplanets.filter(e => e.hostname === selectedSystem)
+        : []
 
     return (
         <>
@@ -30,7 +35,11 @@ export const DOME = () => {
             )}
 
             {exoplanets.length > 0 &&  (
-                <GalaxyCanvas exoplanets={exoplanets} />
+                selectedSystem && systemPlanets.length > 0 ? (
+                    <SystemCanvas hostname={selectedSystem} planets={systemPlanets} />
+                ) : (
+                    <GalaxyCanvas exoplanets={exoplanets} />
+                )
             )}
 
             {errorExoplanets && (
