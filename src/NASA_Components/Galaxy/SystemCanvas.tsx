@@ -23,64 +23,81 @@ function tempToColor(teff: number | null): THREE.Color {
 function makeIceGiantTexture(): THREE.Texture {
     const size = 512
     const canvas = document.createElement('canvas')
-    canvas.width = size
+    canvas.width = size * 2
     canvas.height = size
     const ctx = canvas.getContext('2d')!
 
-    // Deep teal base
+    // Rich teal base
     const base = ctx.createLinearGradient(0, 0, 0, size)
-    base.addColorStop(0,   '#0a2a3a')
-    base.addColorStop(0.2, '#0d4a6a')
-    base.addColorStop(0.5, '#0e6680')
-    base.addColorStop(0.8, '#0d4a6a')
-    base.addColorStop(1,   '#0a2a3a')
+    base.addColorStop(0,    '#041820')
+    base.addColorStop(0.12, '#083848')
+    base.addColorStop(0.30, '#0a6070')
+    base.addColorStop(0.50, '#0d8090')
+    base.addColorStop(0.70, '#0a6070')
+    base.addColorStop(0.88, '#083848')
+    base.addColorStop(1,    '#041820')
     ctx.fillStyle = base
-    ctx.fillRect(0, 0, size, size)
+    ctx.fillRect(0, 0, size * 2, size)
 
-    // Bright cyan atmospheric bands
+    // Large slow cloud swirls
+    for (let i = 0; i < 50; i++) {
+        const x  = Math.random() * size * 2
+        const y  = Math.random() * size
+        const rx = 50 + Math.random() * 120
+        const ry = 10 + Math.random() * 25
+        const rot = (Math.random() - 0.5) * 0.25
+        const alpha = 0.12 + Math.random() * 0.18
+        const swirl = ctx.createRadialGradient(x, y, 0, x, y, rx)
+        swirl.addColorStop(0,   `rgba(20,210,230,${alpha * 1.5})`)
+        swirl.addColorStop(0.4, `rgba(10,180,210,${alpha})`)
+        swirl.addColorStop(1,   'rgba(0,0,0,0)')
+        ctx.fillStyle = swirl
+        ctx.beginPath()
+        ctx.ellipse(x, y, rx, ry, rot, 0, Math.PI * 2)
+        ctx.fill()
+    }
+
+    // Bright horizontal band highlights
     const bands = [
-        { y: 0.06, h: 0.025, color: 'rgba(0,220,240,0.30)' },
-        { y: 0.14, h: 0.040, color: 'rgba(0,200,230,0.22)' },
-        { y: 0.22, h: 0.020, color: 'rgba(20,230,250,0.35)' },
-        { y: 0.32, h: 0.055, color: 'rgba(0,185,215,0.20)' },
-        { y: 0.42, h: 0.030, color: 'rgba(10,220,245,0.28)' },
-        { y: 0.50, h: 0.045, color: 'rgba(0,200,230,0.25)' },
-        { y: 0.60, h: 0.025, color: 'rgba(20,225,248,0.32)' },
-        { y: 0.70, h: 0.050, color: 'rgba(0,190,220,0.22)' },
-        { y: 0.80, h: 0.030, color: 'rgba(10,215,240,0.28)' },
-        { y: 0.90, h: 0.040, color: 'rgba(0,200,228,0.20)' },
+        { y: 0.12, h: 0.022, a: 0.32 },
+        { y: 0.24, h: 0.018, a: 0.25 },
+        { y: 0.36, h: 0.028, a: 0.38 },
+        { y: 0.48, h: 0.020, a: 0.28 },
+        { y: 0.58, h: 0.030, a: 0.35 },
+        { y: 0.70, h: 0.018, a: 0.25 },
+        { y: 0.82, h: 0.024, a: 0.30 },
+        { y: 0.92, h: 0.015, a: 0.20 },
     ]
-
     for (const band of bands) {
         const y = band.y * size
         const h = band.h * size
         const grad = ctx.createLinearGradient(0, y - h, 0, y + h)
         grad.addColorStop(0,   'rgba(0,0,0,0)')
-        grad.addColorStop(0.5, band.color)
+        grad.addColorStop(0.5, `rgba(0,230,255,${band.a})`)
         grad.addColorStop(1,   'rgba(0,0,0,0)')
         ctx.fillStyle = grad
-        ctx.fillRect(0, y - h, size, h * 2)
+        ctx.fillRect(0, y - h, size * 2, h * 2)
     }
 
-    // Dark separator lanes
-    for (const by of [0.10, 0.19, 0.28, 0.38, 0.47, 0.56, 0.65, 0.76, 0.86]) {
+    // Dark inter-band lanes
+    for (const by of [0.18, 0.30, 0.42, 0.53, 0.64, 0.76, 0.87]) {
         const y = by * size
-        const grad = ctx.createLinearGradient(0, y - 6, 0, y + 6)
+        const grad = ctx.createLinearGradient(0, y - 7, 0, y + 7)
         grad.addColorStop(0,   'rgba(0,0,0,0)')
-        grad.addColorStop(0.5, 'rgba(0,0,0,0.25)')
+        grad.addColorStop(0.5, 'rgba(0,0,0,0.30)')
         grad.addColorStop(1,   'rgba(0,0,0,0)')
         ctx.fillStyle = grad
-        ctx.fillRect(0, y - 6, size, 12)
+        ctx.fillRect(0, y - 7, size * 2, 14)
     }
 
     // Polar darkening
     const polar = ctx.createLinearGradient(0, 0, 0, size)
-    polar.addColorStop(0,   'rgba(0,10,20,0.60)')
-    polar.addColorStop(0.18,'rgba(0,0,0,0)')
-    polar.addColorStop(0.82,'rgba(0,0,0,0)')
-    polar.addColorStop(1,   'rgba(0,10,20,0.60)')
+    polar.addColorStop(0,    'rgba(0,5,12,0.75)')
+    polar.addColorStop(0.18, 'rgba(0,0,0,0)')
+    polar.addColorStop(0.82, 'rgba(0,0,0,0)')
+    polar.addColorStop(1,    'rgba(0,5,12,0.75)')
     ctx.fillStyle = polar
-    ctx.fillRect(0, 0, size, size)
+    ctx.fillRect(0, 0, size * 2, size)
 
     const tex = new THREE.CanvasTexture(canvas)
     tex.wrapS = THREE.RepeatWrapping
@@ -89,52 +106,56 @@ function makeIceGiantTexture(): THREE.Texture {
 }
 
 function makeGasGiantTexture(): THREE.Texture {
-    // TODO: add Jupiter/Saturn-style banding texture
-    // Placeholder — returns null so the material falls back to color
+    // TODO: Jupiter/Saturn-style warm banding
     return null as unknown as THREE.Texture
 }
 
 function makeSuperEarthTexture(): THREE.Texture {
-    // TODO: add rocky/oceanic texture
+    // TODO: rocky/oceanic texture
     return null as unknown as THREE.Texture
 }
 
 function makeRockyTexture(): THREE.Texture {
-    // TODO: add cratered rocky texture
+    // TODO: cratered rocky texture
     return null as unknown as THREE.Texture
 }
 
 // ─── Planet ring textures ─────────────────────────────────────────────────────
 
 function makeIceGiantRingTexture(): THREE.Texture {
-    const size = 256
+    const size = 512
     const canvas = document.createElement('canvas')
     canvas.width = size
     canvas.height = 1
     const ctx = canvas.getContext('2d')!
 
-    // Multiple distinct ring bands like Uranus
     const grad = ctx.createLinearGradient(0, 0, size, 0)
-    grad.addColorStop(0,    'rgba(0,0,0,0)')
-    grad.addColorStop(0.05, 'rgba(80,200,220,0.15)')
-    grad.addColorStop(0.10, 'rgba(0,0,0,0)')
-    grad.addColorStop(0.18, 'rgba(60,180,210,0.35)')
-    grad.addColorStop(0.22, 'rgba(100,220,240,0.55)')
-    grad.addColorStop(0.26, 'rgba(60,180,210,0.35)')
-    grad.addColorStop(0.30, 'rgba(0,0,0,0)')
-    grad.addColorStop(0.40, 'rgba(40,160,200,0.20)')
-    grad.addColorStop(0.46, 'rgba(80,200,230,0.45)')
-    grad.addColorStop(0.50, 'rgba(120,230,250,0.65)')
-    grad.addColorStop(0.54, 'rgba(80,200,230,0.45)')
-    grad.addColorStop(0.58, 'rgba(40,160,200,0.20)')
-    grad.addColorStop(0.65, 'rgba(0,0,0,0)')
-    grad.addColorStop(0.72, 'rgba(50,170,205,0.30)')
-    grad.addColorStop(0.76, 'rgba(90,210,235,0.50)')
-    grad.addColorStop(0.80, 'rgba(50,170,205,0.30)')
-    grad.addColorStop(0.86, 'rgba(0,0,0,0)')
-    grad.addColorStop(0.92, 'rgba(40,150,190,0.18)')
-    grad.addColorStop(0.96, 'rgba(0,0,0,0)')
-    grad.addColorStop(1,    'rgba(0,0,0,0)')
+
+    const ringBands = [
+        [0.06, 0.025, 0.15, '30,180,200'],
+        [0.14, 0.040, 0.30, '40,200,220'],
+        [0.24, 0.055, 0.50, '50,215,235'],
+        [0.35, 0.030, 0.25, '35,195,215'],
+        [0.44, 0.065, 0.65, '60,225,245'],
+        [0.54, 0.045, 0.55, '55,220,240'],
+        [0.63, 0.030, 0.30, '40,205,225'],
+        [0.72, 0.050, 0.45, '50,215,235'],
+        [0.82, 0.035, 0.28, '35,195,215'],
+        [0.90, 0.025, 0.18, '25,175,200'],
+        [0.96, 0.018, 0.10, '20,160,185'],
+    ] as const
+
+    grad.addColorStop(0, 'rgba(0,0,0,0)')
+    for (const [center, half, peak, rgb] of ringBands) {
+        const s = center - half
+        const e = center + half
+        grad.addColorStop(Math.max(0, s - half * 0.8), 'rgba(0,0,0,0)')
+        grad.addColorStop(s,      `rgba(${rgb},${peak * 0.3})`)
+        grad.addColorStop(center, `rgba(${rgb},${peak})`)
+        grad.addColorStop(e,      `rgba(${rgb},${peak * 0.3})`)
+        grad.addColorStop(Math.min(1, e + half * 0.8), 'rgba(0,0,0,0)')
+    }
+    grad.addColorStop(1, 'rgba(0,0,0,0)')
     ctx.fillStyle = grad
     ctx.fillRect(0, 0, size, 1)
 
@@ -194,28 +215,28 @@ function planetConfig(type: PlanetType): {
 } {
     switch (type) {
         case 'gas_giant': return {
-            color:    new THREE.Color(0.75, 0.58, 0.35),
-            emissive: new THREE.Color(0.05, 0.03, 0.01),
+            color:     new THREE.Color(0.75, 0.58, 0.35),
+            emissive:  new THREE.Color(0.05, 0.03, 0.01),
             roughness: 0.8,
-            hasRings: true,
+            hasRings:  true,
         }
         case 'ice_giant': return {
-            color:    new THREE.Color(0.0, 0.72, 0.85),
-            emissive: new THREE.Color(0.0, 0.05, 0.10),
-            roughness: 0.6,
-            hasRings: true,
+            color:     new THREE.Color(0.0, 0.75, 0.88),
+            emissive:  new THREE.Color(0.0, 0.06, 0.12),
+            roughness: 0.55,
+            hasRings:  true,
         }
         case 'super_earth': return {
-            color:    new THREE.Color(0.35, 0.55, 0.38),
-            emissive: new THREE.Color(0.01, 0.03, 0.01),
+            color:     new THREE.Color(0.35, 0.55, 0.38),
+            emissive:  new THREE.Color(0.01, 0.03, 0.01),
             roughness: 0.9,
-            hasRings: false,
+            hasRings:  false,
         }
         case 'rocky': return {
-            color:    new THREE.Color(0.65, 0.48, 0.38),
-            emissive: new THREE.Color(0.02, 0.01, 0.0),
+            color:     new THREE.Color(0.65, 0.48, 0.38),
+            emissive:  new THREE.Color(0.02, 0.01, 0.0),
             roughness: 0.95,
-            hasRings: false,
+            hasRings:  false,
         }
     }
 }
@@ -331,7 +352,7 @@ const StarGlow = ({ starSize, starColor }: StarGlowProps) => {
 type StarMeshProps = { starSize: number; starColor: THREE.Color }
 
 const StarMesh = ({ starSize, starColor }: StarMeshProps) => {
-    const matRef = useRef<THREE.MeshStandardMaterial>(null)
+    const matRef      = useRef<THREE.MeshStandardMaterial>(null)
     const starTexture = useMemo(() => makeStarTexture(starColor), [starColor])
 
     useFrame(({ clock }) => {
@@ -381,16 +402,15 @@ type PlanetRingsProps = { planetSize: number; type: PlanetType }
 const PlanetRings = ({ planetSize, type }: PlanetRingsProps) => {
     const { innerMult, outerMult, tilt, ringTexture } = useMemo(() => {
         if (type === 'ice_giant') return {
-            innerMult: 1.3,
-            outerMult: 2.8,
-            tilt: -Math.PI / 2.2,   // more edge-on like Uranus
+            innerMult:   1.3,
+            outerMult:   2.8,
+            tilt:        -Math.PI / 5,  // ~36° Saturn-like tilt
             ringTexture: makeIceGiantRingTexture(),
         }
-        // gas giant
         return {
-            innerMult: 1.4,
-            outerMult: 2.4,
-            tilt: -Math.PI / 2.5,
+            innerMult:   1.4,
+            outerMult:   2.4,
+            tilt:        -Math.PI / 5,
             ringTexture: makeGasGiantRingTexture(),
         }
     }, [type])
@@ -410,7 +430,7 @@ const PlanetRings = ({ planetSize, type }: PlanetRingsProps) => {
     }, [planetSize, innerMult, outerMult])
 
     return (
-        <mesh rotation={[tilt, 0, 0.15]} geometry={geometry}>
+        <mesh rotation={[tilt, 0, 0.2]} geometry={geometry}>
             <meshBasicMaterial
                 map={ringTexture}
                 side={THREE.DoubleSide}
@@ -430,12 +450,13 @@ type OrbitingPlanetProps = {
 }
 
 const OrbitingPlanet = ({ planet, index, orbitRadius }: OrbitingPlanetProps) => {
-    const groupRef  = useRef<THREE.Group>(null)
-    const type      = getPlanetType(planet.pl_rade)
-    const cfg       = planetConfig(type)
+    const groupRef   = useRef<THREE.Group>(null)
+    const matRef     = useRef<THREE.MeshStandardMaterial>(null)
+    const type       = getPlanetType(planet.pl_rade)
+    const cfg        = planetConfig(type)
     const planetSize = Math.min(Math.max((planet.pl_rade ?? 1) * 0.4, 0.8), 8)
-    const speed     = 0.3 / ((planet.pl_orbsmax ?? (index + 1) * 0.5) * 5)
-    const offset    = (index / 8) * Math.PI * 2
+    const speed      = 0.3 / ((planet.pl_orbsmax ?? (index + 1) * 0.5) * 5)
+    const offset     = (index / 8) * Math.PI * 2
 
     const surfaceTexture = useMemo(() => {
         switch (type) {
@@ -452,6 +473,10 @@ const OrbitingPlanet = ({ planet, index, orbitRadius }: OrbitingPlanetProps) => 
             groupRef.current.position.x = Math.cos(t) * orbitRadius
             groupRef.current.position.z = Math.sin(t) * orbitRadius
         }
+        // Slowly drift atmosphere texture
+        if (surfaceTexture && type === 'ice_giant') {
+            surfaceTexture.offset.x = (clock.getElapsedTime() * 0.002) % 1
+        }
     })
 
     return (
@@ -461,10 +486,11 @@ const OrbitingPlanet = ({ planet, index, orbitRadius }: OrbitingPlanetProps) => 
                 <mesh>
                     <sphereGeometry args={[planetSize, 48, 48]} />
                     <meshStandardMaterial
-                        color={cfg.color}
+                        ref={matRef}
+                        color={surfaceTexture ? undefined : cfg.color}
                         map={surfaceTexture ?? undefined}
                         emissive={cfg.emissive}
-                        emissiveIntensity={1}
+                        emissiveIntensity={0.6}
                         roughness={cfg.roughness}
                         metalness={0.05}
                     />
