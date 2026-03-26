@@ -55,6 +55,7 @@ function planetConfig(rade: number | null): {
 }
 
 const AU = 60
+const MIN_ORBIT_GAP = 18
 
 function makeGlowTexture(color: THREE.Color): THREE.Texture {
     const size = 256
@@ -96,7 +97,6 @@ function makeStarTexture(color: THREE.Color): THREE.Texture {
             const y   = Math.random() * size
             const rad = minR + Math.random() * (maxR - minR)
 
-            // Bright center — softer falloff
             const bright = ctx.createRadialGradient(x, y, 0, x, y, rad)
             bright.addColorStop(0,   `rgba(255,240,190,${alpha * 1.8})`)
             bright.addColorStop(0.5, `rgba(255,215,130,${alpha})`)
@@ -106,7 +106,6 @@ function makeStarTexture(color: THREE.Color): THREE.Texture {
             ctx.arc(x, y, rad, 0, Math.PI * 2)
             ctx.fill()
 
-            // Dark lane — wider and more gradual
             const dark = ctx.createRadialGradient(x, y, rad * 0.6, x, y, rad * 1.6)
             dark.addColorStop(0,   `rgba(0,0,0,0)`)
             dark.addColorStop(0.5, `rgba(0,0,0,${alpha * 1.0})`)
@@ -122,13 +121,11 @@ function makeStarTexture(color: THREE.Color): THREE.Texture {
     paintGranules(150, 18, 9,  0.13)
     paintGranules(100, 10, 4,  0.15)
 
-    // Sunspots — softer, more faded
     for (let i = 0; i < 5; i++) {
         const x   = Math.random() * size * 2
         const y   = size * 0.2 + Math.random() * size * 0.6
         const rad = 10 + Math.random() * 16
 
-        // Umbra — less opaque
         const umbra = ctx.createRadialGradient(x, y, 0, x, y, rad)
         umbra.addColorStop(0,   `rgba(0,0,0,0.45)`)
         umbra.addColorStop(0.6, `rgba(0,0,0,0.25)`)
@@ -138,7 +135,6 @@ function makeStarTexture(color: THREE.Color): THREE.Texture {
         ctx.arc(x, y, rad, 0, Math.PI * 2)
         ctx.fill()
 
-        // Penumbra — wider, very gentle fade
         const penumbra = ctx.createRadialGradient(x, y, rad * 0.4, x, y, rad * 2.5)
         penumbra.addColorStop(0,   `rgba(0,0,0,0.15)`)
         penumbra.addColorStop(1,   `rgba(0,0,0,0)`)
@@ -252,14 +248,11 @@ const PlanetRings = ({ planetSize, ringColor }: PlanetRingsProps) => {
 type OrbitingPlanetProps = {
     planet: Exoplanet
     index: number
-    minOrbitRadius: number
+    orbitRadius: number
 }
 
-const OrbitingPlanet = ({ planet, index, minOrbitRadius }: OrbitingPlanetProps) => {
+const OrbitingPlanet = ({ planet, index, orbitRadius }: OrbitingPlanetProps) => {
     const groupRef = useRef<THREE.Group>(null)
-
-    const rawOrbit = (planet.pl_orbsmax ?? (index + 1) * 0.5) * AU
-    const orbitRadius = Math.max(rawOrbit, minOrbitRadius)
     const planetSize = Math.min(Math.max((planet.pl_rade ?? 1) * 0.4, 0.8), 8)
     const speed = 0.3 / ((planet.pl_orbsmax ?? (index + 1) * 0.5) * 5)
     const offset = (index / 8) * Math.PI * 2
@@ -299,7 +292,20 @@ const SystemScene = ({ planets }: SystemSceneProps) => {
     const star = planets[0]
     const starColor = tempToColor(star.st_teff)
     const starSize = Math.min(Math.max((star.st_rad ?? 1) * 2, 4), 25)
-    const minOrbitRadius = starSize + 8 + 10
+
+    const orbitRadii = useMemo(() => {
+        const radii: number[] = []
+        const starClearance = starSize + 18
+        planets.forEach((planet, i) => {
+            const raw = (planet.pl_orbsmax ?? (i + 1) * 0.5) * AU
+            let r = Math.max(raw, starClearance)
+            if (i > 0) {
+                r = Math.max(r, radii[i - 1] + MIN_ORBIT_GAP)
+            }
+            radii.push(r)
+        })
+        return radii
+    }, [planets, starSize])
 
     return (
         <>
@@ -312,7 +318,7 @@ const SystemScene = ({ planets }: SystemSceneProps) => {
                     key={planet.pl_name}
                     planet={planet}
                     index={i}
-                    minOrbitRadius={minOrbitRadius}
+                    orbitRadius={orbitRadii[i]}
                 />
             ))}
         </>
