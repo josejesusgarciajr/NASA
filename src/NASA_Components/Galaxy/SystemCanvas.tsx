@@ -56,7 +56,6 @@ function planetConfig(rade: number | null): {
 
 const AU = 60
 
-// Creates a smooth radial gradient texture for the glow sprite
 function makeGlowTexture(color: THREE.Color): THREE.Texture {
     const size = 256
     const canvas = document.createElement('canvas')
@@ -68,14 +67,91 @@ function makeGlowTexture(color: THREE.Color): THREE.Texture {
     const r = Math.round(color.r * 255)
     const g = Math.round(color.g * 255)
     const b = Math.round(color.b * 255)
-    gradient.addColorStop(0,   `rgba(${r},${g},${b},0.9)`)
-    gradient.addColorStop(0.15,`rgba(${r},${g},${b},0.5)`)
-    gradient.addColorStop(0.4, `rgba(${r},${g},${b},0.15)`)
-    gradient.addColorStop(0.7, `rgba(${r},${g},${b},0.04)`)
-    gradient.addColorStop(1,   `rgba(${r},${g},${b},0)`)
+    gradient.addColorStop(0,    `rgba(${r},${g},${b},0.9)`)
+    gradient.addColorStop(0.15, `rgba(${r},${g},${b},0.5)`)
+    gradient.addColorStop(0.4,  `rgba(${r},${g},${b},0.15)`)
+    gradient.addColorStop(0.7,  `rgba(${r},${g},${b},0.04)`)
+    gradient.addColorStop(1,    `rgba(${r},${g},${b},0)`)
     ctx.fillStyle = gradient
     ctx.fillRect(0, 0, size, size)
+    return new THREE.CanvasTexture(canvas)
+}
+
+function makeStarTexture(color: THREE.Color): THREE.Texture {
+    const size = 512
+    const canvas = document.createElement('canvas')
+    canvas.width = size * 2
+    canvas.height = size
+    const ctx = canvas.getContext('2d')!
+
+    const r = Math.round(color.r * 255)
+    const g = Math.round(color.g * 255)
+    const b = Math.round(color.b * 255)
+    ctx.fillStyle = `rgb(${r},${g},${b})`
+    ctx.fillRect(0, 0, size * 2, size)
+
+    const paintGranules = (count: number, maxR: number, minR: number, alpha: number) => {
+        for (let i = 0; i < count; i++) {
+            const x   = Math.random() * size * 2
+            const y   = Math.random() * size
+            const rad = minR + Math.random() * (maxR - minR)
+
+            // Bright center — softer falloff
+            const bright = ctx.createRadialGradient(x, y, 0, x, y, rad)
+            bright.addColorStop(0,   `rgba(255,240,190,${alpha * 1.8})`)
+            bright.addColorStop(0.5, `rgba(255,215,130,${alpha})`)
+            bright.addColorStop(1,   `rgba(0,0,0,0)`)
+            ctx.fillStyle = bright
+            ctx.beginPath()
+            ctx.arc(x, y, rad, 0, Math.PI * 2)
+            ctx.fill()
+
+            // Dark lane — wider and more gradual
+            const dark = ctx.createRadialGradient(x, y, rad * 0.6, x, y, rad * 1.6)
+            dark.addColorStop(0,   `rgba(0,0,0,0)`)
+            dark.addColorStop(0.5, `rgba(0,0,0,${alpha * 1.0})`)
+            dark.addColorStop(1,   `rgba(0,0,0,0)`)
+            ctx.fillStyle = dark
+            ctx.beginPath()
+            ctx.arc(x, y, rad * 1.6, 0, Math.PI * 2)
+            ctx.fill()
+        }
+    }
+
+    paintGranules(200, 32, 16, 0.10)
+    paintGranules(150, 18, 9,  0.13)
+    paintGranules(100, 10, 4,  0.15)
+
+    // Sunspots — softer, more faded
+    for (let i = 0; i < 5; i++) {
+        const x   = Math.random() * size * 2
+        const y   = size * 0.2 + Math.random() * size * 0.6
+        const rad = 10 + Math.random() * 16
+
+        // Umbra — less opaque
+        const umbra = ctx.createRadialGradient(x, y, 0, x, y, rad)
+        umbra.addColorStop(0,   `rgba(0,0,0,0.45)`)
+        umbra.addColorStop(0.6, `rgba(0,0,0,0.25)`)
+        umbra.addColorStop(1,   `rgba(0,0,0,0)`)
+        ctx.fillStyle = umbra
+        ctx.beginPath()
+        ctx.arc(x, y, rad, 0, Math.PI * 2)
+        ctx.fill()
+
+        // Penumbra — wider, very gentle fade
+        const penumbra = ctx.createRadialGradient(x, y, rad * 0.4, x, y, rad * 2.5)
+        penumbra.addColorStop(0,   `rgba(0,0,0,0.15)`)
+        penumbra.addColorStop(1,   `rgba(0,0,0,0)`)
+        ctx.fillStyle = penumbra
+        ctx.beginPath()
+        ctx.arc(x, y, rad * 2.5, 0, Math.PI * 2)
+        ctx.fill()
+    }
+
     const tex = new THREE.CanvasTexture(canvas)
+    tex.wrapS = THREE.RepeatWrapping
+    tex.wrapT = THREE.RepeatWrapping
+    tex.repeat.set(1, 1)
     return tex
 }
 
@@ -94,6 +170,35 @@ const StarGlow = ({ starSize, starColor }: StarGlowProps) => {
                 transparent
             />
         </sprite>
+    )
+}
+
+type StarMeshProps = { starSize: number; starColor: THREE.Color }
+
+const StarMesh = ({ starSize, starColor }: StarMeshProps) => {
+    const matRef = useRef<THREE.MeshStandardMaterial>(null)
+    const starTexture = useMemo(() => makeStarTexture(starColor), [starColor])
+
+    useFrame(({ clock }) => {
+        if (matRef.current) {
+            const offset = (clock.getElapsedTime() * 0.004) % 1
+            starTexture.offset.x = offset
+        }
+    })
+
+    return (
+        <mesh>
+            <sphereGeometry args={[starSize, 64, 64]} />
+            <meshStandardMaterial
+                ref={matRef}
+                map={starTexture}
+                emissive={starColor}
+                emissiveIntensity={1.8}
+                emissiveMap={starTexture}
+                roughness={0.5}
+                metalness={0}
+            />
+        </mesh>
     )
 }
 
@@ -120,7 +225,6 @@ type PlanetRingsProps = { planetSize: number; ringColor: THREE.Color }
 const PlanetRings = ({ planetSize, ringColor }: PlanetRingsProps) => {
     const geometry = useMemo(() => {
         const geo = new THREE.RingGeometry(planetSize * 1.4, planetSize * 2.4, 64)
-        // Fix UV mapping so the ring fades correctly
         const pos = geo.attributes.position
         const uv = geo.attributes.uv
         const v3 = new THREE.Vector3()
@@ -155,9 +259,7 @@ const OrbitingPlanet = ({ planet, index, minOrbitRadius }: OrbitingPlanetProps) 
     const groupRef = useRef<THREE.Group>(null)
 
     const rawOrbit = (planet.pl_orbsmax ?? (index + 1) * 0.5) * AU
-    // Never let a planet orbit inside or clipping the star
     const orbitRadius = Math.max(rawOrbit, minOrbitRadius)
-
     const planetSize = Math.min(Math.max((planet.pl_rade ?? 1) * 0.4, 0.8), 8)
     const speed = 0.3 / ((planet.pl_orbsmax ?? (index + 1) * 0.5) * 5)
     const offset = (index / 8) * Math.PI * 2
@@ -197,29 +299,14 @@ const SystemScene = ({ planets }: SystemSceneProps) => {
     const star = planets[0]
     const starColor = tempToColor(star.st_teff)
     const starSize = Math.min(Math.max((star.st_rad ?? 1) * 2, 4), 25)
-    // Planets must orbit at least this far: star surface + planet max size + padding
     const minOrbitRadius = starSize + 8 + 10
 
     return (
         <>
             <pointLight position={[0, 0, 0]} intensity={2} distance={8000} color={starColor} />
             <ambientLight intensity={0.04} />
-
-            {/* Smooth glow sprite — no hard edges */}
             <StarGlow starSize={starSize} starColor={starColor} />
-
-            {/* Star surface */}
-            <mesh>
-                <sphereGeometry args={[starSize, 48, 48]} />
-                <meshStandardMaterial
-                    color={starColor}
-                    emissive={starColor}
-                    emissiveIntensity={2.5}
-                    roughness={0.35}
-                    metalness={0}
-                />
-            </mesh>
-
+            <StarMesh starSize={starSize} starColor={starColor} />
             {planets.map((planet, i) => (
                 <OrbitingPlanet
                     key={planet.pl_name}
