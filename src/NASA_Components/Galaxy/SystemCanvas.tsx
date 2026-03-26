@@ -1,11 +1,10 @@
-import { useRef } from 'react'
+import { useRef, useMemo } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import { useNavigate } from 'react-router-dom'
 import * as THREE from 'three'
 import type { Exoplanet } from '../../types/NASA/Exoplanets'
 
-// Convert star temperature to color (reuse same logic as StarField)
 function tempToColor(teff: number | null): THREE.Color {
     if (!teff) return new THREE.Color(1, 1, 1)
     if (teff > 30000) return new THREE.Color(0.6, 0.7, 1.0)
@@ -17,8 +16,89 @@ function tempToColor(teff: number | null): THREE.Color {
     return new THREE.Color(1.0, 0.3, 0.1)
 }
 
-// Scale AU to scene units
+function planetConfig(rade: number | null): { color: THREE.Color; emissive: THREE.Color; roughness: number; hasRings: boolean; ringColor: THREE.Color } {
+    const r = rade ?? 1
+    if (r > 10) return {
+        color: new THREE.Color(0.75, 0.58, 0.35),
+        emissive: new THREE.Color(0.05, 0.03, 0.01),
+        roughness: 0.8,
+        hasRings: true,
+        ringColor: new THREE.Color(0.65, 0.52, 0.32),
+    }
+    if (r > 4) return {
+        color: new THREE.Color(0.45, 0.62, 0.82),
+        emissive: new THREE.Color(0.01, 0.02, 0.06),
+        roughness: 0.7,
+        hasRings: true,
+        ringColor: new THREE.Color(0.35, 0.48, 0.65),
+    }
+    if (r > 2) return {
+        color: new THREE.Color(0.35, 0.55, 0.38),
+        emissive: new THREE.Color(0.01, 0.03, 0.01),
+        roughness: 0.9,
+        hasRings: false,
+        ringColor: new THREE.Color(0, 0, 0),
+    }
+    return {
+        color: new THREE.Color(0.65, 0.48, 0.38),
+        emissive: new THREE.Color(0.02, 0.01, 0.0),
+        roughness: 0.95,
+        hasRings: false,
+        ringColor: new THREE.Color(0, 0, 0),
+    }
+}
+
 const AU = 60
+
+type OrbitRingProps = { orbitRadius: number }
+
+const OrbitRing = ({ orbitRadius }: OrbitRingProps) => {
+    const line = useMemo(() => {
+        const points = []
+        const segments = 128
+        for (let i = 0; i <= segments; i++) {
+            const angle = (i / segments) * Math.PI * 2
+            points.push(new THREE.Vector3(Math.cos(angle) * orbitRadius, 0, Math.sin(angle) * orbitRadius))
+        }
+        const geometry = new THREE.BufferGeometry().setFromPoints(points)
+        const material = new THREE.LineBasicMaterial({ color: 'white', opacity: 0.1, transparent: true })
+        return new THREE.Line(geometry, material)
+    }, [orbitRadius])
+
+    return <primitive object={line} />
+}
+
+type PlanetRingsProps = { planetSize: number; ringColor: THREE.Color }
+
+const PlanetRings = ({ planetSize, ringColor }: PlanetRingsProps) => {
+    const ringRef = useRef<THREE.Mesh>(null)
+
+    const geometry = useMemo(() => {
+        return new THREE.RingGeometry(planetSize * 1.4, planetSize * 2.4, 64)
+    }, [planetSize])
+
+    // Fix UV mapping for RingGeometry so texture looks correct
+    useMemo(() => {
+        const pos = geometry.attributes.position
+        const uv = geometry.attributes.uv
+        const v3 = new THREE.Vector3()
+        for (let i = 0; i < pos.count; i++) {
+            v3.fromBufferAttribute(pos, i)
+            uv.setXY(i, v3.length() / (planetSize * 2.4), 0)
+        }
+    }, [geometry, planetSize])
+
+    return (
+        <mesh ref={ringRef} rotation={[-Math.PI / 2.5, 0.1, 0]} geometry={geometry}>
+            <meshBasicMaterial
+                color={ringColor}
+                side={THREE.DoubleSide}
+                transparent
+                opacity={0.55}
+            />
+        </mesh>
+    )
+}
 
 type OrbitingPlanetProps = {
     planet: Exoplanet
@@ -26,62 +106,89 @@ type OrbitingPlanetProps = {
 }
 
 const OrbitingPlanet = ({ planet, index }: OrbitingPlanetProps) => {
-    const meshRef = useRef<THREE.Mesh>(null)
+    const groupRef = useRef<THREE.Group>(null)
     const orbitRadius = (planet.pl_orbsmax ?? (index + 1) * 0.5) * AU
-    const planetSize = Math.min(Math.max((planet.pl_rade ?? 1) * 0.4, 0.5), 6)
-    const speed = 1 / ((planet.pl_orbsmax ?? (index + 1) * 0.5) * 10) // outer planets slower
-    const offset = (index / 8) * Math.PI * 2 // spread planets so they don't start overlapping
+    const planetSize = Math.min(Math.max((planet.pl_rade ?? 1) * 0.4, 0.8), 8)
+    const speed = 0.3 / ((planet.pl_orbsmax ?? (index + 1) * 0.5) * 5)
+    const offset = (index / 8) * Math.PI * 2
+    const cfg = planetConfig(planet.pl_rade)
 
     useFrame(({ clock }) => {
-        if (meshRef.current) {
+        if (groupRef.current) {
             const t = clock.getElapsedTime() * speed + offset
-            meshRef.current.position.x = Math.cos(t) * orbitRadius
-            meshRef.current.position.z = Math.sin(t) * orbitRadius
+            groupRef.current.position.x = Math.cos(t) * orbitRadius
+            groupRef.current.position.z = Math.sin(t) * orbitRadius
         }
     })
 
     return (
         <>
-            {/* Orbit ring */}
-            <mesh rotation={[-Math.PI / 2, 0, 0]}>
-                <ringGeometry args={[orbitRadius - 0.2, orbitRadius + 0.2, 128]} />
-                <meshBasicMaterial color="white" opacity={0.08} transparent side={THREE.DoubleSide} />
-            </mesh>
-
-            {/* Planet */}
-            <mesh ref={meshRef}>
-                <sphereGeometry args={[planetSize, 16, 16]} />
-                <meshStandardMaterial color="#4a9eff" roughness={0.8} />
-            </mesh>
+            <OrbitRing orbitRadius={orbitRadius} />
+            <group ref={groupRef}>
+                <mesh>
+                    <sphereGeometry args={[planetSize, 48, 48]} />
+                    <meshStandardMaterial
+                        color={cfg.color}
+                        emissive={cfg.emissive}
+                        emissiveIntensity={1}
+                        roughness={cfg.roughness}
+                        metalness={0.05}
+                    />
+                </mesh>
+                {cfg.hasRings && <PlanetRings planetSize={planetSize} ringColor={cfg.ringColor} />}
+            </group>
         </>
     )
 }
 
-type SystemSceneProps = {
-    planets: Exoplanet[]
-}
+type SystemSceneProps = { planets: Exoplanet[] }
 
 const SystemScene = ({ planets }: SystemSceneProps) => {
     const star = planets[0]
     const starColor = tempToColor(star.st_teff)
-    const starSize = Math.min(Math.max((star.st_rad ?? 1) * 2, 3), 20)
+    const starSize = Math.min(Math.max((star.st_rad ?? 1) * 2, 4), 25)
 
     return (
         <>
-            <ambientLight intensity={0.2} />
-            <pointLight position={[0, 0, 0]} intensity={3} distance={2000} color={starColor} />
+            <pointLight position={[0, 0, 0]} intensity={2} distance={8000} color={starColor} />
+            <ambientLight intensity={0.04} />
 
-            {/* Central star */}
+            {/* Outer diffuse corona */}
             <mesh>
-                <sphereGeometry args={[starSize, 32, 32]} />
-                <meshStandardMaterial
+                <sphereGeometry args={[starSize * 1.6, 32, 32]} />
+                <meshBasicMaterial
                     color={starColor}
-                    emissive={starColor}
-                    emissiveIntensity={1.5}
+                    opacity={0.06}
+                    transparent
+                    blending={THREE.AdditiveBlending}
+                    depthWrite={false}
                 />
             </mesh>
 
-            {/* Planets */}
+            {/* Mid glow */}
+            <mesh>
+                <sphereGeometry args={[starSize * 1.3, 32, 32]} />
+                <meshBasicMaterial
+                    color={starColor}
+                    opacity={0.18}
+                    transparent
+                    blending={THREE.AdditiveBlending}
+                    depthWrite={false}
+                />
+            </mesh>
+
+            {/* Star surface */}
+            <mesh>
+                <sphereGeometry args={[starSize, 48, 48]} />
+                <meshStandardMaterial
+                    color={starColor}
+                    emissive={starColor}
+                    emissiveIntensity={2.5}
+                    roughness={0.35}
+                    metalness={0}
+                />
+            </mesh>
+
             {planets.map((planet, i) => (
                 <OrbitingPlanet key={planet.pl_name} planet={planet} index={i} />
             ))}
@@ -97,17 +204,19 @@ type SystemCanvasProps = {
 export const SystemCanvas = ({ hostname, planets }: SystemCanvasProps) => {
     const navigate = useNavigate()
 
+    const maxOrbit = Math.max(...planets.map(p => (p.pl_orbsmax ?? 0.5))) * AU
+    const camDist = Math.max(maxOrbit * 2.5, 80)
+
     return (
         <div style={{ width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0, background: 'black' }}>
             <Canvas
-                camera={{ position: [0, 200, 400], fov: 60, near: 0.1, far: 100000 }}
+                camera={{ position: [0, camDist * 0.6, camDist], fov: 60, near: 0.1, far: 100000 }}
                 style={{ width: '100%', height: '100%' }}
             >
                 <SystemScene planets={planets} />
                 <OrbitControls enableZoom={true} enableRotate={true} enablePan={true} />
             </Canvas>
 
-            {/* Back button */}
             <div
                 onClick={() => navigate('/dome')}
                 style={{
@@ -127,7 +236,6 @@ export const SystemCanvas = ({ hostname, planets }: SystemCanvasProps) => {
                 ← Back to Galaxy
             </div>
 
-            {/* System info */}
             <div style={{
                 position: 'fixed',
                 top: '80px',
@@ -139,32 +247,34 @@ export const SystemCanvas = ({ hostname, planets }: SystemCanvasProps) => {
                 border: '1px solid rgba(255,255,255,0.2)',
                 fontSize: '13px',
                 zIndex: 1000,
-                minWidth: '200px',
+                minWidth: '220px',
             }}>
-                <div style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '8px' }}>{hostname}</div>
-                <div style={{ color: 'rgba(255,255,255,0.6)', marginBottom: '4px' }}>
-                    {planets.length} planet{planets.length > 1 ? 's' : ''}
+                <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '12px' }}>{hostname}</div>
+                <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', letterSpacing: '1px', marginBottom: '8px' }}>STAR</div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <span style={{ color: 'rgba(255,255,255,0.5)' }}>Temp</span>
+                    <span>{planets[0].st_teff ? `${planets[0].st_teff.toLocaleString()} K` : '—'}</span>
                 </div>
-                {planets[0].st_teff && (
-                    <div style={{ color: 'rgba(255,255,255,0.6)', marginBottom: '4px' }}>
-                        Temp: {planets[0].st_teff.toLocaleString()} K
-                    </div>
-                )}
-                {planets[0].sy_dist && (
-                    <div style={{ color: 'rgba(255,255,255,0.6)', marginBottom: '12px' }}>
-                        Distance: {planets[0].sy_dist.toFixed(1)} pc
-                    </div>
-                )}
-                <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '8px' }}>
-                    {planets.map(p => (
-                        <div key={p.pl_name} style={{ marginBottom: '4px', color: 'rgba(255,255,255,0.8)' }}>
-                            {p.pl_name}
-                            <span style={{ color: 'rgba(255,255,255,0.4)', marginLeft: '8px', fontSize: '11px' }}>
-                                {p.pl_orbsmax ? `${p.pl_orbsmax} AU` : 'orbit unknown'}
-                            </span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <span style={{ color: 'rgba(255,255,255,0.5)' }}>Radius</span>
+                    <span>{planets[0].st_rad ? `${planets[0].st_rad} R☉` : '—'}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+                    <span style={{ color: 'rgba(255,255,255,0.5)' }}>Distance</span>
+                    <span>{planets[0].sy_dist ? `${planets[0].sy_dist.toFixed(1)} pc` : '—'}</span>
+                </div>
+                <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', letterSpacing: '1px', marginBottom: '8px' }}>
+                    PLANETS
+                </div>
+                {planets.map(p => (
+                    <div key={p.pl_name} style={{ marginBottom: '6px' }}>
+                        <div style={{ color: 'white' }}>{p.pl_name}</div>
+                        <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px' }}>
+                            {p.pl_orbsmax ? `${p.pl_orbsmax} AU orbit` : 'orbit unknown'}
+                            {p.pl_rade ? ` · ${p.pl_rade} R⊕` : ''}
                         </div>
-                    ))}
-                </div>
+                    </div>
+                ))}
             </div>
         </div>
     )
