@@ -1,26 +1,30 @@
 // nasa
 import type { APOD } from '../../types/NASA/APOD'
+import { APODMediaContent } from './APODMediaContent'
 
 // material ui
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
+import CardActions from '@mui/material/CardActions'
 import Typography from '@mui/material/Typography'
 import CardActionArea from '@mui/material/CardActionArea'
-import { APODMediaContent } from './APODMediaContent'
+import IconButton from '@mui/material/IconButton'
+import FavoriteIcon from '@mui/icons-material/Favorite'
 
 type APODCardProps = {
     apod: APOD;
+    removeAPOD: (apod: APOD) => void;
 }
 
-export const APODCard = ({ apod }: APODCardProps) => {
+export const APODCard = ({ apod, removeAPOD }: APODCardProps) => {
     const shortDescription = apod.explanation?.length > 100
         ? apod.explanation.substring(0, 100) + '...'
         : apod.explanation
 
     return (
-        <Card sx={{ backgroundColor: 'background.paper', height: '100%' }}>
-            <CardActionArea sx={{ height: '100%' }}>
-            <APODMediaContent apod={apod} />
+        <Card sx={{ backgroundColor: 'background.paper', height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <CardActionArea sx={{ flexGrow: 1 }}>
+                <APODMediaContent apod={apod} />
                 <CardContent>
                     <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                         {apod.date}
@@ -33,6 +37,14 @@ export const APODCard = ({ apod }: APODCardProps) => {
                     </Typography>
                 </CardContent>
             </CardActionArea>
+            <CardActions sx={{ justifyContent: 'flex-end' }}>
+                <IconButton
+                    size="small"
+                    onClick={() => removeAPOD(apod)}
+                >
+                    <FavoriteIcon sx={{ fontSize: '1rem' }} />
+                </IconButton>
+            </CardActions>
         </Card>
     )
 }

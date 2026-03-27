@@ -14,7 +14,7 @@ import LibraryAddIcon from '@mui/icons-material/LibraryAdd'
 import { useNavigate } from 'react-router-dom'
 
 export const APODGallery = () => {
-    const { savedAPODS } = useAPODGallery()
+    const { savedAPODS, removeAPOD } = useAPODGallery()
     const navigate = useNavigate();
 
     return (
@@ -45,7 +45,7 @@ export const APODGallery = () => {
                     <Grid container spacing={2} columns={{ xs: 1, sm: 2, md: 4 }}>
                         {savedAPODS.map(apod => (
                             <Grid key={apod.date} size={1}>
-                                <APODCard apod={apod} />
+                                <APODCard apod={apod} removeAPOD={removeAPOD} />
                             </Grid>
                         ))}
                     </Grid>
