@@ -39,13 +39,13 @@ function makeIceGiantTexture(): THREE.Texture {
     ctx.fillStyle = base
     ctx.fillRect(0, 0, size * 2, size)
 
-    // Large slow cloud swirls
+    // Large cloud swirls
     for (let i = 0; i < 50; i++) {
-        const x  = Math.random() * size * 2
-        const y  = Math.random() * size
-        const rx = 50 + Math.random() * 120
-        const ry = 10 + Math.random() * 25
-        const rot = (Math.random() - 0.5) * 0.25
+        const x     = Math.random() * size * 2
+        const y     = Math.random() * size
+        const rx    = 50 + Math.random() * 120
+        const ry    = 10 + Math.random() * 25
+        const rot   = (Math.random() - 0.5) * 0.25
         const alpha = 0.12 + Math.random() * 0.18
         const swirl = ctx.createRadialGradient(x, y, 0, x, y, rx)
         swirl.addColorStop(0,   `rgba(20,210,230,${alpha * 1.5})`)
@@ -57,7 +57,7 @@ function makeIceGiantTexture(): THREE.Texture {
         ctx.fill()
     }
 
-    // Bright horizontal band highlights
+    // Bright horizontal bands
     const bands = [
         { y: 0.12, h: 0.022, a: 0.32 },
         { y: 0.24, h: 0.018, a: 0.25 },
@@ -81,7 +81,7 @@ function makeIceGiantTexture(): THREE.Texture {
 
     // Dark inter-band lanes
     for (const by of [0.18, 0.30, 0.42, 0.53, 0.64, 0.76, 0.87]) {
-        const y = by * size
+        const y    = by * size
         const grad = ctx.createLinearGradient(0, y - 7, 0, y + 7)
         grad.addColorStop(0,   'rgba(0,0,0,0)')
         grad.addColorStop(0.5, 'rgba(0,0,0,0.30)')
@@ -106,8 +106,113 @@ function makeIceGiantTexture(): THREE.Texture {
 }
 
 function makeGasGiantTexture(): THREE.Texture {
-    // TODO: Jupiter/Saturn-style warm banding
-    return null as unknown as THREE.Texture
+    const size = 512
+    const canvas = document.createElement('canvas')
+    canvas.width = size * 2
+    canvas.height = size
+    const ctx = canvas.getContext('2d')!
+
+    // Warm Jupiter/Saturn base gradient
+    const base = ctx.createLinearGradient(0, 0, 0, size)
+    base.addColorStop(0,    '#2a1a08')
+    base.addColorStop(0.10, '#4a2e10')
+    base.addColorStop(0.22, '#8a5a28')
+    base.addColorStop(0.35, '#c8843a')
+    base.addColorStop(0.50, '#d4924a')
+    base.addColorStop(0.65, '#c8843a')
+    base.addColorStop(0.78, '#8a5a28')
+    base.addColorStop(0.90, '#4a2e10')
+    base.addColorStop(1,    '#2a1a08')
+    ctx.fillStyle = base
+    ctx.fillRect(0, 0, size * 2, size)
+
+    // Wide turbulent cloud bands — Jupiter style
+    const bands = [
+        { y: 0.06, h: 0.030, r: 210, g: 160, b: 90,  a: 0.40 },
+        { y: 0.13, h: 0.020, r: 255, g: 200, b: 130, a: 0.35 },
+        { y: 0.20, h: 0.040, r: 180, g: 110, b: 55,  a: 0.45 },
+        { y: 0.29, h: 0.025, r: 240, g: 190, b: 120, a: 0.38 },
+        { y: 0.37, h: 0.050, r: 200, g: 130, b: 60,  a: 0.50 },
+        { y: 0.46, h: 0.030, r: 255, g: 210, b: 140, a: 0.42 },
+        { y: 0.54, h: 0.050, r: 195, g: 125, b: 55,  a: 0.50 },
+        { y: 0.63, h: 0.025, r: 245, g: 195, b: 125, a: 0.38 },
+        { y: 0.71, h: 0.040, r: 175, g: 108, b: 50,  a: 0.45 },
+        { y: 0.80, h: 0.020, r: 250, g: 198, b: 128, a: 0.35 },
+        { y: 0.87, h: 0.030, r: 205, g: 155, b: 85,  a: 0.40 },
+        { y: 0.94, h: 0.020, r: 230, g: 175, b: 100, a: 0.30 },
+    ]
+
+    for (const band of bands) {
+        const y    = band.y * size
+        const h    = band.h * size
+        const grad = ctx.createLinearGradient(0, y - h, 0, y + h)
+        grad.addColorStop(0,   'rgba(0,0,0,0)')
+        grad.addColorStop(0.5, `rgba(${band.r},${band.g},${band.b},${band.a})`)
+        grad.addColorStop(1,   'rgba(0,0,0,0)')
+        ctx.fillStyle = grad
+        ctx.fillRect(0, y - h, size * 2, h * 2)
+    }
+
+    // Dark brown belt regions
+    for (const by of [0.09, 0.17, 0.25, 0.33, 0.42, 0.50, 0.58, 0.67, 0.75, 0.84, 0.91]) {
+        const y    = by * size
+        const grad = ctx.createLinearGradient(0, y - 8, 0, y + 8)
+        grad.addColorStop(0,   'rgba(0,0,0,0)')
+        grad.addColorStop(0.5, 'rgba(30,15,5,0.35)')
+        grad.addColorStop(1,   'rgba(0,0,0,0)')
+        ctx.fillStyle = grad
+        ctx.fillRect(0, y - 8, size * 2, 16)
+    }
+
+    // Turbulent swirl patches
+    for (let i = 0; i < 60; i++) {
+        const x     = Math.random() * size * 2
+        const y     = Math.random() * size
+        const rx    = 40 + Math.random() * 100
+        const ry    = 8  + Math.random() * 20
+        const rot   = (Math.random() - 0.5) * 0.2
+        const alpha = 0.06 + Math.random() * 0.12
+        const warm  = Math.random() > 0.5
+        const swirl = ctx.createRadialGradient(x, y, 0, x, y, rx)
+        swirl.addColorStop(0,   warm
+            ? `rgba(255,200,120,${alpha * 1.4})`
+            : `rgba(140,80,30,${alpha * 1.4})`)
+        swirl.addColorStop(0.5, warm
+            ? `rgba(230,170,90,${alpha})`
+            : `rgba(110,60,20,${alpha})`)
+        swirl.addColorStop(1,   'rgba(0,0,0,0)')
+        ctx.fillStyle = swirl
+        ctx.beginPath()
+        ctx.ellipse(x, y, rx, ry, rot, 0, Math.PI * 2)
+        ctx.fill()
+    }
+
+    // Great Red Spot-style oval storm
+    const gx = size * 0.6
+    const gy = size * 0.58
+    const storm = ctx.createRadialGradient(gx, gy, 0, gx, gy, 55)
+    storm.addColorStop(0,   'rgba(180,60,30,0.70)')
+    storm.addColorStop(0.4, 'rgba(200,80,40,0.50)')
+    storm.addColorStop(0.7, 'rgba(160,50,25,0.30)')
+    storm.addColorStop(1,   'rgba(0,0,0,0)')
+    ctx.fillStyle = storm
+    ctx.beginPath()
+    ctx.ellipse(gx, gy, 55, 32, 0.1, 0, Math.PI * 2)
+    ctx.fill()
+
+    // Polar darkening
+    const polar = ctx.createLinearGradient(0, 0, 0, size)
+    polar.addColorStop(0,    'rgba(10,5,0,0.70)')
+    polar.addColorStop(0.15, 'rgba(0,0,0,0)')
+    polar.addColorStop(0.85, 'rgba(0,0,0,0)')
+    polar.addColorStop(1,    'rgba(10,5,0,0.70)')
+    ctx.fillStyle = polar
+    ctx.fillRect(0, 0, size * 2, size)
+
+    const tex = new THREE.CanvasTexture(canvas)
+    tex.wrapS = THREE.RepeatWrapping
+    tex.wrapT = THREE.ClampToEdgeWrapping
+    return tex
 }
 
 function makeSuperEarthTexture(): THREE.Texture {
@@ -166,26 +271,40 @@ function makeIceGiantRingTexture(): THREE.Texture {
 }
 
 function makeGasGiantRingTexture(): THREE.Texture {
-    const size = 256
+    const size = 512
     const canvas = document.createElement('canvas')
     canvas.width = size
     canvas.height = 1
     const ctx = canvas.getContext('2d')!
 
     const grad = ctx.createLinearGradient(0, 0, size, 0)
-    grad.addColorStop(0,    'rgba(0,0,0,0)')
-    grad.addColorStop(0.05, 'rgba(180,150,100,0.20)')
-    grad.addColorStop(0.15, 'rgba(200,170,110,0.50)')
-    grad.addColorStop(0.25, 'rgba(220,190,130,0.70)')
-    grad.addColorStop(0.35, 'rgba(200,170,110,0.55)')
-    grad.addColorStop(0.45, 'rgba(180,150,90,0.35)')
-    grad.addColorStop(0.50, 'rgba(160,130,80,0.20)')
-    grad.addColorStop(0.55, 'rgba(180,150,90,0.35)')
-    grad.addColorStop(0.65, 'rgba(200,170,110,0.55)')
-    grad.addColorStop(0.75, 'rgba(220,190,130,0.70)')
-    grad.addColorStop(0.85, 'rgba(200,170,110,0.50)')
-    grad.addColorStop(0.95, 'rgba(180,150,100,0.20)')
-    grad.addColorStop(1,    'rgba(0,0,0,0)')
+
+    const ringBands = [
+        [0.05, 0.020, 0.20, '200,170,110'],
+        [0.12, 0.035, 0.40, '220,185,120'],
+        [0.21, 0.050, 0.60, '235,200,135'],
+        [0.30, 0.025, 0.30, '210,175,115'],
+        [0.38, 0.060, 0.70, '240,205,140'],
+        [0.48, 0.040, 0.55, '230,195,130'],
+        [0.57, 0.025, 0.35, '215,180,118'],
+        [0.65, 0.055, 0.65, '238,202,138'],
+        [0.74, 0.030, 0.40, '222,187,122'],
+        [0.82, 0.045, 0.50, '228,193,128'],
+        [0.90, 0.025, 0.25, '205,170,110'],
+        [0.96, 0.018, 0.15, '195,160,105'],
+    ] as const
+
+    grad.addColorStop(0, 'rgba(0,0,0,0)')
+    for (const [center, half, peak, rgb] of ringBands) {
+        const s = center - half
+        const e = center + half
+        grad.addColorStop(Math.max(0, s - half * 0.8), 'rgba(0,0,0,0)')
+        grad.addColorStop(s,      `rgba(${rgb},${peak * 0.3})`)
+        grad.addColorStop(center, `rgba(${rgb},${peak})`)
+        grad.addColorStop(e,      `rgba(${rgb},${peak * 0.3})`)
+        grad.addColorStop(Math.min(1, e + half * 0.8), 'rgba(0,0,0,0)')
+    }
+    grad.addColorStop(1, 'rgba(0,0,0,0)')
     ctx.fillStyle = grad
     ctx.fillRect(0, 0, size, 1)
 
@@ -216,13 +335,13 @@ function planetConfig(type: PlanetType): {
     switch (type) {
         case 'gas_giant': return {
             color:     new THREE.Color(0.75, 0.58, 0.35),
-            emissive:  new THREE.Color(0.05, 0.03, 0.01),
+            emissive:  new THREE.Color(0.02, 0.01, 0.00),
             roughness: 0.8,
             hasRings:  true,
         }
         case 'ice_giant': return {
             color:     new THREE.Color(0.0, 0.75, 0.88),
-            emissive:  new THREE.Color(0.0, 0.06, 0.12),
+            emissive:  new THREE.Color(0.0, 0.03, 0.06),
             roughness: 0.55,
             hasRings:  true,
         }
@@ -404,12 +523,12 @@ const PlanetRings = ({ planetSize, type }: PlanetRingsProps) => {
         if (type === 'ice_giant') return {
             innerMult:   1.3,
             outerMult:   2.8,
-            tilt:        -Math.PI / 5,  // ~36° Saturn-like tilt
+            tilt:        -Math.PI / 5,
             ringTexture: makeIceGiantRingTexture(),
         }
         return {
             innerMult:   1.4,
-            outerMult:   2.4,
+            outerMult:   2.6,
             tilt:        -Math.PI / 5,
             ringTexture: makeGasGiantRingTexture(),
         }
@@ -473,8 +592,8 @@ const OrbitingPlanet = ({ planet, index, orbitRadius }: OrbitingPlanetProps) => 
             groupRef.current.position.x = Math.cos(t) * orbitRadius
             groupRef.current.position.z = Math.sin(t) * orbitRadius
         }
-        // Slowly drift atmosphere texture
-        if (surfaceTexture && type === 'ice_giant') {
+        // Slowly drift atmosphere for gas/ice giants
+        if (surfaceTexture && (type === 'ice_giant' || type === 'gas_giant')) {
             surfaceTexture.offset.x = (clock.getElapsedTime() * 0.002) % 1
         }
     })
@@ -487,10 +606,11 @@ const OrbitingPlanet = ({ planet, index, orbitRadius }: OrbitingPlanetProps) => 
                     <sphereGeometry args={[planetSize, 48, 48]} />
                     <meshStandardMaterial
                         ref={matRef}
+                        // Don't apply color tint when we have a texture — it overrides the map
                         color={surfaceTexture ? undefined : cfg.color}
                         map={surfaceTexture ?? undefined}
                         emissive={cfg.emissive}
-                        emissiveIntensity={0.6}
+                        emissiveIntensity={0.4}
                         roughness={cfg.roughness}
                         metalness={0.05}
                     />
@@ -525,7 +645,8 @@ const SystemScene = ({ planets }: SystemSceneProps) => {
     return (
         <>
             <pointLight position={[0, 0, 0]} intensity={2} distance={8000} color={starColor} />
-            <ambientLight intensity={0.04} />
+            {/* Raised ambient so planets on the dark side are still visible */}
+            <ambientLight intensity={0.25} />
             <StarGlow starSize={starSize} starColor={starColor} />
             <StarMesh starSize={starSize} starColor={starColor} />
             {planets.map((planet, i) => (
