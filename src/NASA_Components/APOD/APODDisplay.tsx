@@ -10,14 +10,16 @@ import { IconButton } from '@mui/material'
 
 type APODDisplayProps = {
     apod: APOD;
+    backButton?: React.ReactNode;
 }
 
-export const APODDisplay = ({apod} : APODDisplayProps) => {
+export const APODDisplay = ({apod, backButton} : APODDisplayProps) => {
     // saved favorite apods
     const { savedAPOD, saveAPOD, removeAPOD } = useFavoriteAPODS(apod);
 
     return (
         <>
+            {backButton}
             <p style={{ textAlign: 'center' }}>
                 {apod.title}
                 {!savedAPOD ? (

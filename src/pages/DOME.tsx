@@ -6,6 +6,7 @@ import type { Exoplanet } from '../types/NASA/Exoplanets'
 
 // react
 import { useEffect, useState, useCallback } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 // material ui
 import Box from '@mui/material/Box'
@@ -14,12 +15,26 @@ import LinearProgress from '@mui/material/LinearProgress'
 
 export const DOME = () => {
     const { exoplanets, loadingExoplanets, errorExoplanets, fetchExoplanets } = useExoplanets()
+    const [searchParams, setSearchParams] = useSearchParams()
     const [view, setView] = useState<'galaxy' | 'system'>('galaxy')
-    const [selectedSystem, setSelectedSystem] = useState<string | null>(null)
+    const [selectedSystem, setSelectedSystem] = useState<string | null>(
+        () => searchParams.get('system')
+    )
     const [overlayOpacity, setOverlayOpacity] = useState(0)
     const [overlayActive, setOverlayActive] = useState(false)
 
     useEffect(() => { fetchExoplanets() }, [])
+
+    // Sync view state with the ?system= param so saved URLs open directly in system view
+    useEffect(() => {
+        const param = searchParams.get('system')
+        if (param) {
+            setSelectedSystem(param)
+            setView('system')
+        } else {
+            setView('galaxy')
+        }
+    }, [searchParams])
 
     const systemPlanets = selectedSystem
         ? exoplanets.filter(e => e.hostname === selectedSystem)
@@ -31,18 +46,20 @@ export const DOME = () => {
         requestAnimationFrame(() => requestAnimationFrame(() => setOverlayOpacity(1)))
         setTimeout(() => {
             setSelectedSystem(star.hostname)
+            setSearchParams({ system: star.hostname })
             setView('system')
             setTimeout(() => {
                 setOverlayOpacity(0)
                 setTimeout(() => setOverlayActive(false), 700)
             }, 150)
         }, 700)
-    }, [])
+    }, [setSearchParams])
 
     const handleBack = useCallback(() => {
         setOverlayActive(true)
         requestAnimationFrame(() => requestAnimationFrame(() => setOverlayOpacity(1)))
         setTimeout(() => {
+            setSearchParams({})
             setView('galaxy')
             // Extra delay so CameraRestorer has time to run before we reveal the scene
             setTimeout(() => {
@@ -50,7 +67,7 @@ export const DOME = () => {
                 setTimeout(() => setOverlayActive(false), 700)
             }, 250)
         }, 600)
-    }, [])
+    }, [setSearchParams])
 
     return (
         <>
