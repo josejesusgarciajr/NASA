@@ -1,3 +1,5 @@
+export type PlanetType = 'gas_giant' | 'ice_giant' | 'super_earth' | 'rocky'
+
 export type Exoplanet = {
     // Identity
     pl_name: string;
