@@ -2,9 +2,6 @@
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 
-// react
-import { useNavigate } from 'react-router-dom'
-
 // nasa
 import type { Exoplanet } from '../../types/NASA/Exoplanets'
 import { SystemScene } from './SystemScene'
@@ -13,17 +10,17 @@ import { AU } from '../../utils/galaxy'
 type SystemCanvasProps = {
     hostname: string
     planets: Exoplanet[]
+    onBack: () => void
 }
 
-export const SystemCanvas = ({ hostname, planets }: SystemCanvasProps) => {
-    const navigate = useNavigate()
+export const SystemCanvas = ({ hostname, planets, onBack }: SystemCanvasProps) => {
     const maxOrbit = Math.max(...planets.map(p => (p.pl_orbsmax ?? 0.5))) * AU
-    const camDist  = Math.max(maxOrbit * 2.5, 80)
+    const camDist  = Math.max(maxOrbit * 1.4, 70)
 
     return (
         <div style={{ width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0, background: 'black' }}>
             <Canvas
-                camera={{ position: [0, camDist * 0.6, camDist], fov: 60, near: 0.1, far: 100000 }}
+                camera={{ position: [0, camDist * 0.4, camDist * 0.9], fov: 55, near: 0.1, far: 100000 }}
                 style={{ width: '100%', height: '100%' }}
             >
                 <SystemScene planets={planets} />
@@ -31,7 +28,7 @@ export const SystemCanvas = ({ hostname, planets }: SystemCanvasProps) => {
             </Canvas>
 
             <div
-                onClick={() => navigate('/dome')}
+                onClick={onBack}
                 style={{
                     position: 'fixed', top: '80px', left: '20px',
                     background: 'rgba(0,0,0,0.7)', color: 'white',

@@ -11,13 +11,15 @@ import { makeStarTexture } from '../../utils/galaxy'
 type StarMeshProps = { starSize: number; starColor: THREE.Color }
 
 export const StarMesh = ({ starSize, starColor }: StarMeshProps) => {
+    const meshRef     = useRef<THREE.Mesh>(null)
     const matRef      = useRef<THREE.MeshStandardMaterial>(null)
     const starTexture = useMemo(() => makeStarTexture(starColor), [starColor])
-    useFrame(({ clock }) => {
-        if (matRef.current) starTexture.offset.x = (clock.getElapsedTime() * 0.004) % 1
+    useFrame((_, delta) => {
+        if (meshRef.current) meshRef.current.rotation.y += delta * 0.05
+        if (matRef.current) starTexture.offset.x = (starTexture.offset.x + delta * 0.004) % 1
     })
     return (
-        <mesh>
+        <mesh ref={meshRef}>
             <sphereGeometry args={[starSize, 64, 64]} />
             <meshStandardMaterial
                 ref={matRef}

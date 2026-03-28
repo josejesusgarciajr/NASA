@@ -8,7 +8,7 @@ import { useThree, useFrame } from '@react-three/fiber'
 type StarFieldProps = {
     exoplanets: Exoplanet[];
     onHover: (exoplanet: Exoplanet | null) => void;
-    onClick: (exoplanet: Exoplanet) => void;
+    onClick: (exoplanet: Exoplanet, worldPos: THREE.Vector3) => void;
 }
 
 // Creates a circular sprite texture so stars look round not square
@@ -87,19 +87,6 @@ export const StarField = ({ exoplanets, onHover, onClick } : StarFieldProps) => 
 
     const hoveredIndexRef = useRef<number | null>(null)
 
-    useEffect(() => {
-        const canvas = gl.domElement
-
-        function onMouseMove(e: MouseEvent) {
-            const rect = canvas.getBoundingClientRect()
-            mouse.current.x = ((e.clientX - rect.left) / rect.width) * 2 - 1
-            mouse.current.y = -((e.clientY - rect.top) / rect.height) * 2 + 1
-        }
-
-        canvas.addEventListener('mousemove', onMouseMove)
-        return () => canvas.removeEventListener('mousemove', onMouseMove)
-    }, [gl])
-
     useFrame(() => {
         raycaster.current.setFromCamera(mouse.current, camera)
         
@@ -134,8 +121,14 @@ export const StarField = ({ exoplanets, onHover, onClick } : StarFieldProps) => 
         }
 
         function onMouseClick() {
-            if (hoveredIndexRef.current !== null) {
-                onClick(uniqueStars[hoveredIndexRef.current])
+            const idx = hoveredIndexRef.current
+            if (idx !== null) {
+                const worldPos = new THREE.Vector3(
+                    positions[idx * 3],
+                    positions[idx * 3 + 1],
+                    positions[idx * 3 + 2],
+                )
+                onClick(uniqueStars[idx], worldPos)
             }
         }
 
@@ -145,7 +138,7 @@ export const StarField = ({ exoplanets, onHover, onClick } : StarFieldProps) => 
             canvas.removeEventListener('mousemove', onMouseMove)
             canvas.removeEventListener('click', onMouseClick)
         }
-    }, [gl, uniqueStars, onClick])
+    }, [gl, uniqueStars, onClick, positions])
 
     return (
         <points ref={pointsRef}>

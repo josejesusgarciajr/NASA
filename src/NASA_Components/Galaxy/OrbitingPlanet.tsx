@@ -20,8 +20,9 @@ type OrbitingPlanetProps = {
 }
 
 export const OrbitingPlanet = ({ planet, index, orbitRadius, solarRadiusInUnits }: OrbitingPlanetProps) => {
-    const groupRef = useRef<THREE.Group>(null)
-    const matRef   = useRef<THREE.MeshStandardMaterial>(null)
+    const groupRef  = useRef<THREE.Group>(null)
+    const meshRef   = useRef<THREE.Mesh>(null)
+    const matRef    = useRef<THREE.MeshStandardMaterial>(null)
     const type     = getPlanetType(planet.pl_rade)
     const cfg      = planetConfig(type)
 
@@ -32,7 +33,7 @@ export const OrbitingPlanet = ({ planet, index, orbitRadius, solarRadiusInUnits 
         : solarRadiusInUnits * 0.25
     const planetSize = Math.min(Math.max(rawSize, minSize), solarRadiusInUnits * 0.82)
 
-    const speed  = 0.3 / ((planet.pl_orbsmax ?? (index + 1) * 0.5) * 5)
+    const speed  = 0.05 / ((planet.pl_orbsmax ?? (index + 1) * 0.5) * 5)
     const offset = (index / 8) * Math.PI * 2
 
     const surfaceTexture = useMemo(() => {
@@ -44,15 +45,18 @@ export const OrbitingPlanet = ({ planet, index, orbitRadius, solarRadiusInUnits 
         }
     }, [type])
 
-    useFrame(({ clock }) => {
+    const spinSpeed = 0.5 + (index % 3) * 0.15
+
+    useFrame(({ clock }, delta) => {
         if (groupRef.current) {
             const t = clock.getElapsedTime() * speed + offset
             groupRef.current.position.x = Math.cos(t) * orbitRadius
             groupRef.current.position.z = Math.sin(t) * orbitRadius
         }
+        if (meshRef.current) meshRef.current.rotation.y += delta * spinSpeed
         // Slow atmosphere drift for all textured planets
         if (surfaceTexture) {
-            surfaceTexture.offset.x = (clock.getElapsedTime() * 0.001) % 1
+            surfaceTexture.offset.x = (surfaceTexture.offset.x + delta * 0.001) % 1
         }
     })
 
@@ -60,7 +64,7 @@ export const OrbitingPlanet = ({ planet, index, orbitRadius, solarRadiusInUnits 
         <>
             <OrbitRing orbitRadius={orbitRadius} />
             <group ref={groupRef}>
-                <mesh>
+                <mesh ref={meshRef}>
                     <sphereGeometry args={[planetSize, 48, 48]} />
                     <meshStandardMaterial
                         ref={matRef}

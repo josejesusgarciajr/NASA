@@ -1,24 +1,85 @@
-import { Canvas } from '@react-three/fiber'
+// three
+import * as THREE from 'three'
+import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
+
+// react
+import { useRef, useCallback, useState } from 'react'
+
+// nasa
 import { StarField } from './StarField'
 import type { Exoplanet } from '../../types/NASA/Exoplanets'
-import { useRef, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { saveGalaxyCamera, getSavedGalaxyCamera } from '../../utils/galaxyTransitionStore'
 
 type GalaxyCanvasProps = {
     exoplanets: Exoplanet[]
+    onEnterSystem: (star: Exoplanet) => void
 }
 
-export const GalaxyCanvas = ({ exoplanets }: GalaxyCanvasProps) => {
-    const navigate = useNavigate();
-    const tooltipRef = useRef<HTMLDivElement>(null)
+// Tracks camera + controls target into a ref every frame so we can snapshot it on click
+const CameraTracker = ({ stateRef }: {
+    stateRef: React.MutableRefObject<{ position: THREE.Vector3; target: THREE.Vector3 }>
+}) => {
+    const { camera } = useThree()
+    const controls = useThree(s => s.controls) as any
+
+    useFrame(() => {
+        stateRef.current.position.copy(camera.position)
+        if (controls?.target) stateRef.current.target.copy(controls.target)
+    })
+    return null
+}
+
+// On first frame after mount, restores camera to the last saved galaxy position
+const CameraRestorer = () => {
+    const { camera } = useThree()
+    const controls = useThree(s => s.controls) as any
+    const restoredRef = useRef(false)
+
+    useFrame(() => {
+        if (restoredRef.current) return
+        const saved = getSavedGalaxyCamera()
+        if (saved && controls) {
+            camera.position.copy(saved.position)
+            controls.target.copy(saved.target)
+            controls.update()
+        }
+        restoredRef.current = true
+    })
+    return null
+}
+
+// Lerps camera toward a target position while zooming in to a star
+const GalaxyZoomer = ({ target }: { target: THREE.Vector3 | null }) => {
+    const { camera } = useThree()
+    const controls = useThree(s => s.controls) as any
+
+    useFrame(() => {
+        if (!target) return
+        camera.position.lerp(target, 0.06)
+        if (controls?.target) {
+            controls.target.lerp(target, 0.06)
+            controls.update()
+        }
+    })
+    return null
+}
+
+export const GalaxyCanvas = ({ exoplanets, onEnterSystem }: GalaxyCanvasProps) => {
+    const tooltipRef     = useRef<HTMLDivElement>(null)
     const tooltipNameRef = useRef<HTMLSpanElement>(null)
     const tooltipPlanetsRef = useRef<HTMLSpanElement>(null)
+    const [zoomTarget, setZoomTarget] = useState<THREE.Vector3 | null>(null)
+
+    const cameraStateRef = useRef({
+        position: new THREE.Vector3(0, 0, 2000),
+        target: new THREE.Vector3(0, 0, 0),
+    })
 
     const handleMouseMove = useCallback((e: React.MouseEvent) => {
         if (tooltipRef.current) {
             tooltipRef.current.style.left = `${e.clientX + 12}px`
-            tooltipRef.current.style.top = `${e.clientY - 12}px`
+            tooltipRef.current.style.top  = `${e.clientY - 12}px`
         }
     }, [])
 
@@ -37,9 +98,11 @@ export const GalaxyCanvas = ({ exoplanets }: GalaxyCanvasProps) => {
         }
     }, [])
 
-    const handleClick = useCallback((star: Exoplanet) => {
-        navigate(`/dome?system=${encodeURIComponent(star.hostname)}`)
-    }, [navigate])
+    const handleClick = useCallback((star: Exoplanet, worldPos: THREE.Vector3) => {
+        saveGalaxyCamera(cameraStateRef.current.position, cameraStateRef.current.target)
+        setZoomTarget(worldPos)
+        onEnterSystem(star)
+    }, [onEnterSystem])
 
     return (
         <div
@@ -53,13 +116,18 @@ export const GalaxyCanvas = ({ exoplanets }: GalaxyCanvasProps) => {
                 <ambientLight intensity={0.5} />
                 <StarField exoplanets={exoplanets} onHover={handleHover} onClick={handleClick} />
                 <OrbitControls
+                    makeDefault
                     enableZoom={true}
                     enablePan={true}
                     enableRotate={true}
+                    enabled={!zoomTarget}
                     zoomSpeed={2}
                     minDistance={1}
                     maxDistance={4000}
                 />
+                <CameraTracker stateRef={cameraStateRef} />
+                <CameraRestorer />
+                <GalaxyZoomer target={zoomTarget} />
             </Canvas>
 
             <div
