@@ -13,17 +13,18 @@ import FavoriteIcon from '@mui/icons-material/Favorite'
 
 type APODCardProps = {
     apod: APOD;
+    cardClicked: (apod: APOD) => void;
     removeAPOD: (apod: APOD) => void;
 }
 
-export const APODCard = ({ apod, removeAPOD }: APODCardProps) => {
+export const APODCard = ({ apod, cardClicked, removeAPOD }: APODCardProps) => {
     const shortDescription = apod.explanation?.length > 100
         ? apod.explanation.substring(0, 100) + '...'
         : apod.explanation
 
     return (
         <Card sx={{ backgroundColor: 'background.paper', height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <CardActionArea sx={{ flexGrow: 1 }}>
+            <CardActionArea onClick={() => cardClicked(apod)} sx={{ flexGrow: 1 }}>
                 <APODMediaContent apod={apod} />
                 <CardContent>
                     <Typography variant="caption" sx={{ color: 'text.secondary' }}>

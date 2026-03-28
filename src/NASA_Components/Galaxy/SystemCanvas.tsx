@@ -1,6 +1,8 @@
 // three
-import { Canvas } from '@react-three/fiber'
+import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
+import { useRef, useState } from 'react'
+import * as THREE from 'three'
 
 // nasa
 import type { Exoplanet } from '../../types/NASA/Exoplanets'
@@ -13,9 +15,41 @@ type SystemCanvasProps = {
     onBack: () => void
 }
 
+// Zooms the system-view camera out from its starting position when active
+const SystemZoomOuter = ({ active }: { active: boolean }) => {
+    const { camera } = useThree()
+    const startPosRef = useRef<THREE.Vector3 | null>(null)
+    const startTimeRef = useRef<number | null>(null)
+    const DURATION = 600 // ms — matches the overlay fade-to-black duration in DOME.tsx
+
+    useFrame(() => {
+        if (!active) return
+
+        const now = performance.now()
+
+        if (startTimeRef.current === null) {
+            startTimeRef.current = now
+            startPosRef.current = camera.position.clone()
+        }
+
+        const t = Math.min((now - startTimeRef.current) / DURATION, 1)
+        const eased = t * t  // ease-in: starts slow, accelerates — mirrors the zoom-in feel
+
+        // Scale the camera position away from the origin (the star system center)
+        camera.position.copy(startPosRef.current!).multiplyScalar(1 + eased * 3)
+    })
+    return null
+}
+
 export const SystemCanvas = ({ hostname, planets, onBack }: SystemCanvasProps) => {
     const maxOrbit = Math.max(...planets.map(p => (p.pl_orbsmax ?? 0.5))) * AU
     const camDist  = Math.max(maxOrbit * 1.4, 70)
+    const [zoomingOut, setZoomingOut] = useState(false)
+
+    const handleBack = () => {
+        setZoomingOut(true)
+        onBack()  // triggers the overlay fade in DOME.tsx simultaneously
+    }
 
     return (
         <div style={{ width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0, background: 'black' }}>
@@ -24,11 +58,12 @@ export const SystemCanvas = ({ hostname, planets, onBack }: SystemCanvasProps) =
                 style={{ width: '100%', height: '100%' }}
             >
                 <SystemScene planets={planets} />
-                <OrbitControls enableZoom enableRotate enablePan />
+                <OrbitControls enableZoom enableRotate enablePan enabled={!zoomingOut} />
+                <SystemZoomOuter active={zoomingOut} />
             </Canvas>
 
             <div
-                onClick={onBack}
+                onClick={handleBack}
                 style={{
                     position: 'fixed', top: '80px', left: '20px',
                     background: 'rgba(0,0,0,0.7)', color: 'white',

@@ -1,4 +1,5 @@
 // nasa
+import type { APOD } from '../types/NASA/APOD'
 import { APODCard } from '../NASA_Components/APOD/APODCard'
 import { NASAServiceDisplay } from '../NASA_Components/NASAServiceDisplay'
 import { useAPODGallery } from '../hooks/APOD/useAPODGallery'
@@ -16,6 +17,10 @@ import { useNavigate } from 'react-router-dom'
 export const APODGallery = () => {
     const { savedAPODS, removeAPOD } = useAPODGallery()
     const navigate = useNavigate();
+
+    function handleCardClicked(apod: APOD) {
+        console.log(`Card clicked: ${apod.title}`)
+    }
 
     return (
         <>
@@ -45,7 +50,7 @@ export const APODGallery = () => {
                     <Grid container spacing={2} columns={{ xs: 1, sm: 2, md: 4 }}>
                         {savedAPODS.map(apod => (
                             <Grid key={apod.date} size={1}>
-                                <APODCard apod={apod} removeAPOD={removeAPOD} />
+                                <APODCard apod={apod} cardClicked={handleCardClicked} removeAPOD={removeAPOD} />
                             </Grid>
                         ))}
                     </Grid>
