@@ -3,6 +3,9 @@ import type { APOD } from '../../types/NASA/APOD'
 import { APODMediaContent } from './APODMediaContent'
 import { useFavoriteAPODS } from '../../hooks/APOD/useFavoriteAPODS'
 
+// help components
+import { BackButton } from '../../components/BackButton'
+
 // material ui
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import FavoriteIcon from '@mui/icons-material/Favorite'
@@ -10,16 +13,20 @@ import { IconButton } from '@mui/material'
 
 type APODDisplayProps = {
     apod: APOD;
-    backButton?: React.ReactNode;
+    onBack?: () => void;
+    backButtonText?: string;
 }
 
-export const APODDisplay = ({apod, backButton} : APODDisplayProps) => {
+export const APODDisplay = ({apod, onBack, backButtonText = '← Back'} : APODDisplayProps) => {
     // saved favorite apods
     const { savedAPOD, saveAPOD, removeAPOD } = useFavoriteAPODS(apod);
 
     return (
         <>
-            {backButton}
+            {onBack && (
+                <BackButton text={backButtonText} handleBack={onBack}/>
+            )}
+
             <p style={{ textAlign: 'center' }}>
                 {apod.title}
                 {!savedAPOD ? (

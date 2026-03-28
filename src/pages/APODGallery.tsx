@@ -4,9 +4,6 @@ import { APODCard } from '../NASA_Components/APOD/APODCard'
 import { NASAServiceDisplay } from '../NASA_Components/NASAServiceDisplay'
 import { useAPODGallery } from '../hooks/APOD/useAPODGallery'
 
-// helper components
-import { BackButton } from '../components/BackButton'
-
 // material ui
 import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
@@ -21,31 +18,26 @@ import { APODDisplay } from '../NASA_Components/APOD/APODDisplay'
 
 export const APODGallery = () => {
     const { savedAPODS, removeAPOD } = useAPODGallery()
-    const [cardClicked, setCardClicked] = useState<boolean>(false)
     const [clickedAPOD, setClickedAPOD] = useState<APOD | null>(null)
     const navigate = useNavigate();
 
     function handleCardClicked(apod: APOD) {
         setClickedAPOD(apod)
-        setCardClicked(true)
     }
 
     function handleBack() {
         setClickedAPOD(null)
-        setCardClicked(false)
     }
 
     return (
         <>
-            {cardClicked && clickedAPOD != null ? (
+            {clickedAPOD != null ? (
                 <>
                     <NASAServiceDisplay 
                         serviceAcronym='APOD'
                         serviceName='Your saved APOD'
                     />
-                    <APODDisplay apod={clickedAPOD} backButton={
-                        <BackButton text={'← Back to Gallery'} handleBack={handleBack}/>
-                    } />
+                    <APODDisplay apod={clickedAPOD} onBack={handleBack} backButtonText='← Back to Gallery' />
                 </>
             ) : (
                 <>
