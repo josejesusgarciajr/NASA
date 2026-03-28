@@ -16,64 +16,68 @@ type GalaxyCanvasProps = {
     onEnterSystem: (star: Exoplanet) => void
 }
 
-// Tracks camera + controls target into a ref every frame so we can snapshot it on click
-const CameraTracker = ({ stateRef }: {
+type ControlsRef = React.RefObject<any>
+
+// Tracks camera position + controls target into a ref every frame
+const CameraTracker = ({ stateRef, controlsRef }: {
     stateRef: React.MutableRefObject<{ position: THREE.Vector3; target: THREE.Vector3 }>
+    controlsRef: ControlsRef
 }) => {
     const { camera } = useThree()
-    const controls = useThree(s => s.controls) as any
 
     useFrame(() => {
         stateRef.current.position.copy(camera.position)
-        if (controls?.target) stateRef.current.target.copy(controls.target)
+        if (controlsRef.current?.target) {
+            stateRef.current.target.copy(controlsRef.current.target)
+        }
     })
     return null
 }
 
-// On first frame after mount, restores camera to the last saved galaxy position
-const CameraRestorer = () => {
+// On the first frame after mount where controls are available, restores the saved camera state
+const CameraRestorer = ({ controlsRef }: { controlsRef: ControlsRef }) => {
     const { camera } = useThree()
-    const controls = useThree(s => s.controls) as any
     const restoredRef = useRef(false)
 
     useFrame(() => {
         if (restoredRef.current) return
         const saved = getSavedGalaxyCamera()
-        if (saved && controls) {
-            camera.position.copy(saved.position)
-            controls.target.copy(saved.target)
-            controls.update()
-        }
+        if (!saved) { restoredRef.current = true; return }
+        // Wait until controls ref is populated (commit happens before first frame, so this is usually immediate)
+        if (!controlsRef.current) return
+        camera.position.copy(saved.position)
+        controlsRef.current.target.copy(saved.target)
+        controlsRef.current.update()
         restoredRef.current = true
     })
     return null
 }
 
-// Lerps camera toward a target position while zooming in to a star
-const GalaxyZoomer = ({ target }: { target: THREE.Vector3 | null }) => {
+// Lerps camera + controls target toward a star position during the zoom-in animation
+const GalaxyZoomer = ({ target, controlsRef }: { target: THREE.Vector3 | null; controlsRef: ControlsRef }) => {
     const { camera } = useThree()
-    const controls = useThree(s => s.controls) as any
 
     useFrame(() => {
         if (!target) return
         camera.position.lerp(target, 0.06)
-        if (controls?.target) {
-            controls.target.lerp(target, 0.06)
-            controls.update()
+        if (controlsRef.current?.target) {
+            controlsRef.current.target.lerp(target, 0.06)
+            controlsRef.current.update()
         }
     })
     return null
 }
 
 export const GalaxyCanvas = ({ exoplanets, onEnterSystem }: GalaxyCanvasProps) => {
-    const tooltipRef     = useRef<HTMLDivElement>(null)
-    const tooltipNameRef = useRef<HTMLSpanElement>(null)
+    const tooltipRef        = useRef<HTMLDivElement>(null)
+    const tooltipNameRef    = useRef<HTMLSpanElement>(null)
     const tooltipPlanetsRef = useRef<HTMLSpanElement>(null)
+    const controlsRef       = useRef<any>(null)
     const [zoomTarget, setZoomTarget] = useState<THREE.Vector3 | null>(null)
 
     const cameraStateRef = useRef({
         position: new THREE.Vector3(0, 0, 2000),
-        target: new THREE.Vector3(0, 0, 0),
+        target:   new THREE.Vector3(0, 0, 0),
     })
 
     const handleMouseMove = useCallback((e: React.MouseEvent) => {
@@ -99,7 +103,11 @@ export const GalaxyCanvas = ({ exoplanets, onEnterSystem }: GalaxyCanvasProps) =
     }, [])
 
     const handleClick = useCallback((star: Exoplanet, worldPos: THREE.Vector3) => {
-        saveGalaxyCamera(cameraStateRef.current.position, cameraStateRef.current.target)
+        // Snapshot camera state before zoom starts
+        saveGalaxyCamera(
+            cameraStateRef.current.position.clone(),
+            cameraStateRef.current.target.clone(),
+        )
         setZoomTarget(worldPos)
         onEnterSystem(star)
     }, [onEnterSystem])
@@ -116,18 +124,19 @@ export const GalaxyCanvas = ({ exoplanets, onEnterSystem }: GalaxyCanvasProps) =
                 <ambientLight intensity={0.5} />
                 <StarField exoplanets={exoplanets} onHover={handleHover} onClick={handleClick} />
                 <OrbitControls
+                    ref={controlsRef}
                     makeDefault
-                    enableZoom={true}
-                    enablePan={true}
-                    enableRotate={true}
+                    enableZoom
+                    enablePan
+                    enableRotate
                     enabled={!zoomTarget}
                     zoomSpeed={2}
                     minDistance={1}
                     maxDistance={4000}
                 />
-                <CameraTracker stateRef={cameraStateRef} />
-                <CameraRestorer />
-                <GalaxyZoomer target={zoomTarget} />
+                <CameraTracker stateRef={cameraStateRef} controlsRef={controlsRef} />
+                <CameraRestorer controlsRef={controlsRef} />
+                <GalaxyZoomer target={zoomTarget} controlsRef={controlsRef} />
             </Canvas>
 
             <div
@@ -143,7 +152,7 @@ export const GalaxyCanvas = ({ exoplanets, onEnterSystem }: GalaxyCanvasProps) =
                     pointerEvents: 'none',
                     zIndex: 1000,
                     border: '1px solid rgba(255,255,255,0.2)',
-                    whiteSpace: 'nowrap'
+                    whiteSpace: 'nowrap',
                 }}
             >
                 <span ref={tooltipNameRef} />
