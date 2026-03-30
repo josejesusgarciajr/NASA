@@ -69,50 +69,102 @@ const GalaxyZoomer = ({ target, controlsRef }: { target: THREE.Vector3 | null; c
     return null
 }
 
-// Renders a pulsing ring that expands and fades around the hovered star
+// Renders 3 pulsing rings that emanate from the hovered star one after another
 const HoverRing = ({ star }: { star: Exoplanet | null }) => {
-    const meshRef = useRef<THREE.Mesh>(null)
-    const matRef  = useRef<THREE.MeshBasicMaterial>(null)
-    const timeRef = useRef(0)
+    const meshRef  = useRef<THREE.Mesh>(null)
+    const matRef   = useRef<THREE.ShaderMaterial>(null)
+    const phaseRef = useRef(0)
     const { camera, gl } = useThree()
 
     useEffect(() => {
-        timeRef.current = 0
+        phaseRef.current = 0
     }, [star])
 
     useFrame((_, delta) => {
         if (!meshRef.current || !matRef.current || !star) return
 
-        timeRef.current += delta * 1.2
+        phaseRef.current += delta * 0.4
 
-        // Match the vertex shader: gl_PointSize = size * (150 / depth)
-        // The world-space radius that equals one visual pixel is:
-        //   worldRadius = size * 150 / depth  *  depth / focal_px
-        //               = size * 150 * tan(halfFOV) * 2 / physicalHeight
-        // Depth cancels — the world radius is distance-independent, so the ring
-        // stays proportional to the star's visual disc at any zoom level.
         const cam = camera as THREE.PerspectiveCamera
         const tanHalfFOV = Math.tan(cam.fov * Math.PI / 360)
         const starRadius = star.st_rad ?? 1
-        const baseSize   = starRadius * 150 * 2 * tanHalfFOV / gl.domElement.height
 
-        const t       = timeRef.current % 1
-        const scale   = baseSize * (1.5 + t * 2.0)
-        const opacity = 0.9 * (1 - t)
+        // Exact world-space radius of the star's visual disc:
+        //   gl_PointSize = starRadius * 150 / depth  (physical px)
+        //   worldRadius  = (gl_PointSize/2) * depth / focal_px  → depth cancels →
+        //   worldRadius  = starRadius * 150 * tan(halfFOV) / physicalHeight
+        const starWorldRadius = starRadius * 150 * tanHalfFOV / gl.domElement.height
 
-        meshRef.current.scale.setScalar(scale)
-        matRef.current.opacity = opacity
+        // Scale the quad to 8× the star's visual radius.
+        // This makes the star's edge land at exactly dist=0.25 in the shader
+        // (starWorldRadius / (planScale/2) = 1/(8/2) = 0.25), which is a constant
+        // regardless of star size or camera distance.
+        const planScale = starWorldRadius * 8
+
+        meshRef.current.scale.setScalar(planScale)
+        matRef.current.uniforms.uPhase.value = phaseRef.current
         meshRef.current.quaternion.copy(camera.quaternion)
     })
 
     if (!star) return null
-
     const { x, y, z } = toCartesian(star)
 
     return (
         <mesh ref={meshRef} position={[x, y, z]}>
-            <ringGeometry args={[0.78, 1.0, 48]} />
-            <meshBasicMaterial ref={matRef} color="white" transparent depthWrite={false} side={THREE.DoubleSide} />
+            <planeGeometry args={[1, 1]} />
+            <shaderMaterial
+                ref={matRef}
+                transparent
+                depthWrite={false}
+                side={THREE.DoubleSide}
+                uniforms={{ uPhase: { value: 0 } }}
+                vertexShader={`
+                    varying vec2 vUv;
+                    void main() {
+                        vUv = uv;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    }
+                `}
+                fragmentShader={`
+                    uniform float uPhase;
+                    varying vec2 vUv;
+
+                    void main() {
+                        // dist: 0 at center → 1 at the mid-edge of the quad.
+                        // Because planScale = 8 × starWorldRadius,
+                        // the star's visual edge always sits at dist = 0.25.
+                        float dist = length(vUv - 0.5) * 2.0;
+
+                        // Clip the dead circle in the middle so no pixels overlap the star.
+                        if (dist < 0.24) discard;
+
+                        float halfWidth = 0.04;  // ring band half-width in plane-space
+                        float softness  = 0.03;  // smooth fade on each edge
+
+                        float totalAlpha = 0.0;
+
+                        for (int i = 0; i < 3; i++) {
+                            // Stagger each ring by 1/3 of a cycle
+                            float t = fract(uPhase + float(i) / 3.0);
+
+                            // Center travels from just outside the star (0.30) to ~0.82
+                            float center = 0.30 + t * 0.52;
+                            float inner  = center - halfWidth;
+                            float outer  = center + halfWidth;
+
+                            float a = smoothstep(inner - softness, inner, dist)
+                                    * smoothstep(outer + softness, outer, dist);
+
+                            // Ring fades out as it expands; slight ease with pow
+                            a *= pow(1.0 - t, 1.5) * 0.85;
+                            totalAlpha = max(totalAlpha, a);
+                        }
+
+                        if (totalAlpha < 0.01) discard;
+                        gl_FragColor = vec4(1.0, 1.0, 1.0, totalAlpha);
+                    }
+                `}
+            />
         </mesh>
     )
 }
