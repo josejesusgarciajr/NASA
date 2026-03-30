@@ -4,12 +4,13 @@ import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 
 // react
-import { useRef, useCallback, useState } from 'react'
+import { useRef, useCallback, useState, useEffect } from 'react'
 
 // nasa
 import { StarField } from './StarField'
 import type { Exoplanet } from '../../types/NASA/Exoplanets'
 import { saveGalaxyCamera, getSavedGalaxyCamera } from '../../utils/galaxyTransitionStore'
+import { toCartesian } from '../../utils/coordinateUtils'
 
 type GalaxyCanvasProps = {
     exoplanets: Exoplanet[]
@@ -68,12 +69,61 @@ const GalaxyZoomer = ({ target, controlsRef }: { target: THREE.Vector3 | null; c
     return null
 }
 
+// Renders a pulsing ring that expands and fades around the hovered star
+const HoverRing = ({ star }: { star: Exoplanet | null }) => {
+    const meshRef = useRef<THREE.Mesh>(null)
+    const matRef  = useRef<THREE.MeshBasicMaterial>(null)
+    const timeRef = useRef(0)
+    const { camera, gl } = useThree()
+
+    useEffect(() => {
+        timeRef.current = 0
+    }, [star])
+
+    useFrame((_, delta) => {
+        if (!meshRef.current || !matRef.current || !star) return
+
+        timeRef.current += delta * 1.2
+
+        // Match the vertex shader: gl_PointSize = size * (150 / depth)
+        // The world-space radius that equals one visual pixel is:
+        //   worldRadius = size * 150 / depth  *  depth / focal_px
+        //               = size * 150 * tan(halfFOV) * 2 / physicalHeight
+        // Depth cancels — the world radius is distance-independent, so the ring
+        // stays proportional to the star's visual disc at any zoom level.
+        const cam = camera as THREE.PerspectiveCamera
+        const tanHalfFOV = Math.tan(cam.fov * Math.PI / 360)
+        const starRadius = star.st_rad ?? 1
+        const baseSize   = starRadius * 150 * 2 * tanHalfFOV / gl.domElement.height
+
+        const t       = timeRef.current % 1
+        const scale   = baseSize * (1.5 + t * 2.0)
+        const opacity = 0.9 * (1 - t)
+
+        meshRef.current.scale.setScalar(scale)
+        matRef.current.opacity = opacity
+        meshRef.current.quaternion.copy(camera.quaternion)
+    })
+
+    if (!star) return null
+
+    const { x, y, z } = toCartesian(star)
+
+    return (
+        <mesh ref={meshRef} position={[x, y, z]}>
+            <ringGeometry args={[0.78, 1.0, 48]} />
+            <meshBasicMaterial ref={matRef} color="white" transparent depthWrite={false} side={THREE.DoubleSide} />
+        </mesh>
+    )
+}
+
 export const GalaxyCanvas = ({ exoplanets, onEnterSystem }: GalaxyCanvasProps) => {
     const tooltipRef        = useRef<HTMLDivElement>(null)
     const tooltipNameRef    = useRef<HTMLSpanElement>(null)
     const tooltipPlanetsRef = useRef<HTMLSpanElement>(null)
     const controlsRef       = useRef<any>(null)
-    const [zoomTarget, setZoomTarget] = useState<THREE.Vector3 | null>(null)
+    const [zoomTarget, setZoomTarget]     = useState<THREE.Vector3 | null>(null)
+    const [hoveredStar, setHoveredStar]   = useState<Exoplanet | null>(null)
 
     const cameraStateRef = useRef({
         position: new THREE.Vector3(0, 0, 2000),
@@ -88,6 +138,7 @@ export const GalaxyCanvas = ({ exoplanets, onEnterSystem }: GalaxyCanvasProps) =
     }, [])
 
     const handleHover = useCallback((star: Exoplanet | null) => {
+        setHoveredStar(star)
         if (!tooltipRef.current) return
         if (star) {
             tooltipRef.current.style.display = 'block'
@@ -134,6 +185,7 @@ export const GalaxyCanvas = ({ exoplanets, onEnterSystem }: GalaxyCanvasProps) =
                     minDistance={1}
                     maxDistance={4000}
                 />
+                <HoverRing star={hoveredStar} />
                 <CameraTracker stateRef={cameraStateRef} controlsRef={controlsRef} />
                 <CameraRestorer controlsRef={controlsRef} />
                 <GalaxyZoomer target={zoomTarget} controlsRef={controlsRef} />

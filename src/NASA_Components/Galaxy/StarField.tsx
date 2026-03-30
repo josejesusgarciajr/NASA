@@ -45,19 +45,20 @@ function tempToColor(teff: number | null): THREE.Color {
 export const StarField = ({ exoplanets, onHover, onClick } : StarFieldProps) => {
     const pointsRef = useRef<THREE.Points>(null)
     const { camera, gl } = useThree()
-    const raycaster = useRef(new THREE.Raycaster())
     const mouse = useRef(new THREE.Vector2())
+
+    // Pre-allocated objects to avoid per-frame GC pressure
+    const tempPoint = useRef(new THREE.Vector3())
+    const mvMatrix  = useRef(new THREE.Matrix4())
 
     // Deduplicate by hostname — one point per star system
     const uniqueStars = useMemo(() => {
         const seen = new Set<string>()
-        const stars = exoplanets.filter(e => {
+        return exoplanets.filter(e => {
             if (seen.has(e.hostname)) return false
             seen.add(e.hostname)
             return true
         })
-        
-        return stars
     }, [exoplanets])
 
     const { positions, colors, sizes } = useMemo(() => {
@@ -88,25 +89,67 @@ export const StarField = ({ exoplanets, onHover, onClick } : StarFieldProps) => 
     const hoveredIndexRef = useRef<number | null>(null)
 
     useFrame(() => {
-        raycaster.current.setFromCamera(mouse.current, camera)
-        
-        const distance = camera.position.length()
-        raycaster.current.params.Points!.threshold = Math.min(Math.max(distance * 0.01, 0.5), 8)
+        if (!pointsRef.current) return
 
-        if (pointsRef.current) {
-            const intersects = raycaster.current.intersectObject(pointsRef.current)
-            
-            if (intersects.length > 0) {
-                const index = intersects[0].index!
-                if (hoveredIndexRef.current !== index) {
-                    hoveredIndexRef.current = index
-                    onHover(uniqueStars[index])
-                }
-            } else {
-                if (hoveredIndexRef.current !== null) {
-                    hoveredIndexRef.current = null
-                    onHover(null)
-                }
+        // Build the model-view matrix (world → view space) once per frame
+        camera.updateMatrixWorld()
+        mvMatrix.current.multiplyMatrices(camera.matrixWorldInverse, pointsRef.current.matrixWorld)
+
+        const width  = gl.domElement.width
+        const height = gl.domElement.height
+
+        // Mouse in physical pixels (NDC → physical px)
+        const mouseXPx = (mouse.current.x + 1) * 0.5 * width
+        const mouseYPx = (1 - mouse.current.y) * 0.5 * height
+
+        let closestDistSq = Infinity
+        let closestIndex  = -1
+
+        for (let i = 0; i < uniqueStars.length; i++) {
+            tempPoint.current.set(
+                positions[i * 3],
+                positions[i * 3 + 1],
+                positions[i * 3 + 2],
+            )
+
+            // World → view space
+            tempPoint.current.applyMatrix4(mvMatrix.current)
+
+            // Discard stars behind the camera (z > 0 in view space)
+            if (tempPoint.current.z >= 0) continue
+
+            const depth = -tempPoint.current.z
+
+            // View → NDC (includes perspective divide)
+            tempPoint.current.applyMatrix4(camera.projectionMatrix)
+
+            // NDC → physical pixels
+            const xPx = (tempPoint.current.x + 1) * 0.5 * width
+            const yPx = (1 - tempPoint.current.y) * 0.5 * height
+
+            const dx = xPx - mouseXPx
+            const dy = yPx - mouseYPx
+            const distSq = dx * dx + dy * dy
+
+            // Mirror the vertex shader exactly: gl_PointSize = size * (150.0 / -mvPosition.z)
+            // Hit radius = half of that, with a 4px floor so tiny stars are still hoverable
+            const hitRadius = Math.max(sizes[i] * 150 / depth / 2, 4)
+
+            if (distSq <= hitRadius * hitRadius && distSq < closestDistSq) {
+                closestDistSq = distSq
+                closestIndex  = i
+            }
+        }
+
+        if (closestIndex !== -1) {
+            if (hoveredIndexRef.current !== closestIndex) {
+                hoveredIndexRef.current = closestIndex
+                onHover(uniqueStars[closestIndex])
+            }
+        } else {
+            if (hoveredIndexRef.current !== null) {
+                hoveredIndexRef.current = null
+                onHover(null)
             }
         }
     })
