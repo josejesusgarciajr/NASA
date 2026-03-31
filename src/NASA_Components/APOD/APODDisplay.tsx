@@ -11,6 +11,9 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import { IconButton } from '@mui/material'
 
+// react
+import { useEffect } from 'react'
+
 type APODDisplayProps = {
     apod: APOD;
     onBack?: () => void;
@@ -20,6 +23,10 @@ type APODDisplayProps = {
 export const APODDisplay = ({apod, onBack, backButtonText = '← Back'} : APODDisplayProps) => {
     // saved favorite apods
     const { savedAPOD, saveAPOD, removeAPOD } = useFavoriteAPODS(apod);
+
+    useEffect(() => {
+        window.scrollTo({ top: 0 });
+    }, [])
 
     return (
         <>

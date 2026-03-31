@@ -12,21 +12,27 @@ import IconButton from '@mui/material/IconButton'
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd'
 
 // react
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { APODDisplay } from '../NASA_Components/APOD/APODDisplay'
 
 export const APODGallery = () => {
     const { savedAPODS, removeAPOD } = useAPODGallery()
     const [clickedAPOD, setClickedAPOD] = useState<APOD | null>(null)
+    const scrollPositionRef  = useRef(0);
     const navigate = useNavigate();
 
     function handleCardClicked(apod: APOD) {
+        scrollPositionRef.current = window.scrollY;
         setClickedAPOD(apod)
     }
 
     function handleBack() {
         setClickedAPOD(null)
+        // Wait for gallery to re-render before restoring scroll
+        requestAnimationFrame(() => {
+            window.scrollTo({ top: scrollPositionRef.current, behavior: 'instant' });
+        });
     }
 
     return (
