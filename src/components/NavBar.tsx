@@ -59,6 +59,7 @@ const apodLinks = [
 const navLinks = [
   { to: '/', label: 'Home', end: true },
   { to: '/neows', label: 'NEOWS' },
+  { to: '/eonet', label: 'EONET' },
   { to: '/dome', label: 'DOME' },
 ]
 
