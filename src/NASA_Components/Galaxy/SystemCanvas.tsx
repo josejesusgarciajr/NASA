@@ -1,7 +1,7 @@
 // three
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
-import { useRef, useState } from 'react'
+import React, { useRef, useState, useMemo } from 'react'
 import * as THREE from 'three'
 
 // nasa
@@ -14,6 +14,42 @@ type SystemCanvasProps = {
     hostname: string
     planets: Exoplanet[]
     onBack: () => void
+}
+
+// Smoothly follows a focused planet — camera stays behind it (from star's POV) so the star glows in the background
+const PlanetFollowCamera = ({
+    focusedIndex,
+    positionRefs,
+    orbitRadius,
+}: {
+    focusedIndex: number | null
+    positionRefs: React.MutableRefObject<THREE.Vector3[]>
+    orbitRadius: number
+}) => {
+    const { camera } = useThree()
+    const _tmpLookAt = useRef(new THREE.Vector3())
+
+    useFrame(() => {
+        if (focusedIndex === null) return
+        const planetPos = positionRefs.current[focusedIndex]
+        if (!planetPos || planetPos.lengthSq() < 0.001) return
+
+        // Direction from star (origin) → planet
+        const starToPlanet = planetPos.clone().normalize()
+        const followDist = orbitRadius * 0.55
+
+        // Place camera behind the planet (further from star) and elevated
+        const targetCamPos = planetPos.clone()
+            .add(starToPlanet.clone().multiplyScalar(followDist))
+            .add(new THREE.Vector3(0, followDist * 0.35, 0))
+
+        camera.position.lerp(targetCamPos, 0.04)
+
+        // Look slightly toward the star so both planet and star glow are framed
+        _tmpLookAt.current.copy(planetPos).lerp(new THREE.Vector3(0, 0, 0), 0.25)
+        camera.lookAt(_tmpLookAt.current)
+    })
+    return null
 }
 
 // Zooms the system-view camera out from its starting position when active
@@ -46,11 +82,27 @@ export const SystemCanvas = ({ hostname, planets, onBack }: SystemCanvasProps) =
     const maxOrbit = Math.max(...planets.map(p => (p.pl_orbsmax ?? 0.5))) * AU
     const camDist  = Math.max(maxOrbit * 1.4, 70)
     const [zoomingOut, setZoomingOut] = useState(false)
+    const [focusedPlanet, setFocusedPlanet] = useState<{ index: number; orbitRadius: number } | null>(null)
+
+    // One persistent Vector3 per planet — updated every frame by OrbitingPlanet
+    const positionRefsArray = useMemo(
+        () => planets.map(() => new THREE.Vector3()),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [planets.length]
+    )
+    const positionRefs = useRef(positionRefsArray)
 
     const handleBack = () => {
         setZoomingOut(true)
         onBack()  // triggers the overlay fade in DOME.tsx simultaneously
     }
+
+    const handlePlanetClick = (index: number, orbitRadius: number) => {
+        if (zoomingOut) return
+        setFocusedPlanet({ index, orbitRadius })
+    }
+
+    const handleUnfocus = () => setFocusedPlanet(null)
 
     return (
         <div style={{ width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0, background: 'black' }}>
@@ -58,12 +110,36 @@ export const SystemCanvas = ({ hostname, planets, onBack }: SystemCanvasProps) =
                 camera={{ position: [0, camDist * 0.4, camDist * 0.9], fov: 55, near: 0.1, far: 100000 }}
                 style={{ width: '100%', height: '100%' }}
             >
-                <SystemScene planets={planets} />
-                <OrbitControls enableZoom enableRotate enablePan enabled={!zoomingOut} />
+                <SystemScene
+                    planets={planets}
+                    planetPositionRefs={positionRefs.current}
+                    onPlanetClick={handlePlanetClick}
+                />
+                <OrbitControls enableZoom enableRotate enablePan enabled={!zoomingOut && focusedPlanet === null} />
                 <SystemZoomOuter active={zoomingOut} />
+                <PlanetFollowCamera
+                    focusedIndex={focusedPlanet?.index ?? null}
+                    positionRefs={positionRefs}
+                    orbitRadius={focusedPlanet?.orbitRadius ?? 1}
+                />
             </Canvas>
 
             <BackButton text={'← Back to Galaxy'} handleBack={handleBack} />
+
+            {focusedPlanet !== null && (
+                <button
+                    onClick={handleUnfocus}
+                    style={{
+                        position: 'fixed', bottom: '32px', left: '50%', transform: 'translateX(-50%)',
+                        background: 'rgba(0,0,0,0.7)', color: 'white',
+                        border: '1px solid rgba(255,255,255,0.35)', borderRadius: '4px',
+                        padding: '8px 20px', fontSize: '13px', cursor: 'pointer',
+                        letterSpacing: '0.5px', zIndex: 1000,
+                    }}
+                >
+                    ← Back to System View
+                </button>
+            )}
 
             <div style={{
                 position: 'fixed', top: '80px', right: '20px',

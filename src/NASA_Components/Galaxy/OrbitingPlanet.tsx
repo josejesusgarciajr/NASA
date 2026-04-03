@@ -17,9 +17,11 @@ type OrbitingPlanetProps = {
     index: number
     orbitRadius: number
     solarRadiusInUnits: number
+    positionRef?: THREE.Vector3
+    onPlanetClick?: () => void
 }
 
-export const OrbitingPlanet = ({ planet, index, orbitRadius, solarRadiusInUnits }: OrbitingPlanetProps) => {
+export const OrbitingPlanet = ({ planet, index, orbitRadius, solarRadiusInUnits, positionRef, onPlanetClick }: OrbitingPlanetProps) => {
     const groupRef  = useRef<THREE.Group>(null)
     const meshRef   = useRef<THREE.Mesh>(null)
     const matRef    = useRef<THREE.MeshStandardMaterial>(null)
@@ -52,6 +54,7 @@ export const OrbitingPlanet = ({ planet, index, orbitRadius, solarRadiusInUnits 
             const t = clock.getElapsedTime() * speed + offset
             groupRef.current.position.x = Math.cos(t) * orbitRadius
             groupRef.current.position.z = Math.sin(t) * orbitRadius
+            if (positionRef) positionRef.copy(groupRef.current.position)
         }
         if (meshRef.current) meshRef.current.rotation.y += delta * spinSpeed
         // Slow atmosphere drift for all textured planets
@@ -64,7 +67,7 @@ export const OrbitingPlanet = ({ planet, index, orbitRadius, solarRadiusInUnits 
         <>
             <OrbitRing orbitRadius={orbitRadius} />
             <group ref={groupRef}>
-                <mesh ref={meshRef}>
+                <mesh ref={meshRef} onClick={(e) => { e.stopPropagation(); onPlanetClick?.() }}>
                     <sphereGeometry args={[planetSize, 48, 48]} />
                     <meshStandardMaterial
                         ref={matRef}

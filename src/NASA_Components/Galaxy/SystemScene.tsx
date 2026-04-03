@@ -8,10 +8,15 @@ import { AU, MIN_ORBIT_GAP } from '../../utils/galaxy'
 
 // react
 import { useMemo } from 'react'
+import * as THREE from 'three'
 
-type SystemSceneProps = { planets: Exoplanet[] }
+type SystemSceneProps = {
+    planets: Exoplanet[]
+    planetPositionRefs?: THREE.Vector3[]
+    onPlanetClick?: (index: number, orbitRadius: number) => void
+}
 
-export const SystemScene = ({ planets }: SystemSceneProps) => {
+export const SystemScene = ({ planets, planetPositionRefs, onPlanetClick }: SystemSceneProps) => {
     const star      = planets[0]
     const starColor = tempToColor(star.st_teff)
     const starSize  = Math.min(Math.max((star.st_rad ?? 1) * 2, 4), 25)
@@ -43,6 +48,8 @@ export const SystemScene = ({ planets }: SystemSceneProps) => {
                     index={i}
                     orbitRadius={orbitRadii[i]}
                     solarRadiusInUnits={solarRadiusInUnits}
+                    positionRef={planetPositionRefs?.[i]}
+                    onPlanetClick={() => onPlanetClick?.(i, orbitRadii[i])}
                 />
             ))}
         </>
