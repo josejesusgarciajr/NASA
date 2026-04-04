@@ -1,7 +1,8 @@
 // nasa
 import { NASAServiceDisplay } from '../NASA_Components/NASAServiceDisplay'
-import { useEONET } from '../hooks/EONET/useEONET'
 import { PaginatedEONETEvents } from '../NASA_Components/EONET/PaginatedEONETEvents'
+import { EONETCategoryFilter } from '../NASA_Components/EONET/EONETCategoryFilter'
+import { useEONET } from '../hooks/EONET/useEONET'
 
 // react
 import { useState, useEffect, useMemo } from 'react'
@@ -11,7 +12,10 @@ import LinearProgress from '@mui/material/LinearProgress'
 import Box from '@mui/material/Box'
 
 export const EONET = () => {
-    const { loadingEONET, eonetResponse, fetchActiveEONET } = useEONET()
+    const { 
+        loadingEONET, eonetResponse, fetchActiveEONET,
+        eonetCategories, activeEonetCategory, loadingEONETCategories, fetchEONETCategories, setActiveEonetCategory
+     } = useEONET()
     const [page, setPage] = useState<number>(0)
     const [rowsPerPage, setRowsPerPage] = useState<number>(10)
 
@@ -21,7 +25,9 @@ export const EONET = () => {
 
     // derived eonet events for filtering and sorting
     const filteredEONETEvents = useMemo(() => {
-        const events = eonetResponse?.events ?? []
+        const events = eonetResponse?.events.filter(eonetEvent => {
+            return activeEonetCategory === 'All' || eonetEvent.categories.some(category => category.id === activeEonetCategory)
+        }) ?? []
 
         return [...events].sort((a, b) => {
             if (sortedColumn === 'title') {
@@ -36,7 +42,7 @@ export const EONET = () => {
 
             return 0
         })
-    }, [eonetResponse, sortedColumn, sortDesc])
+    }, [eonetResponse, activeEonetCategory, sortedColumn, sortDesc])
 
     function sortByColumn(column: string) {
         const newSortDesc = sortedColumn === column ? !sortDesc : true; // toggle if same column, otherwise default to ascending
@@ -46,10 +52,22 @@ export const EONET = () => {
         setPage(0) // reset to first page on sort
     }
 
+    function handleCategoryChange(categoryId: string) {
+        setActiveEonetCategory(categoryId)
+        setPage(0) // reset to first page on category change
+    }
+
     // fetch EONET data on component mount
     useEffect(() => {
         fetchActiveEONET()
+        fetchEONETCategories()
     }, [])
+
+    // render page
+    const renderPage = (eonetCategories.length > 0 && 
+                        !loadingEONETCategories &&
+                        filteredEONETEvents.length > 0 &&
+                        !loadingEONET)
 
     return (
         <>
@@ -64,17 +82,24 @@ export const EONET = () => {
                 </>
             )}
 
-            {filteredEONETEvents.length > 0 && (
-                <PaginatedEONETEvents 
-                    eonetEvents={filteredEONETEvents} 
-                    page={page}
-                    setPage={setPage}
-                    rowsPerPage={rowsPerPage}
-                    setRowsPerPage={setRowsPerPage}
-                    sortedColumn={sortedColumn}
-                    sortByColumn={sortByColumn}
-                    sortDesc={sortDesc}
-                />
+            {renderPage && (
+                <>
+                    <EONETCategoryFilter 
+                        categories={eonetCategories} 
+                        activeCategory={activeEonetCategory}
+                        onCategoryChange={handleCategoryChange}
+                    />
+                    <PaginatedEONETEvents 
+                        eonetEvents={filteredEONETEvents} 
+                        page={page}
+                        setPage={setPage}
+                        rowsPerPage={rowsPerPage}
+                        setRowsPerPage={setRowsPerPage}
+                        sortedColumn={sortedColumn}
+                        sortByColumn={sortByColumn}
+                        sortDesc={sortDesc}
+                    />
+                </>
             )}
         </>
     )
