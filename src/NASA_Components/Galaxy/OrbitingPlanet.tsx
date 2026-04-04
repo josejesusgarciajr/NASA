@@ -30,10 +30,13 @@ export const OrbitingPlanet = ({ planet, index, orbitRadius, solarRadiusInUnits,
 
     const pl_rade    = planet.pl_rade ?? 1
     const rawSize    = (pl_rade / 109) * solarRadiusInUnits * 2.5
-    const minSize    = type === 'rocky' || type === 'super_earth'
+    const minByType  = type === 'rocky' || type === 'super_earth'
         ? solarRadiusInUnits * 0.18
         : solarRadiusInUnits * 0.25
-    const planetSize = Math.min(Math.max(rawSize, minSize), solarRadiusInUnits * 0.82)
+    // Orbit-proportional floor — keeps distant planets (Neptune, Uranus, etc.) visible
+    const minSize    = Math.max(minByType, orbitRadius * 0.02)
+    const maxSize    = Math.max(solarRadiusInUnits * 0.82, orbitRadius * 0.05)
+    const planetSize = Math.min(Math.max(rawSize, minSize), maxSize)
 
     const speed  = 0.05 / ((planet.pl_orbsmax ?? (index + 1) * 0.5) * 5)
     const offset = (index / 8) * Math.PI * 2
