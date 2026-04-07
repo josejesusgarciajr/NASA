@@ -1,15 +1,12 @@
 // nasa
-import { NASAServiceDisplay } from '../NASA_Components/NASAServiceDisplay'
+import { NASAServiceDisplay } from '../NASA_Components/shared/NASAServiceDisplay'
 import { PaginatedEONETEvents } from '../NASA_Components/EONET/PaginatedEONETEvents'
 import { EONETCategoryFilter } from '../NASA_Components/EONET/EONETCategoryFilter'
 import { useEONET } from '../hooks/EONET/useEONET'
+import { NeonLinearProgress } from '../NASA_Components/shared/NeonLinearProgress'
 
 // react
 import { useState, useEffect, useMemo } from 'react'
-
-// material ui
-import LinearProgress from '@mui/material/LinearProgress'
-import Box from '@mui/material/Box'
 
 export const EONET = () => {
     const { 
@@ -74,10 +71,8 @@ export const EONET = () => {
             <NASAServiceDisplay serviceAcronym='EONET' serviceName="Earth Observatory Natural Event Tracker" />
 
             {loadingEONET && (
-                <>
-                    <Box sx={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 2000 }}>
-                        <LinearProgress />
-                    </Box>
+                <>  
+                    <NeonLinearProgress />
                     <p>Fetching Cosmic Data...</p>
                 </>
             )}

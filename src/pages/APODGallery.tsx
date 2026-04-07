@@ -1,7 +1,7 @@
 // nasa
 import type { APOD } from '../types/NASA/APOD'
 import { APODCard } from '../NASA_Components/APOD/APODCard'
-import { NASAServiceDisplay } from '../NASA_Components/NASAServiceDisplay'
+import { NASAServiceDisplay } from '../NASA_Components/shared/NASAServiceDisplay'
 import { useAPODGallery } from '../hooks/APOD/useAPODGallery'
 
 // material ui

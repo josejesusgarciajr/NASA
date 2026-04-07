@@ -4,11 +4,10 @@ import { useEffect } from 'react'
 
 // NASA Components
 import { APODDisplay } from '../NASA_Components/APOD/APODDisplay'
-import { NASAServiceDisplay } from '../NASA_Components/NASAServiceDisplay'
+import { NASAServiceDisplay } from '../NASA_Components/shared/NASAServiceDisplay'
+import { NeonLinearProgress } from '../NASA_Components/shared/NeonLinearProgress'
 
 // MATERIAL UI
-import LinearProgress from '@mui/material/LinearProgress'
-import Box from '@mui/material/Box'
 import Alert from '@mui/material/Alert'
 
 // APOD
@@ -24,9 +23,7 @@ export function Home() {
   return (
     <>
       {loadingAPOD && (
-        <Box sx={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 2000 }}>
-          <LinearProgress />
-        </Box>
+        <NeonLinearProgress />
       )}
 
       {loadingAPOD && <p>Fetching Cosmic Data...</p>}

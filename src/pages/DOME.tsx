@@ -2,6 +2,7 @@
 import { useExoplanets } from '../hooks/Exoplanets/useExoplanets'
 import { GalaxyCanvas } from '../NASA_Components/Galaxy/GalaxyCanvas'
 import { SystemCanvas } from '../NASA_Components/Galaxy/SystemCanvas'
+import { NeonLinearProgress } from '../NASA_Components/shared/NeonLinearProgress'
 import type { Exoplanet } from '../types/NASA/Exoplanets'
 
 // react
@@ -9,9 +10,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 // material ui
-import Box from '@mui/material/Box'
 import Alert from '@mui/material/Alert'
-import LinearProgress from '@mui/material/LinearProgress'
 
 export const DOME = () => {
     const { exoplanets, loadingExoplanets, errorExoplanets, fetchExoplanets } = useExoplanets()
@@ -72,9 +71,7 @@ export const DOME = () => {
     return (
         <>
             {loadingExoplanets && (
-                <Box sx={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 3000 }}>
-                    <LinearProgress />
-                </Box>
+                <NeonLinearProgress />
             )}
 
             {exoplanets.length > 0 && (

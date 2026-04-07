@@ -1,12 +1,12 @@
 // react
 import { useEffect } from 'react'
 
+// nasa
 import { NEOFeedDisplay } from '../NASA_Components/NEOWS/NEOFeedDisplay'
-import { NASAServiceDisplay } from '../NASA_Components/NASAServiceDisplay'
+import { NASAServiceDisplay } from '../NASA_Components/shared/NASAServiceDisplay'
+import { NeonLinearProgress } from '../NASA_Components/shared/NeonLinearProgress'
 
 // MATERIAL UI
-import LinearProgress from '@mui/material/LinearProgress'
-import Box from '@mui/material/Box'
 import Alert from '@mui/material/Alert';
 
 // Near Earth Object Web Service
@@ -39,9 +39,7 @@ export const NEOWS = () => {
     return (
         <>
             {(loadingNEO || loadingNEOSELF) && (
-                <Box sx={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 2000 }}>
-                <LinearProgress />
-                </Box>
+                <NeonLinearProgress />
             )}
 
             {errorNEO && (
