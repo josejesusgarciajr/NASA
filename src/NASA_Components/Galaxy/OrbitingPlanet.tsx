@@ -57,10 +57,10 @@ export const OrbitingPlanet = ({ planet, index, orbitRadius, solarRadiusInUnits,
             groupRef.current.position.z = Math.sin(t) * orbitRadius
             if (positionRef) positionRef.copy(groupRef.current.position)
         }
-        if (meshRef.current) meshRef.current.rotation.y += delta * spinSpeed
+        if (meshRef.current) meshRef.current.rotation.y -= delta * spinSpeed
         // Slow atmosphere drift for all textured planets
         if (surfaceTexture) {
-            surfaceTexture.offset.x = (surfaceTexture.offset.x + delta * 0.001) % 1
+            surfaceTexture.offset.x = (surfaceTexture.offset.x - delta * 0.001) % 1
         }
     })
 
