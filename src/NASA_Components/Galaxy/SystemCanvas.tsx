@@ -21,10 +21,12 @@ const PlanetFollowCamera = ({
     focusedIndex,
     positionRefs,
     orbitRadius,
+    planetSize,
 }: {
     focusedIndex: number | null
     positionRefs: React.MutableRefObject<THREE.Vector3[]>
     orbitRadius: number
+    planetSize: number
 }) => {
     const { camera } = useThree()
     const _tmpLookAt = useRef(new THREE.Vector3())
@@ -36,7 +38,8 @@ const PlanetFollowCamera = ({
 
         // Direction from star (origin) → planet
         const starToPlanet = planetPos.clone().normalize()
-        const followDist = orbitRadius * 0.55
+        // Keep camera far enough that the planet never fills the view — planet-size-aware
+        const followDist = Math.max(orbitRadius * 0.5, planetSize * 8)
 
         // Place camera behind the planet (further from star) and elevated
         const targetCamPos = planetPos.clone()
@@ -45,8 +48,8 @@ const PlanetFollowCamera = ({
 
         camera.position.lerp(targetCamPos, 0.04)
 
-        // Look slightly toward the star so both planet and star glow are framed
-        _tmpLookAt.current.copy(planetPos).lerp(new THREE.Vector3(0, 0, 0), 0.25)
+        // Look 30% toward the star so the planet is framed with the star visible behind it
+        _tmpLookAt.current.copy(planetPos).lerp(new THREE.Vector3(0, 0, 0), 0.30)
         camera.lookAt(_tmpLookAt.current)
     })
     return null
@@ -82,7 +85,7 @@ export const SystemCanvas = ({ hostname, planets, onBack }: SystemCanvasProps) =
     const maxOrbit = Math.max(...planets.map(p => (p.pl_orbsmax ?? 0.5))) * AU
     const camDist  = Math.max(maxOrbit * 1.4, 70)
     const [zoomingOut, setZoomingOut] = useState(false)
-    const [focusedPlanet, setFocusedPlanet] = useState<{ index: number; orbitRadius: number } | null>(null)
+    const [focusedPlanet, setFocusedPlanet] = useState<{ index: number; orbitRadius: number; planetSize: number } | null>(null)
 
     // One persistent Vector3 per planet — updated every frame by OrbitingPlanet
     const positionRefsArray = useMemo(
@@ -97,9 +100,9 @@ export const SystemCanvas = ({ hostname, planets, onBack }: SystemCanvasProps) =
         onBack()  // triggers the overlay fade in DOME.tsx simultaneously
     }
 
-    const handlePlanetClick = (index: number, orbitRadius: number) => {
+    const handlePlanetClick = (index: number, orbitRadius: number, planetSize: number) => {
         if (zoomingOut) return
-        setFocusedPlanet({ index, orbitRadius })
+        setFocusedPlanet({ index, orbitRadius, planetSize })
     }
 
     const handleUnfocus = () => setFocusedPlanet(null)
@@ -121,6 +124,7 @@ export const SystemCanvas = ({ hostname, planets, onBack }: SystemCanvasProps) =
                     focusedIndex={focusedPlanet?.index ?? null}
                     positionRefs={positionRefs}
                     orbitRadius={focusedPlanet?.orbitRadius ?? 1}
+                    planetSize={focusedPlanet?.planetSize ?? 1}
                 />
             </Canvas>
 

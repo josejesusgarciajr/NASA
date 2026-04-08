@@ -18,7 +18,7 @@ type OrbitingPlanetProps = {
     orbitRadius: number
     solarRadiusInUnits: number
     positionRef?: THREE.Vector3
-    onPlanetClick?: () => void
+    onPlanetClick?: (planetSize: number) => void
 }
 
 export const OrbitingPlanet = ({ planet, index, orbitRadius, solarRadiusInUnits, positionRef, onPlanetClick }: OrbitingPlanetProps) => {
@@ -29,11 +29,12 @@ export const OrbitingPlanet = ({ planet, index, orbitRadius, solarRadiusInUnits,
     const cfg      = planetConfig(type)
 
     const pl_rade    = planet.pl_rade ?? 1
-    const rawSize    = (pl_rade / 109) * solarRadiusInUnits * 20
+    const rawSize    = (pl_rade / 109) * solarRadiusInUnits * 5
     const minSize    = type === 'rocky' || type === 'super_earth'
-        ? solarRadiusInUnits * 0.18
-        : solarRadiusInUnits * 0.25
-    const maxSize    = Math.max(solarRadiusInUnits * 0.82, orbitRadius * 0.05)
+        ? solarRadiusInUnits * 0.05
+        : solarRadiusInUnits * 0.08
+    // Hard cap: no planet can exceed 60% of the star radius
+    const maxSize    = solarRadiusInUnits * 0.6
     const planetSize = Math.min(Math.max(rawSize, minSize), maxSize)
 
     const speed  = 0.05 / ((planet.pl_orbsmax ?? (index + 1) * 0.5) * 5)
@@ -68,7 +69,7 @@ export const OrbitingPlanet = ({ planet, index, orbitRadius, solarRadiusInUnits,
         <>
             <OrbitRing orbitRadius={orbitRadius} />
             <group ref={groupRef}>
-                <mesh ref={meshRef} onClick={(e) => { e.stopPropagation(); onPlanetClick?.() }}>
+                <mesh ref={meshRef} onClick={(e) => { e.stopPropagation(); onPlanetClick?.(planetSize) }}>
                     <sphereGeometry args={[planetSize, 48, 48]} />
                     <meshStandardMaterial
                         ref={matRef}

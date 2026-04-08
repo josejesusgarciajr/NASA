@@ -13,18 +13,20 @@ import * as THREE from 'three'
 type SystemSceneProps = {
     planets: Exoplanet[]
     planetPositionRefs?: THREE.Vector3[]
-    onPlanetClick?: (index: number, orbitRadius: number) => void
+    onPlanetClick?: (index: number, orbitRadius: number, planetSize: number) => void
 }
 
 export const SystemScene = ({ planets, planetPositionRefs, onPlanetClick }: SystemSceneProps) => {
     const star      = planets[0]
     const starColor = tempToColor(star.st_teff)
-    const starSize  = Math.min(Math.max((star.st_rad ?? 1) * 2, 4), 25)
+    const starSize  = Math.min(Math.max((star.st_rad ?? 1) * 5, 15), 60)
     const solarRadiusInUnits = starSize
 
     const orbitRadii = useMemo(() => {
         const radii: number[] = []
-        const starClearance = starSize + 18
+        // Ring outer = planetSize * 2.6, max planetSize = starSize * 0.6
+        // → max ring outer ≈ starSize * 1.56; orbit center must clear star + ring outer
+        const starClearance = starSize * 2.7 + 10
         planets.forEach((planet, i) => {
             const raw = (planet.pl_orbsmax ?? (i + 1) * 0.5) * AU
             let r = Math.max(raw, starClearance)
@@ -49,7 +51,7 @@ export const SystemScene = ({ planets, planetPositionRefs, onPlanetClick }: Syst
                     orbitRadius={orbitRadii[i]}
                     solarRadiusInUnits={solarRadiusInUnits}
                     positionRef={planetPositionRefs?.[i]}
-                    onPlanetClick={() => onPlanetClick?.(i, orbitRadii[i])}
+                    onPlanetClick={(size) => onPlanetClick?.(i, orbitRadii[i], size)}
                 />
             ))}
         </>
