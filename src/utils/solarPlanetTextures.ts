@@ -21,7 +21,7 @@ const BASE = '/textures/planets'
 
 const SOLAR_PLANET_TEXTURE_URLS: Record<string, string> = {
     mercury: `${BASE}/mercury.jpg`,
-    venus:   `${BASE}/venus.jpg`,
+    venus:   `${BASE}/venus_atmosphere.jpg`,
     mars:    `${BASE}/mars.jpg`,
     jupiter: `${BASE}/jupiter.jpg`,
     saturn:  `${BASE}/saturn.jpg`,
@@ -29,8 +29,9 @@ const SOLAR_PLANET_TEXTURE_URLS: Record<string, string> = {
     neptune: `${BASE}/neptune.jpg`,
 }
 
-export const EARTH_DAY_TEXTURE_URL   = `${BASE}/earth_day.jpg`
-export const EARTH_NIGHT_TEXTURE_URL = `${BASE}/earth_night.jpg`
+export const SUN_TEXTURE_URL         = `${BASE}/sun.jpg`
+export const EARTH_DAY_TEXTURE_URL   = `${BASE}/earth_daymap.jpg`
+export const EARTH_NIGHT_TEXTURE_URL = `${BASE}/earth_nightmap.jpg`
 export const EARTH_CLOUD_TEXTURE_URL = `${BASE}/earth_clouds.jpg`
 export const SATURN_RING_TEXTURE_URL = `${BASE}/saturn_ring.png`
 

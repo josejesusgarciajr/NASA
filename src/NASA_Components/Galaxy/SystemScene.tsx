@@ -10,6 +10,8 @@ import { AU, MIN_ORBIT_GAP } from '../../utils/galaxy'
 import { useMemo } from 'react'
 import * as THREE from 'three'
 
+const milkyWayTexture = new THREE.TextureLoader().load('/textures/planets/stars_milky_way.jpg')
+
 type SystemSceneProps = {
     planets: Exoplanet[]
     planetPositionRefs?: THREE.Vector3[]
@@ -39,11 +41,17 @@ export const SystemScene = ({ planets, planetPositionRefs, isSolarSystem, onPlan
 
     return (
         <>
+            {/* Milky Way background — large inverted sphere so it surrounds the scene */}
+            <mesh>
+                <sphereGeometry args={[50000, 64, 32]} />
+                <meshBasicMaterial map={milkyWayTexture} side={THREE.BackSide} />
+            </mesh>
+
             <pointLight position={[0, 0, 0]} intensity={2} distance={8000} color={starColor} />
             {/* Higher ambient so textures are visible from all angles */}
             <ambientLight intensity={0.45} />
             <StarGlow starSize={starSize} starColor={starColor} />
-            <StarMesh starSize={starSize} starColor={starColor} />
+            <StarMesh starSize={starSize} starColor={starColor} isSolarSystem={isSolarSystem} />
             {planets.map((planet, i) => (
                 <OrbitingPlanet
                     key={planet.pl_name}
