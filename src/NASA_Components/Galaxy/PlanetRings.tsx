@@ -8,10 +8,10 @@ import { useMemo } from 'react'
 import type { PlanetType } from '../../types/NASA/Exoplanets'
 import { makeIceGiantRingTexture, makeGasGiantRingTexture } from '../../utils/planetTextures' 
 
-type PlanetRingsProps = { planetSize: number; type: PlanetType }
+type PlanetRingsProps = { planetSize: number; type: PlanetType; ringTexture?: THREE.Texture }
 
-export const PlanetRings = ({ planetSize, type }: PlanetRingsProps) => {
-    const { innerMult, outerMult, tilt, ringTexture } = useMemo(() => {
+export const PlanetRings = ({ planetSize, type, ringTexture: externalRingTexture }: PlanetRingsProps) => {
+    const { innerMult, outerMult, tilt, ringTexture: proceduralRingTexture } = useMemo(() => {
         if (type === 'ice_giant') return {
             innerMult:   1.3,
             outerMult:   2.8,
@@ -40,9 +40,11 @@ export const PlanetRings = ({ planetSize, type }: PlanetRingsProps) => {
         return geo
     }, [planetSize, innerMult, outerMult])
 
+    const activeTexture = externalRingTexture ?? proceduralRingTexture
+
     return (
         <mesh rotation={[tilt, 0, 0.2]} geometry={geometry}>
-            <meshBasicMaterial map={ringTexture} side={THREE.DoubleSide} transparent depthWrite={false} />
+            <meshBasicMaterial map={activeTexture} side={THREE.DoubleSide} transparent depthWrite={false} />
         </mesh>
     )
 }

@@ -13,10 +13,11 @@ import * as THREE from 'three'
 type SystemSceneProps = {
     planets: Exoplanet[]
     planetPositionRefs?: THREE.Vector3[]
+    isSolarSystem?: boolean
     onPlanetClick?: (index: number, orbitRadius: number, planetSize: number) => void
 }
 
-export const SystemScene = ({ planets, planetPositionRefs, onPlanetClick }: SystemSceneProps) => {
+export const SystemScene = ({ planets, planetPositionRefs, isSolarSystem, onPlanetClick }: SystemSceneProps) => {
     const star      = planets[0]
     const starColor = tempToColor(star.st_teff)
     const starSize  = Math.min(Math.max((star.st_rad ?? 1) * 5, 15), 60)
@@ -51,6 +52,7 @@ export const SystemScene = ({ planets, planetPositionRefs, onPlanetClick }: Syst
                     orbitRadius={orbitRadii[i]}
                     solarRadiusInUnits={solarRadiusInUnits}
                     positionRef={planetPositionRefs?.[i]}
+                    isSolarSystem={isSolarSystem}
                     onPlanetClick={(size) => onPlanetClick?.(i, orbitRadii[i], size)}
                 />
             ))}

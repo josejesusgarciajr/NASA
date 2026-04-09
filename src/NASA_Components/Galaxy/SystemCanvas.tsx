@@ -116,6 +116,7 @@ export const SystemCanvas = ({ hostname, planets, onBack }: SystemCanvasProps) =
                 <SystemScene
                     planets={planets}
                     planetPositionRefs={positionRefs.current}
+                    isSolarSystem={hostname.toLowerCase() === 'sun'}
                     onPlanetClick={handlePlanetClick}
                 />
                 <OrbitControls enableZoom enableRotate enablePan enabled={!zoomingOut && focusedPlanet === null} />
