@@ -50,7 +50,8 @@ export const OrbitingPlanet = ({ planet, index, orbitRadius, solarRadiusInUnits,
         : solarRadiusInUnits * 0.08
     // Hard cap: no planet can exceed 60% of the star radius
     const maxSize    = solarRadiusInUnits * 0.6
-    const planetSize = Math.min(Math.max(rawSize, minSize), maxSize)
+    const basePlanetSize = Math.min(Math.max(rawSize, minSize), maxSize)
+    const planetSize = isSolarSystem ? basePlanetSize * 1.25 : basePlanetSize
 
     const speed  = 0.05 / ((planet.pl_orbsmax ?? (index + 1) * 0.5) * 5)
     const offset = (index / 8) * Math.PI * 2
