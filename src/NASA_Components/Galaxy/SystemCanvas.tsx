@@ -81,6 +81,40 @@ const SystemZoomOuter = ({ active }: { active: boolean }) => {
     return null
 }
 
+// Smoothly pans the camera back to the system overview after unfocusing a planet
+const CameraReturnToOverview = ({
+    active,
+    targetPos,
+    onDone,
+}: {
+    active: boolean
+    targetPos: THREE.Vector3
+    onDone: () => void
+}) => {
+    const { camera } = useThree()
+    const startRef = useRef<THREE.Vector3 | null>(null)
+
+    useFrame(() => {
+        if (!active) {
+            startRef.current = null
+            return
+        }
+
+        if (!startRef.current) startRef.current = camera.position.clone()
+
+        // Constant lerp factor — gives smooth exponential ease-out (~1.5s to settle)
+        camera.position.lerp(targetPos, 0.055)
+        camera.lookAt(0, 0, 0)
+
+        if (camera.position.distanceTo(targetPos) < 1.5) {
+            camera.position.copy(targetPos)
+            camera.lookAt(0, 0, 0)
+            onDone()
+        }
+    })
+    return null
+}
+
 export const SystemCanvas = ({ hostname, planets, onBack }: SystemCanvasProps) => {
     // Mirror SystemScene's orbit clamping so camDist reflects the actual rendered layout.
     // A large star pushes all orbits out to starClearance regardless of pl_orbsmax, so
@@ -97,8 +131,16 @@ export const SystemCanvas = ({ hostname, planets, onBack }: SystemCanvasProps) =
     const maxActualOrbit = Math.max(...actualOrbits, starSize * 3)
     // 1.8× gives the outermost orbit ~75% of the vertical viewport (FOV 55°), with margin
     const camDist = Math.max(maxActualOrbit * 1.8, starSize * 4, 80)
-    const [zoomingOut, setZoomingOut] = useState(false)
-    const [focusedPlanet, setFocusedPlanet] = useState<{ index: number; orbitRadius: number; planetSize: number } | null>(null)
+
+    // The default overview position — used as the lerp target when returning from a planet
+    const overviewPos = useMemo(
+        () => new THREE.Vector3(0, camDist * 0.4, camDist * 0.9),
+        [camDist]
+    )
+
+    const [zoomingOut, setZoomingOut]               = useState(false)
+    const [focusedPlanet, setFocusedPlanet]         = useState<{ index: number; orbitRadius: number; planetSize: number } | null>(null)
+    const [returningToOverview, setReturningToOverview] = useState(false)
 
     // One persistent Vector3 per planet — updated every frame by OrbitingPlanet
     const positionRefsArray = useMemo(
@@ -118,7 +160,13 @@ export const SystemCanvas = ({ hostname, planets, onBack }: SystemCanvasProps) =
         setFocusedPlanet({ index, orbitRadius, planetSize })
     }
 
-    const handleUnfocus = () => setFocusedPlanet(null)
+    const handleUnfocus = () => {
+        setFocusedPlanet(null)
+        setReturningToOverview(true)
+    }
+
+    // OrbitControls is disabled while a planet is focused OR while returning to overview
+    const orbitControlsEnabled = !zoomingOut && focusedPlanet === null && !returningToOverview
 
     return (
         <div style={{ width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0, background: 'black' }}>
@@ -132,13 +180,18 @@ export const SystemCanvas = ({ hostname, planets, onBack }: SystemCanvasProps) =
                     isSolarSystem={hostname.toLowerCase() === 'sun'}
                     onPlanetClick={handlePlanetClick}
                 />
-                <OrbitControls enableZoom enableRotate enablePan enabled={!zoomingOut && focusedPlanet === null} />
+                <OrbitControls enableZoom enableRotate enablePan enabled={orbitControlsEnabled} />
                 <SystemZoomOuter active={zoomingOut} />
                 <PlanetFollowCamera
                     focusedIndex={focusedPlanet?.index ?? null}
                     positionRefs={positionRefs}
                     orbitRadius={focusedPlanet?.orbitRadius ?? 1}
                     planetSize={focusedPlanet?.planetSize ?? 1}
+                />
+                <CameraReturnToOverview
+                    active={returningToOverview}
+                    targetPos={overviewPos}
+                    onDone={() => setReturningToOverview(false)}
                 />
             </Canvas>
 

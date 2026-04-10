@@ -5,6 +5,7 @@ import { tempToColor } from '../../utils/galaxy'
 import { StarGlow } from './StarGlow'
 import { StarMesh } from './StarMesh'
 import { AU, MIN_ORBIT_GAP } from '../../utils/galaxy'
+import { HalleysComet } from './HalleysComet'
 
 // react
 import { useMemo } from 'react'
@@ -103,6 +104,8 @@ export const SystemScene = ({ planets, planetPositionRefs, isSolarSystem, onPlan
                     onPlanetClick={(size) => onPlanetClick?.(i, orbitRadii[i], size)}
                 />
             ))}
+
+            {isSolarSystem && <HalleysComet />}
 
             {isSolarSystem && (
                 <>
