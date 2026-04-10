@@ -7,7 +7,7 @@ import * as THREE from 'three'
 // nasa
 import type { Exoplanet } from '../../types/NASA/Exoplanets'
 import { SystemScene } from './SystemScene'
-import { AU } from '../../utils/galaxy'
+import { AU, MIN_ORBIT_GAP } from '../../utils/galaxy'
 import { BackButton } from '../../components/BackButton'
 
 type SystemCanvasProps = {
@@ -82,8 +82,21 @@ const SystemZoomOuter = ({ active }: { active: boolean }) => {
 }
 
 export const SystemCanvas = ({ hostname, planets, onBack }: SystemCanvasProps) => {
-    const maxOrbit = Math.max(...planets.map(p => (p.pl_orbsmax ?? 0.5))) * AU
-    const camDist  = Math.max(maxOrbit * 1.4, 70)
+    // Mirror SystemScene's orbit clamping so camDist reflects the actual rendered layout.
+    // A large star pushes all orbits out to starClearance regardless of pl_orbsmax, so
+    // using raw pl_orbsmax * AU here would leave the camera far too close for big stars.
+    const starSize      = Math.min(Math.max((planets[0].st_rad ?? 1) * 5, 15), 60)
+    const starClearance = starSize * 2.7 + 10
+    const actualOrbits: number[] = []
+    planets.forEach((p, i) => {
+        const raw = (p.pl_orbsmax ?? (i + 1) * 0.5) * AU
+        let r = Math.max(raw, starClearance)
+        if (i > 0) r = Math.max(r, actualOrbits[i - 1] + MIN_ORBIT_GAP)
+        actualOrbits.push(r)
+    })
+    const maxActualOrbit = Math.max(...actualOrbits, starSize * 3)
+    // 1.8× gives the outermost orbit ~75% of the vertical viewport (FOV 55°), with margin
+    const camDist = Math.max(maxActualOrbit * 1.8, starSize * 4, 80)
     const [zoomingOut, setZoomingOut] = useState(false)
     const [focusedPlanet, setFocusedPlanet] = useState<{ index: number; orbitRadius: number; planetSize: number } | null>(null)
 
