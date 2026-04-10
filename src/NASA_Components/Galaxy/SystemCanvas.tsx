@@ -14,6 +14,7 @@ type SystemCanvasProps = {
     hostname: string
     planets: Exoplanet[]
     onBack: () => void
+    astrophageMode?: boolean
 }
 
 // Smoothly follows a focused planet — camera stays behind it (from star's POV) so the star glows in the background
@@ -115,7 +116,7 @@ const CameraReturnToOverview = ({
     return null
 }
 
-export const SystemCanvas = ({ hostname, planets, onBack }: SystemCanvasProps) => {
+export const SystemCanvas = ({ hostname, planets, onBack, astrophageMode }: SystemCanvasProps) => {
     // Mirror SystemScene's orbit clamping so camDist reflects the actual rendered layout.
     // A large star pushes all orbits out to starClearance regardless of pl_orbsmax, so
     // using raw pl_orbsmax * AU here would leave the camera far too close for big stars.
@@ -178,6 +179,7 @@ export const SystemCanvas = ({ hostname, planets, onBack }: SystemCanvasProps) =
                     planets={planets}
                     planetPositionRefs={positionRefs.current}
                     isSolarSystem={hostname.toLowerCase() === 'sun'}
+                    astrophageMode={astrophageMode}
                     onPlanetClick={handlePlanetClick}
                 />
                 <OrbitControls enableZoom enableRotate enablePan enabled={orbitControlsEnabled} />
@@ -194,6 +196,17 @@ export const SystemCanvas = ({ hostname, planets, onBack }: SystemCanvasProps) =
                     onDone={() => setReturningToOverview(false)}
                 />
             </Canvas>
+
+            {/* Astrophage mode — subtle purple scene tint */}
+            {astrophageMode && (
+                <div style={{
+                    position: 'fixed', inset: 0,
+                    background: 'radial-gradient(ellipse at 50% 40%, rgba(160, 0, 255, 0.07) 0%, rgba(80, 0, 180, 0.16) 100%)',
+                    mixBlendMode: 'screen',
+                    pointerEvents: 'none',
+                    zIndex: 1,
+                }} />
+            )}
 
             <BackButton text={'← Back to Galaxy'} handleBack={handleBack} />
 
@@ -219,6 +232,19 @@ export const SystemCanvas = ({ hostname, planets, onBack }: SystemCanvasProps) =
                 border: '1px solid rgba(255,255,255,0.2)',
                 fontSize: '13px', zIndex: 1000, minWidth: '220px',
             }}>
+                {astrophageMode && (
+                    <div style={{
+                        display: 'inline-flex', alignItems: 'center', gap: '6px',
+                        marginBottom: '10px', padding: '3px 8px',
+                        background: 'rgba(160, 0, 255, 0.18)',
+                        border: '1px solid rgba(180, 40, 255, 0.55)',
+                        borderRadius: '3px',
+                        color: '#cc88ff',
+                        fontSize: '10px', letterSpacing: '1.2px', fontWeight: 'bold',
+                    }}>
+                        <span style={{ fontSize: '11px' }}>⬡</span> ASTROPHAGE MODE
+                    </div>
+                )}
                 <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '12px' }}>{hostname}</div>
                 <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', letterSpacing: '1px', marginBottom: '8px' }}>STAR</div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
@@ -233,6 +259,13 @@ export const SystemCanvas = ({ hostname, planets, onBack }: SystemCanvasProps) =
                     <span style={{ color: 'rgba(255,255,255,0.5)' }}>Distance</span>
                     <span>{planets[0].sy_dist ? `${planets[0].sy_dist.toFixed(1)} pc` : '—'}</span>
                 </div>
+                {astrophageMode && (
+                    <div style={{ marginBottom: '14px', padding: '8px', background: 'rgba(100,0,200,0.12)', borderRadius: '3px', border: '1px solid rgba(150,0,255,0.2)' }}>
+                        <div style={{ color: '#bb66ff', fontSize: '10px', letterSpacing: '1px', marginBottom: '4px' }}>MIGRATION ROUTE</div>
+                        <div style={{ color: 'rgba(200,150,255,0.85)', fontSize: '11px' }}>Sun ↔ Venus</div>
+                        <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: '10px', marginTop: '3px' }}>CO₂ spectrum signature</div>
+                    </div>
+                )}
                 <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', letterSpacing: '1px', marginBottom: '8px' }}>PLANETS</div>
                 {planets.map(p => (
                     <div key={p.pl_name} style={{ marginBottom: '6px' }}>

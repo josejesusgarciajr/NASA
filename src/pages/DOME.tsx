@@ -35,9 +35,10 @@ export const DOME = () => {
         }
     }, [searchParams])
 
-    const systemPlanets = selectedSystem
+    const systemPlanets   = selectedSystem
         ? exoplanets.filter(e => e.hostname === selectedSystem)
         : []
+    const astrophageMode  = selectedSystem?.toLowerCase() === 'sun' && searchParams.get('astrophage') === 'true'
 
     const handleEnterSystem = useCallback((star: Exoplanet) => {
         setOverlayActive(true)
@@ -76,7 +77,7 @@ export const DOME = () => {
 
             {exoplanets.length > 0 && (
                 view === 'system' && selectedSystem && systemPlanets.length > 0 ? (
-                    <SystemCanvas hostname={selectedSystem} planets={systemPlanets} onBack={handleBack} />
+                    <SystemCanvas hostname={selectedSystem} planets={systemPlanets} onBack={handleBack} astrophageMode={astrophageMode} />
                 ) : (
                     <GalaxyCanvas exoplanets={exoplanets} onEnterSystem={handleEnterSystem} />
                 )

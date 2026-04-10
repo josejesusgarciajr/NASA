@@ -70,9 +70,22 @@ export const NavBar = () => {
   const [apodMenuAnchor, setApodMenuAnchor] = useState<null | HTMLElement>(null)
   const [apodDrawerOpen, setApodDrawerOpen] = useState(false)
 
+  const params             = new URLSearchParams(location.search)
+  const isSolarSystemView  = location.pathname === '/dome' && params.get('system') === 'Sun'
+  const astrophageActive   = isSolarSystemView && params.get('astrophage') === 'true'
+
   function handleRocketLaunch() {
     if (location.pathname === '/apod-explorer') {
       navigate('/apod-explorer?random=true')
+    } else if (isSolarSystemView) {
+      // Toggle Astrophage mode on the Solar System view
+      const next = new URLSearchParams(location.search)
+      if (astrophageActive) {
+        next.delete('astrophage')
+      } else {
+        next.set('astrophage', 'true')
+      }
+      navigate(`/dome?${next.toString()}`)
     }
   }
 
@@ -175,9 +188,21 @@ export const NavBar = () => {
           {/* Spacer */}
           <Box sx={{ flexGrow: 1 }} />
 
-          {/* Rocket icon */}
-          <IconButton onClick={handleRocketLaunch} sx={{ ml: 0.5 }}>
-            <RocketLaunchIcon sx={{ fontSize: { xs: '0.75rem', sm: '1.5rem' } }} />
+          {/* Rocket icon — glows purple when Astrophage mode is active */}
+          <IconButton
+            onClick={handleRocketLaunch}
+            sx={{
+              ml: 0.5,
+              ...(astrophageActive && {
+                filter: 'drop-shadow(0 0 6px #cc44ff)',
+              }),
+            }}
+          >
+            <RocketLaunchIcon sx={{
+              fontSize: { xs: '0.75rem', sm: '1.5rem' },
+              color: astrophageActive ? '#cc88ff' : 'white',
+              transition: 'color 0.3s ease',
+            }} />
           </IconButton>
 
         </Toolbar>

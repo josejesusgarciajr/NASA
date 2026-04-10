@@ -6,6 +6,7 @@ import { StarGlow } from './StarGlow'
 import { StarMesh } from './StarMesh'
 import { AU, MIN_ORBIT_GAP } from '../../utils/galaxy'
 import { HalleysComet } from './HalleysComet'
+import { AstrophageMigration } from './AstrophageMigration'
 
 // react
 import { useMemo } from 'react'
@@ -56,10 +57,11 @@ type SystemSceneProps = {
     planets: Exoplanet[]
     planetPositionRefs?: THREE.Vector3[]
     isSolarSystem?: boolean
+    astrophageMode?: boolean
     onPlanetClick?: (index: number, orbitRadius: number, planetSize: number) => void
 }
 
-export const SystemScene = ({ planets, planetPositionRefs, isSolarSystem, onPlanetClick }: SystemSceneProps) => {
+export const SystemScene = ({ planets, planetPositionRefs, isSolarSystem, astrophageMode, onPlanetClick }: SystemSceneProps) => {
     const star      = planets[0]
     const starColor = tempToColor(star.st_teff)
     const starSize  = Math.min(Math.max((star.st_rad ?? 1) * 5, 15), 60)
@@ -106,6 +108,11 @@ export const SystemScene = ({ planets, planetPositionRefs, isSolarSystem, onPlan
             ))}
 
             {isSolarSystem && <HalleysComet />}
+
+            {/* Astrophage migration arch — Sun ↔ Venus (Project Hail Mary) */}
+            {isSolarSystem && astrophageMode && planetPositionRefs && planetPositionRefs[1] && (
+                <AstrophageMigration venusPositionRef={planetPositionRefs[1]} />
+            )}
 
             {isSolarSystem && (
                 <>
