@@ -10,6 +10,45 @@ import { AU, MIN_ORBIT_GAP } from '../../utils/galaxy'
 import { useMemo } from 'react'
 import * as THREE from 'three'
 
+type CosmicBeltProps = {
+    innerRadius: number
+    outerRadius: number
+    count: number
+    color: string
+    thickness: number
+    opacity: number
+}
+
+const CosmicBelt = ({ innerRadius, outerRadius, count, color, thickness, opacity }: CosmicBeltProps) => {
+    const positions = useMemo(() => {
+        const arr = new Float32Array(count * 3)
+        for (let i = 0; i < count; i++) {
+            const angle = Math.random() * Math.PI * 2
+            const r     = innerRadius + Math.random() * (outerRadius - innerRadius)
+            arr[i * 3]     = Math.cos(angle) * r
+            arr[i * 3 + 1] = (Math.random() - 0.5) * 2 * thickness
+            arr[i * 3 + 2] = Math.sin(angle) * r
+        }
+        return arr
+    }, [innerRadius, outerRadius, count, thickness])
+
+    return (
+        <points>
+            <bufferGeometry>
+                <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+            </bufferGeometry>
+            <pointsMaterial
+                color={color}
+                size={1.5}
+                sizeAttenuation={false}
+                transparent
+                opacity={opacity}
+                depthWrite={false}
+            />
+        </points>
+    )
+}
+
 const milkyWayTexture = new THREE.TextureLoader().load('/textures/planets/stars_milky_way.jpg')
 
 type SystemSceneProps = {
@@ -64,6 +103,29 @@ export const SystemScene = ({ planets, planetPositionRefs, isSolarSystem, onPlan
                     onPlanetClick={(size) => onPlanetClick?.(i, orbitRadii[i], size)}
                 />
             ))}
+
+            {isSolarSystem && (
+                <>
+                    {/* Asteroid Belt — 2.2 to 3.2 AU, between Mars and Jupiter */}
+                    <CosmicBelt
+                        innerRadius={2.2 * AU}
+                        outerRadius={3.2 * AU}
+                        count={4000}
+                        color="#9a8870"
+                        thickness={6}
+                        opacity={0.75}
+                    />
+                    {/* Kuiper Belt — 30 to 50 AU, beyond Neptune */}
+                    <CosmicBelt
+                        innerRadius={30 * AU}
+                        outerRadius={50 * AU}
+                        count={3000}
+                        color="#6ea8c8"
+                        thickness={120}
+                        opacity={0.55}
+                    />
+                </>
+            )}
         </>
     )
 }
