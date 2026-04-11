@@ -41,6 +41,13 @@ export const DOME = () => {
         : []
     const astrophageMode  = selectedSystem?.toLowerCase() === 'sun' && searchParams.get('astrophage') === 'true'
 
+    useEffect(() => {
+        const link = document.querySelector<HTMLLinkElement>("link[rel='icon']")
+        if (!link) return
+        link.href = astrophageMode ? '/favicon-astrophage.svg' : '/favicon.svg'
+        return () => { link.href = '/favicon.svg' }
+    }, [astrophageMode])
+
     const handleEnterSystem = useCallback((star: Exoplanet) => {
         setOverlayActive(true)
         // Double rAF ensures the div is painted before we trigger the transition
