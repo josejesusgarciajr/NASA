@@ -4,6 +4,7 @@ import dayjs from 'dayjs'
 import { APODDisplay } from '../NASA_Components/APOD/APODDisplay';
 import { NASAServiceDisplay } from '../NASA_Components/shared/NASAServiceDisplay';
 import { NeonLinearProgress } from '../NASA_Components/shared/NeonLinearProgress';
+import { CosmicLoader } from '../NASA_Components/shared/CosmicLoader';
 
 // MATERIAL UI
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -113,7 +114,7 @@ export const APODExplorer = () => {
                 <APODDisplay apod={apod} />
             )}
 
-            {loadingAPOD && <p>Fetching Cosmic Data...</p>}
+            {loadingAPOD && <CosmicLoader />}
         </>
     );
 }

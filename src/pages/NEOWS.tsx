@@ -5,6 +5,7 @@ import { useEffect } from 'react'
 import { NEOFeedDisplay } from '../NASA_Components/NEOWS/NEOFeedDisplay'
 import { NASAServiceDisplay } from '../NASA_Components/shared/NASAServiceDisplay'
 import { NeonLinearProgress } from '../NASA_Components/shared/NeonLinearProgress'
+import { CosmicLoader } from '../NASA_Components/shared/CosmicLoader'
 
 // MATERIAL UI
 import Alert from '@mui/material/Alert';
@@ -62,7 +63,7 @@ export const NEOWS = () => {
                 </>
             )}
 
-            {loadingNEO && <p>Fetching Cosmic Data...</p>}
+            {loadingNEO && <CosmicLoader />}
         </>
     );
 }

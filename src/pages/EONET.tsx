@@ -7,6 +7,7 @@ import { NeonLinearProgress } from '../NASA_Components/shared/NeonLinearProgress
 // react
 import { useState, useEffect, useMemo } from 'react'
 import { NASASelect } from '../NASA_Components/shared/NASASelect'
+import { CosmicLoader } from '../NASA_Components/shared/CosmicLoader'
 
 export const EONET = () => {
     const { 
@@ -68,17 +69,16 @@ export const EONET = () => {
 
     return (
         <>
-            <NASAServiceDisplay serviceAcronym='EONET' serviceName="Earth Observatory Natural Event Tracker" />
-
             {loadingEONET && (
-                <>  
+                <>
                     <NeonLinearProgress />
-                    <p>Fetching Cosmic Data...</p>
+                    <CosmicLoader />
                 </>
             )}
 
             {renderPage && (
                 <>
+                    <NASAServiceDisplay serviceAcronym='EONET' serviceName="Earth Observatory Natural Event Tracker" />
                     <NASASelect
                         label='Category'
                         options={eonetCategories.map(category => category.title)}

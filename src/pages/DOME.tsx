@@ -3,6 +3,7 @@ import { useExoplanets } from '../hooks/Exoplanets/useExoplanets'
 import { GalaxyCanvas } from '../NASA_Components/Galaxy/GalaxyCanvas'
 import { SystemCanvas } from '../NASA_Components/Galaxy/SystemCanvas'
 import { NeonLinearProgress } from '../NASA_Components/shared/NeonLinearProgress'
+import { CosmicLoader } from '../NASA_Components/shared/CosmicLoader'
 import type { Exoplanet } from '../types/NASA/Exoplanets'
 
 // react
@@ -72,7 +73,10 @@ export const DOME = () => {
     return (
         <>
             {loadingExoplanets && (
-                <NeonLinearProgress />
+                <>
+                    <NeonLinearProgress />
+                    <CosmicLoader />
+                </>
             )}
 
             {exoplanets.length > 0 && (
