@@ -1,11 +1,11 @@
 export const buttonGlowSx = {
-    borderColor: "primary.main",
+    borderColor: "rgba(56,189,248,0.45)",
     "&:hover": {
-        borderColor: "secondary.main",
-        boxShadow: "0 0 8px rgba(156, 39, 176, 0.6)",
+        borderColor: "#38bdf8",
+        boxShadow: "0 0 12px rgba(56,189,248,0.35)",
     },
     "&:focus": {
-        borderColor: "secondary.main",
-        boxShadow: "0 0 8px rgba(156, 39, 176, 0.6)",
+        borderColor: "#38bdf8",
+        boxShadow: "0 0 12px rgba(56,189,248,0.35)",
     },
 };

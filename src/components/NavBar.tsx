@@ -37,7 +37,7 @@ export const NavButton = ({ to, end, children }: NavButtonProps) => {
           sx={{
             color: 'white',
             borderRadius: 1,
-            borderBottom: isActive ? '2px solid white' : '2px solid transparent',
+            borderBottom: isActive ? '2px solid #38bdf8' : '2px solid transparent',
             minWidth: 'unset',
             px: { xs: 1.25, sm: 2 },
             fontSize: { xs: '0.6rem', sm: '0.875rem' },
@@ -100,7 +100,14 @@ export const NavBar = () => {
     <>
       <AppBar
         position="fixed"
-        sx={{ top: 0, left: 0, right: 0, width: '100%', zIndex: 1100, margin: 0 }}
+        sx={{
+          top: 0, left: 0, right: 0, width: '100%', zIndex: 1100, margin: 0,
+          background: 'rgba(5, 9, 26, 0.85)',
+          backdropFilter: 'blur(14px)',
+          WebkitBackdropFilter: 'blur(14px)',
+          borderBottom: '1px solid rgba(56, 189, 248, 0.15)',
+          boxShadow: '0 1px 24px rgba(0,0,0,0.6)',
+        }}
       >
         <Toolbar sx={{ px: { xs: 1.5, sm: 3 } }} disableGutters>
 
@@ -138,7 +145,7 @@ export const NavBar = () => {
               sx={{
                 color: 'white',
                 borderRadius: 1,
-                borderBottom: isApodActive ? '2px solid white' : '2px solid transparent',
+                borderBottom: isApodActive ? '2px solid #38bdf8' : '2px solid transparent',
                 minWidth: 'unset',
                 px: 2,
                 fontSize: '0.875rem',
@@ -153,10 +160,12 @@ export const NavBar = () => {
               onClose={() => setApodMenuAnchor(null)}
               PaperProps={{
                 sx: {
-                  backgroundColor: '#1a1a2e',
+                  backgroundColor: 'rgba(10, 18, 40, 0.97)',
+                  backdropFilter: 'blur(12px)',
                   color: 'white',
-                  border: '1px solid rgba(255,255,255,0.1)',
+                  border: '1px solid rgba(56,189,248,0.18)',
                   mt: 1,
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
                 }
               }}
             >
@@ -214,7 +223,13 @@ export const NavBar = () => {
         open={drawerOpen}
         onClose={handleDrawerClose}
         PaperProps={{
-          sx: { width: 220, backgroundColor: '#1a1a2e', color: 'white' }
+          sx: {
+            width: 220,
+            backgroundColor: 'rgba(8, 14, 35, 0.97)',
+            backdropFilter: 'blur(14px)',
+            borderRight: '1px solid rgba(56,189,248,0.15)',
+            color: 'white',
+          }
         }}
       >
         <Box sx={{ pt: 2, pb: 1, px: 2 }}>
@@ -230,7 +245,7 @@ export const NavBar = () => {
               {({ isActive }) => (
                 <ListItemButton sx={{
                   backgroundColor: isActive ? 'rgba(255,255,255,0.1)' : 'transparent',
-                  borderLeft: isActive ? '3px solid white' : '3px solid transparent',
+                  borderLeft: isActive ? '3px solid #38bdf8' : '3px solid transparent',
                   '&:hover': { backgroundColor: 'rgba(255,255,255,0.08)' },
                 }}>
                   <ListItemText primary="Home" primaryTypographyProps={{ sx: { color: 'white', fontSize: '0.95rem' } }} />
@@ -262,7 +277,7 @@ export const NavBar = () => {
                       <ListItemButton sx={{
                         pl: 4,
                         backgroundColor: isActive ? 'rgba(255,255,255,0.1)' : 'transparent',
-                        borderLeft: isActive ? '3px solid white' : '3px solid transparent',
+                        borderLeft: isActive ? '3px solid #38bdf8' : '3px solid transparent',
                         '&:hover': { backgroundColor: 'rgba(255,255,255,0.08)' },
                       }}>
                         <ListItemText primary={link.label} primaryTypographyProps={{ sx: { color: 'rgba(255,255,255,0.8)', fontSize: '0.875rem' } }} />
@@ -281,7 +296,7 @@ export const NavBar = () => {
                 {({ isActive }) => (
                   <ListItemButton sx={{
                     backgroundColor: isActive ? 'rgba(255,255,255,0.1)' : 'transparent',
-                    borderLeft: isActive ? '3px solid white' : '3px solid transparent',
+                    borderLeft: isActive ? '3px solid #38bdf8' : '3px solid transparent',
                     '&:hover': { backgroundColor: 'rgba(255,255,255,0.08)' },
                   }}>
                     <ListItemText primary={link.label} primaryTypographyProps={{ sx: { color: 'white', fontSize: '0.95rem' } }} />

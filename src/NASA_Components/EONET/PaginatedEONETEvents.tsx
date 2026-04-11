@@ -54,12 +54,12 @@ export const PaginatedEONETEvents = ({ eonetEvents, page, setPage, rowsPerPage,
     }
 
     return (
-        <Paper 
-            sx={{ 
-                width: "100%", 
+        <Paper
+            sx={{
+                width: "100%",
                 overflow: "hidden",
-                border: '1px solid',
-                borderColor: 'primary.dark',
+                border: '1px solid rgba(56,189,248,0.2)',
+                boxShadow: '0 0 24px rgba(56,189,248,0.06)',
             }}
         >
             <TableContainer sx={{ maxHeight: { xs: '60vh', md: 400 } }}>
@@ -73,13 +73,12 @@ export const PaginatedEONETEvents = ({ eonetEvents, page, setPage, rowsPerPage,
                                     sx={{
                                         minWidth: { xs: 70, md: column.minWidth },
                                         fontSize: { xs: '0.6rem', md: '0.875rem' },
-                                        backgroundColor: 'primary.dark',
-                                        color: 'primary.contrastText',
+                                        backgroundColor: 'rgba(3, 105, 161, 0.35)',
+                                        color: '#e2e8f0',
                                         fontWeight: 'bold',
-                                        letterSpacing: '0.05em',
+                                        letterSpacing: '0.07em',
                                         textTransform: 'uppercase',
-                                        borderBottom: '2px solid',
-                                        borderColor: 'primary.main',
+                                        borderBottom: '2px solid rgba(56,189,248,0.4)',
                                     }}
                                 >
                                     <TableSortLabel

@@ -1,14 +1,14 @@
 export const glowSx = {
     "& .MuiOutlinedInput-root": {
         "& fieldset": {
-            borderColor: "primary.main",
+            borderColor: "rgba(56,189,248,0.35)",
         },
         "&:hover fieldset": {
-            borderColor: "secondary.main",
+            borderColor: "#38bdf8",
         },
         "&.Mui-focused fieldset": {
-            borderColor: "secondary.main",
-            boxShadow: "0 0 8px rgba(156, 39, 176, 0.6)",
+            borderColor: "#38bdf8",
+            boxShadow: "0 0 10px rgba(56,189,248,0.4)",
         },
     },
 };

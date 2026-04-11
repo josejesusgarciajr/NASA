@@ -23,7 +23,18 @@ export const APODCard = ({ apod, cardClicked, removeAPOD }: APODCardProps) => {
         : apod.explanation
 
     return (
-        <Card sx={{ backgroundColor: 'background.paper', height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <Card sx={{
+            backgroundColor: 'background.paper',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            border: '1px solid rgba(56,189,248,0.12)',
+            transition: 'border-color 0.25s, box-shadow 0.25s',
+            '&:hover': {
+                borderColor: 'rgba(56,189,248,0.4)',
+                boxShadow: '0 0 18px rgba(56,189,248,0.15)',
+            },
+        }}>
             <CardActionArea onClick={() => cardClicked(apod)} sx={{ flexGrow: 1 }}>
                 <APODMediaContent apod={apod} />
                 <CardContent>

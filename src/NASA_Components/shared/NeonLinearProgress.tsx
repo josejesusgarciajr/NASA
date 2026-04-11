@@ -7,16 +7,15 @@ export const NeonLinearProgress = () => {
         <Box sx={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 2000 }}>
             <LinearProgress
                 sx={{
-                    height: 3,
-                    backgroundColor: 'rgba(0, 120, 255, 0.08)',
+                    height: 2,
+                    backgroundColor: 'rgba(56,189,248,0.07)',
                     '& .MuiLinearProgress-bar': {
-                        backgroundColor: '#0088ff',
+                        background: 'linear-gradient(90deg, #38bdf8, #a78bfa)',
                         boxShadow: `
-                            0 0 4px #0088ff,
-                            0 0 12px #0088ff,
-                            0 0 25px #0088ff,
-                            0 0 50px #0066cc80,
-                            0 0 80px #004499
+                            0 0 6px #38bdf8,
+                            0 0 16px rgba(56,189,248,0.7),
+                            0 0 30px rgba(56,189,248,0.4),
+                            0 0 60px rgba(167,139,250,0.3)
                         `,
                     },
                 }}

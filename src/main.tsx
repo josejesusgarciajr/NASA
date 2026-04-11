@@ -12,13 +12,24 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 const theme = createTheme({
   palette: {
-    mode: "dark", // 👈 if you want the darker Vite look
+    mode: "dark",
     primary: {
-      main: "#1976d2",
+      main: "#38bdf8",     // stellar cyan
+      light: "#7dd3fc",
+      dark: "#0369a1",     // deep cosmic blue
+    },
+    secondary: {
+      main: "#a78bfa",     // nebula purple
+      light: "#c4b5fd",
+      dark: "#7c3aed",
     },
     background: {
-      default: "#242424", // old Vite dark background
-      paper: "#1e1e1e",   // surfaces like cards
+      default: "#05091a",  // deep space void
+      paper: "#0d1628",    // deep navy
+    },
+    text: {
+      primary: "#e2e8f0",
+      secondary: "#94a3b8",
     },
   },
   components: {
@@ -26,13 +37,13 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#1976d2",
+            borderColor: "rgba(56,189,248,0.35)",
           },
           "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#115293",
+            borderColor: "#38bdf8",
           },
           "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#1976d2",
+            borderColor: "#38bdf8",
             borderWidth: 2,
           },
         },
@@ -41,10 +52,26 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         outlined: {
-          borderColor: "#1976d2",
+          borderColor: "rgba(56,189,248,0.45)",
           "&:hover": {
-            borderColor: "#115293",
+            borderColor: "#38bdf8",
+            boxShadow: "0 0 12px rgba(56,189,248,0.25)",
           },
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          backgroundImage: "none",
+          border: "1px solid rgba(56,189,248,0.12)",
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundImage: "none",
         },
       },
     },

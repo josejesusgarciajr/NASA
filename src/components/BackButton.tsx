@@ -12,11 +12,20 @@ export const BackButton = ({text, handleBack} : BackButtonProps) => {
             onClick={handleBack}
             sx={{
                 position: 'fixed', top: '80px', left: '20px',
-                background: 'rgba(0,0,0,0.7)', color: 'white',
-                borderRadius: '4px', cursor: 'pointer',
-                border: '1px solid rgba(255,255,255,0.2)', zIndex: 1000,
+                background: 'rgba(5, 9, 26, 0.82)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                color: '#e2e8f0',
+                borderRadius: '6px', cursor: 'pointer',
+                border: '1px solid rgba(56,189,248,0.25)',
+                zIndex: 1000,
                 padding: { xs: '5px 10px', sm: '8px 16px' },
                 fontSize: { xs: '0.7rem', sm: '0.875rem' },
+                transition: 'border-color 0.2s, box-shadow 0.2s',
+                '&:hover': {
+                    borderColor: 'rgba(56,189,248,0.55)',
+                    boxShadow: '0 0 12px rgba(56,189,248,0.2)',
+                },
             }}
         >
             {text}
