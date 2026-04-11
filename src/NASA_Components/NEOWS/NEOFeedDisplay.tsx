@@ -1,19 +1,20 @@
+// nasa
 import type { NEOFeedResponse, NEOObject } from "../../types/NASA/NEOFeedResponse";
 
 import { buttonGlowSx } from '../../types/buttonGlowSx'
 import { NEOObjectDisplay } from "./NEOObjectDisplay";
-import  { NEOSearch } from './NEOSearch';
-import { NEODateFilter } from "./NEODateFilter";
-import { NEOHazardousFilter } from "./NEOHazardousFilter";
-import { NEODiameterSort } from './NEODiameterSort';
+import { NEOSearch } from './NEOSearch';
 import { NEOObjectModal } from "./Modals/NEOObjectModal ";
+import { NASASelect } from "../shared/NASASelect";
 
+// material ui
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { Typography } from "@mui/material";
 
+// react
 import { useState, useEffect, useMemo } from 'react';
 
 type NEOFeedDisplayProps = {
@@ -133,7 +134,8 @@ export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, loadingNEO, setLoad
     }
 
     function sortByDiameter(value: string) {
-        setSelectedNEODiameterSort(value);
+        value === 'Biggest to smallest' ? 
+            setSelectedNEODiameterSort('desc') : setSelectedNEODiameterSort('asc');
     }
 
     function onModalClose() {
@@ -157,9 +159,28 @@ export const NEOFeedDisplay = ({neoFeedResponse, neoNavLink, loadingNEO, setLoad
                 <Button variant="outlined" sx={buttonGlowSx} disabled={loadingNEO} onClick={() => handleNeoNavLink(neoFeedResponse.links.previous)}>Previous</Button>
                 <Button variant="outlined" sx={buttonGlowSx} disabled={loadingNEO} onClick={() => handleNeoNavLink(neoFeedResponse.links.next)}>Next</Button>
                 <NEOSearch searchTerm={searchTerm} searchNEO={searchNEO} loadingNEO={loadingNEO} />
-                <NEODateFilter dates={dates} selectedDate={selectedDate} setSelectedDate={sortByDate} loadingNEO={loadingNEO} />
-                <NEOHazardousFilter hazardousOptions={hazardousOptions} hazardous={hazardous} selectedHazardous={sortByHazardous} loadingNEO={loadingNEO} />
-                <NEODiameterSort sortOptions={neoDiameterSortOptions} selectedOption={selectedNEODiameterSort} sortByDiameter={sortByDiameter} loadingNEO={loadingNEO}/>
+                <NASASelect 
+                    label='Date'
+                    options={dates}
+                    selectedValue={selectedDate}
+                    onChange={sortByDate}
+                    loading={loadingNEO}
+                />
+                <NASASelect
+                    label='Hazardous'
+                    options={hazardousOptions}
+                    selectedValue={hazardous === null ? 'All' : hazardous ? 'HAZARDOUS' : 'Not Hazardous'}
+                    onChange={sortByHazardous}
+                    loading={loadingNEO}
+                />
+                <NASASelect
+                    label='Diameter Sort'
+                    options={neoDiameterSortOptions}
+                    selectedValue={selectedNEODiameterSort === 'desc' ? 'Biggest to smallest' : 'Smallest to biggest'}
+                    onChange={sortByDiameter}
+                    loading={loadingNEO}
+                    ignoreAll={true}
+                />
             </Stack>
             {!loadingNEO && (
                 <Box sx={{ flexGrow: 1 }}>

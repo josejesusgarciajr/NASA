@@ -1,10 +1,12 @@
+// nasa
 import type { NEOObject } from "../../../types/NASA/NEOFeedResponse"
 
 import { NEOCloseApproachTable } from '../NEOCloseApproachTable'
-import { OrbitingBodySelect } from './OrbitingBodySelect'
 import { EstimatedDiameterNEO } from './EstimatedDiameterNEO'
 import { buttonGlowSx } from "../../../types/buttonGlowSx"
+import { NASASelect } from "../../shared/NASASelect"
 
+// material ui
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -13,9 +15,9 @@ import Stack from '@mui/material/Stack';
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from '@mui/icons-material/Close';
-
 import { useMediaQuery, useTheme } from '@mui/material';
 
+// react
 import { useState, useMemo } from 'react';
 
 type NEOObjectModalprops = {
@@ -150,7 +152,13 @@ export const NEOObjectModal = ({neoObject, onClose, startDateRangeStr, endDateRa
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
                         <EstimatedDiameterNEO neoObject={neoObject} units={units} />
                         {orbitingOptions.length > 1 && (
-                            <OrbitingBodySelect options={orbitingOptions} selectedOption={selectedOrbitingOption} onSelectedOption={filterOrbitingOption} />
+                            <NASASelect
+                              label="Orbiting"
+                              options={orbitingOptions}
+                              selectedValue={selectedOrbitingOption}
+                              onChange={filterOrbitingOption}
+                              loading={false}
+                            />
                         )}
                     </Box>
                     { neoObject && (

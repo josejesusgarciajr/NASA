@@ -1,12 +1,12 @@
 // nasa
 import { NASAServiceDisplay } from '../NASA_Components/shared/NASAServiceDisplay'
 import { PaginatedEONETEvents } from '../NASA_Components/EONET/PaginatedEONETEvents'
-import { EONETCategoryFilter } from '../NASA_Components/EONET/EONETCategoryFilter'
 import { useEONET } from '../hooks/EONET/useEONET'
 import { NeonLinearProgress } from '../NASA_Components/shared/NeonLinearProgress'
 
 // react
 import { useState, useEffect, useMemo } from 'react'
+import { NASASelect } from '../NASA_Components/shared/NASASelect'
 
 export const EONET = () => {
     const { 
@@ -23,7 +23,7 @@ export const EONET = () => {
     // derived eonet events for filtering and sorting
     const filteredEONETEvents = useMemo(() => {
         const events = eonetResponse?.events.filter(eonetEvent => {
-            return activeEonetCategory === 'All' || eonetEvent.categories.some(category => category.id === activeEonetCategory)
+            return activeEonetCategory === 'All' || eonetEvent.categories.some(category => category.title === activeEonetCategory)
         }) ?? []
 
         return [...events].sort((a, b) => {
@@ -79,10 +79,12 @@ export const EONET = () => {
 
             {renderPage && (
                 <>
-                    <EONETCategoryFilter 
-                        categories={eonetCategories} 
-                        activeCategory={activeEonetCategory}
-                        onCategoryChange={handleCategoryChange}
+                    <NASASelect
+                        label='Category'
+                        options={eonetCategories.map(category => category.title)}
+                        selectedValue={activeEonetCategory}
+                        onChange={handleCategoryChange}
+                        loading={loadingEONETCategories}
                     />
                     <PaginatedEONETEvents 
                         eonetEvents={filteredEONETEvents} 
