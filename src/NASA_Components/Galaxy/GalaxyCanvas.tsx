@@ -9,7 +9,7 @@ import { useRef, useCallback, useState, useEffect } from 'react'
 // nasa
 import { StarField } from './StarField'
 import type { Exoplanet } from '../../types/NASA/Exoplanets'
-import { saveGalaxyCamera, getSavedGalaxyCamera } from '../../utils/galaxyTransitionStore'
+import { saveGalaxyCamera, getSavedGalaxyCamera, registerZoomToSun } from '../../utils/galaxyTransitionStore'
 import { toCartesian } from '../../utils/coordinateUtils'
 
 type GalaxyCanvasProps = {
@@ -64,6 +64,40 @@ const GalaxyZoomer = ({ target, controlsRef }: { target: THREE.Vector3 | null; c
         if (controlsRef.current?.target) {
             controlsRef.current.target.lerp(target, 0.06)
             controlsRef.current.update()
+        }
+    })
+    return null
+}
+
+// Zooms toward a target but stops at stopDistance — used for the rocket "find Sun" shortcut.
+// Calls onDone once the camera is close enough so orbit controls can be re-enabled.
+const SoftZoomer = ({
+    active, target, stopDistance, controlsRef, onDone,
+}: {
+    active: boolean
+    target: THREE.Vector3
+    stopDistance: number
+    controlsRef: ControlsRef
+    onDone: () => void
+}) => {
+    const { camera } = useThree()
+    const doneRef = useRef(false)
+
+    useFrame(() => {
+        if (!active) { doneRef.current = false; return }
+
+        // Keep orbit center locked to the Sun throughout
+        if (controlsRef.current?.target) {
+            controlsRef.current.target.lerp(target, 0.08)
+            controlsRef.current.update()
+        }
+
+        const dist = camera.position.distanceTo(target)
+        if (dist > stopDistance) {
+            camera.position.lerp(target, 0.06)
+        } else if (!doneRef.current) {
+            doneRef.current = true
+            onDone()
         }
     })
     return null
@@ -230,6 +264,7 @@ export const GalaxyCanvas = ({ exoplanets, onEnterSystem }: GalaxyCanvasProps) =
     const controlsRef       = useRef<any>(null)
     const [zoomTarget, setZoomTarget]     = useState<THREE.Vector3 | null>(null)
     const [hoveredStar, setHoveredStar]   = useState<Exoplanet | null>(null)
+    const [softZoomActive, setSoftZoomActive] = useState(false)
 
     // Earth's star — identified once, drives the always-on pulse ring
     const sun = exoplanets.find(e => e.hostname.toLowerCase() === 'sun') ?? null
@@ -272,6 +307,13 @@ export const GalaxyCanvas = ({ exoplanets, onEnterSystem }: GalaxyCanvasProps) =
         onEnterSystem(star)
     }, [onEnterSystem])
 
+    // Register the rocket shortcut: zoom toward the Sun without entering the system.
+    // The Sun is always at world-space origin (ra=0, dec=0, dist=0).
+    useEffect(() => {
+        if (!sun) return
+        registerZoomToSun(() => setSoftZoomActive(true))
+    }, [sun])
+
     return (
         <div
             style={{ width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0 }}
@@ -289,7 +331,7 @@ export const GalaxyCanvas = ({ exoplanets, onEnterSystem }: GalaxyCanvasProps) =
                     enableZoom
                     enablePan
                     enableRotate
-                    enabled={!zoomTarget}
+                    enabled={!zoomTarget && !softZoomActive}
                     zoomSpeed={2}
                     minDistance={1}
                     maxDistance={4000}
@@ -299,6 +341,13 @@ export const GalaxyCanvas = ({ exoplanets, onEnterSystem }: GalaxyCanvasProps) =
                 <CameraTracker stateRef={cameraStateRef} controlsRef={controlsRef} />
                 <CameraRestorer controlsRef={controlsRef} />
                 <GalaxyZoomer target={zoomTarget} controlsRef={controlsRef} />
+                <SoftZoomer
+                    active={softZoomActive}
+                    target={new THREE.Vector3(0, 0, 0)}
+                    stopDistance={8}
+                    controlsRef={controlsRef}
+                    onDone={() => setSoftZoomActive(false)}
+                />
             </Canvas>
 
             <div

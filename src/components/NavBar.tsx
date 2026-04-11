@@ -22,6 +22,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import { triggerZoomToSun } from '../utils/galaxyTransitionStore'
 
 type NavButtonProps = {
   to: string;
@@ -72,6 +73,7 @@ export const NavBar = () => {
 
   const params             = new URLSearchParams(location.search)
   const isSolarSystemView  = location.pathname === '/dome' && params.get('system') === 'Sun'
+  const isGalaxyView       = location.pathname === '/dome' && !params.get('system')
   const astrophageActive   = isSolarSystemView && params.get('astrophage') === 'true'
 
   function handleRocketLaunch() {
@@ -86,6 +88,9 @@ export const NavBar = () => {
         next.set('astrophage', 'true')
       }
       navigate(`/dome?${next.toString()}`)
+    } else if (isGalaxyView) {
+      // Pan & zoom the galaxy camera to the Sun at (0,0,0)
+      triggerZoomToSun()
     }
   }
 
@@ -197,19 +202,18 @@ export const NavBar = () => {
           {/* Spacer */}
           <Box sx={{ flexGrow: 1 }} />
 
-          {/* Rocket icon — glows purple when Astrophage mode is active */}
+          {/* Rocket icon — cyan on galaxy view, purple when Astrophage mode is active */}
           <IconButton
             onClick={handleRocketLaunch}
             sx={{
               ml: 0.5,
-              ...(astrophageActive && {
-                filter: 'drop-shadow(0 0 6px #cc44ff)',
-              }),
+              ...(astrophageActive && { filter: 'drop-shadow(0 0 6px #cc44ff)' }),
+              ...(isGalaxyView && !astrophageActive && { filter: 'drop-shadow(0 0 5px rgba(56,189,248,0.7))' }),
             }}
           >
             <RocketLaunchIcon sx={{
               fontSize: { xs: '0.75rem', sm: '1.5rem' },
-              color: astrophageActive ? '#cc88ff' : 'white',
+              color: astrophageActive ? '#cc88ff' : isGalaxyView ? '#38bdf8' : 'white',
               transition: 'color 0.3s ease',
             }} />
           </IconButton>
