@@ -266,50 +266,85 @@ export const SystemCanvas = ({ hostname, planets, onBack, astrophageMode }: Syst
                     maxHeight: isMobile ? '55vh' : 'none',
                     overflowY: isMobile ? 'auto' : 'visible',
                 }}>
-                    {astrophageMode && (
-                        <div style={{
-                            display: 'inline-flex', alignItems: 'center', gap: '6px',
-                            marginBottom: '10px', padding: '3px 8px',
-                            background: 'rgba(160, 0, 255, 0.18)',
-                            border: '1px solid rgba(180, 40, 255, 0.55)',
-                            borderRadius: '3px',
-                            color: '#cc88ff',
-                            fontSize: '10px', letterSpacing: '1.2px', fontWeight: 'bold',
-                        }}>
-                            <span style={{ fontSize: '11px' }}>⬡</span> ASTROPHAGE MODE
-                        </div>
-                    )}
-                    <div style={{ fontSize: isMobile ? '14px' : '18px', fontWeight: 'bold', marginBottom: '12px' }}>{hostname}</div>
-                    <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', letterSpacing: '1px', marginBottom: '8px' }}>STAR</div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                        <span style={{ color: 'rgba(255,255,255,0.5)' }}>Temp</span>
-                        <span>{planets[0].st_teff ? `${planets[0].st_teff.toLocaleString()} K` : '—'}</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                        <span style={{ color: 'rgba(255,255,255,0.5)' }}>Radius</span>
-                        <span>{planets[0].st_rad ? `${planets[0].st_rad} R☉` : '—'}</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-                        <span style={{ color: 'rgba(255,255,255,0.5)' }}>Distance</span>
-                        <span>{planets[0].sy_dist ? `${planets[0].sy_dist.toFixed(1)} pc` : '—'}</span>
-                    </div>
-                    {astrophageMode && (
-                        <div style={{ marginBottom: '14px', padding: '8px', background: 'rgba(100,0,200,0.12)', borderRadius: '3px', border: '1px solid rgba(150,0,255,0.2)' }}>
-                            <div style={{ color: '#bb66ff', fontSize: '10px', letterSpacing: '1px', marginBottom: '4px' }}>MIGRATION ROUTE</div>
-                            <div style={{ color: 'rgba(200,150,255,0.85)', fontSize: '11px' }}>Sun ↔ Venus</div>
-                            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: '10px', marginTop: '3px' }}>CO₂ spectrum signature</div>
-                        </div>
-                    )}
-                    <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', letterSpacing: '1px', marginBottom: '8px' }}>PLANETS</div>
-                    {planets.map(p => (
-                        <div key={p.pl_name} style={{ marginBottom: '6px' }}>
-                            <div style={{ color: 'white' }}>{p.pl_name}</div>
-                            <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px' }}>
-                                {p.pl_orbsmax ? `${p.pl_orbsmax} AU orbit` : 'orbit unknown'}
-                                {p.pl_rade ? ` · ${p.pl_rade} R⊕` : ''}
+                    {focusedPlanet !== null ? (
+                        // ── Planet detail view ──────────────────────────────
+                        (() => {
+                            const p = planets[focusedPlanet.index]
+                            const row = (label: string, value: string) => (
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                    <span style={{ color: 'rgba(255,255,255,0.5)' }}>{label}</span>
+                                    <span>{value}</span>
+                                </div>
+                            )
+                            return (
+                                <>
+                                    <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', letterSpacing: '1px', marginBottom: '8px' }}>PLANET</div>
+                                    <div style={{ fontSize: isMobile ? '14px' : '18px', fontWeight: 'bold', marginBottom: '12px' }}>{p.pl_name}</div>
+                                    {row('Radius',  p.pl_rade   ? `${p.pl_rade} R⊕`              : '—')}
+                                    {row('Mass',    p.pl_masse  ? `${p.pl_masse} M⊕`             : '—')}
+                                    {row('Period',  p.pl_orbper ? `${p.pl_orbper.toFixed(1)} d`   : '—')}
+                                    {row('Orbit',   p.pl_orbsmax ? `${p.pl_orbsmax} AU`           : '—')}
+                                    {row('Eccen.',  p.pl_orbeccen != null ? `${p.pl_orbeccen}`    : '—')}
+                                    {row('Eq. Temp', p.pl_eqt   ? `${p.pl_eqt.toLocaleString()} K` : '—')}
+                                    {(p.discoverymethod || p.disc_year) && (
+                                        <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.12)' }}>
+                                            <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', letterSpacing: '1px', marginBottom: '6px' }}>DISCOVERY</div>
+                                            {row('Method', p.discoverymethod ?? '—')}
+                                            {row('Year',   p.disc_year ? `${p.disc_year}` : '—')}
+                                        </div>
+                                    )}
+                                </>
+                            )
+                        })()
+                    ) : (
+                        // ── System / star overview ───────────────────────────
+                        <>
+                            {astrophageMode && (
+                                <div style={{
+                                    display: 'inline-flex', alignItems: 'center', gap: '6px',
+                                    marginBottom: '10px', padding: '3px 8px',
+                                    background: 'rgba(160, 0, 255, 0.18)',
+                                    border: '1px solid rgba(180, 40, 255, 0.55)',
+                                    borderRadius: '3px',
+                                    color: '#cc88ff',
+                                    fontSize: '10px', letterSpacing: '1.2px', fontWeight: 'bold',
+                                }}>
+                                    <span style={{ fontSize: '11px' }}>⬡</span> ASTROPHAGE MODE
+                                </div>
+                            )}
+                            <div style={{ fontSize: isMobile ? '14px' : '18px', fontWeight: 'bold', marginBottom: '12px' }}>{hostname}</div>
+                            <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', letterSpacing: '1px', marginBottom: '8px' }}>STAR</div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                <span style={{ color: 'rgba(255,255,255,0.5)' }}>Temp</span>
+                                <span>{planets[0].st_teff ? `${planets[0].st_teff.toLocaleString()} K` : '—'}</span>
                             </div>
-                        </div>
-                    ))}
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                <span style={{ color: 'rgba(255,255,255,0.5)' }}>Radius</span>
+                                <span>{planets[0].st_rad ? `${planets[0].st_rad} R☉` : '—'}</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+                                <span style={{ color: 'rgba(255,255,255,0.5)' }}>Distance</span>
+                                <span>{planets[0].sy_dist ? `${planets[0].sy_dist.toFixed(1)} pc` : '—'}</span>
+                            </div>
+                            {astrophageMode && (
+                                <div style={{ marginBottom: '14px', padding: '8px', background: 'rgba(100,0,200,0.12)', borderRadius: '3px', border: '1px solid rgba(150,0,255,0.2)' }}>
+                                    <div style={{ color: '#bb66ff', fontSize: '10px', letterSpacing: '1px', marginBottom: '4px' }}>MIGRATION ROUTE</div>
+                                    <div style={{ color: 'rgba(200,150,255,0.85)', fontSize: '11px' }}>Sun ↔ Venus</div>
+                                    <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: '10px', marginTop: '3px' }}>CO₂ spectrum signature</div>
+                                </div>
+                            )}
+                            <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', letterSpacing: '1px', marginBottom: '8px' }}>PLANETS</div>
+                            {planets.map(p => (
+                                <div key={p.pl_name} style={{ marginBottom: '6px' }}>
+                                    <div style={{ color: 'white' }}>{p.pl_name}</div>
+                                    <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px' }}>
+                                        {p.pl_orbsmax ? `${p.pl_orbsmax} AU orbit` : 'orbit unknown'}
+                                        {p.pl_rade ? ` · ${p.pl_rade} R⊕` : ''}
+                                    </div>
+                                </div>
+                            ))}
+                        </>
+                    )}
                 </div>
             )}
         </div>
