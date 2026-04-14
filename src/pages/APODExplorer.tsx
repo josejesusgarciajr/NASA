@@ -26,13 +26,38 @@ export const APODExplorer = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
 
+    // on intial load, check if URL has date send (url shared)
+    useEffect(() => {
+        const dateParam = searchParams.get('date');
+        if (!dateParam) {
+            return;
+        }
+
+        const date = dayjs(dateParam);
+        if (!date.isValid()) {
+            return;
+        }
+
+        setSelectedDate(date);
+        fetchAPODWithDate(date);
+    }, [])
+
+    // on rocket launch, show random apod
     useEffect(() => {
         if (searchParams.get('random') === 'true') {
             const randomDate = getRandomAPODDate();
             fetchAPODWithDate(randomDate);
-            setSearchParams({});
+            setSearchParams({ date: randomDate?.format('YYYY-MM-DD') ?? '' });
         }
     }, [searchParams]);
+
+    function handleDateChange(newDate: dayjs.Dayjs | null) {
+        if (newDate) {
+            setSelectedDate(newDate)
+            fetchAPODWithDate(newDate)
+            setSearchParams({ date: newDate.format('YYYY-MM-DD') });
+        }
+    }
 
     return (
         <>
@@ -70,7 +95,7 @@ export const APODExplorer = () => {
                 yearsOrder='desc'
                 value={selectedDate}
                 onChange={(newDate) => setSelectedDate(newDate)}
-                onAccept={(newDate) => fetchAPODWithDate(newDate)}
+                onAccept={(newDate) => handleDateChange(newDate)}
                 closeOnSelect
                 openTo="year"
                 views={['year', 'month', 'day']}
