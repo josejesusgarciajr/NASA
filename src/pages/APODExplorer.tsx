@@ -32,10 +32,7 @@ export const APODExplorer = () => {
 
         if (searchParams.get('random') === 'true') {
             const randomDate = getRandomAPODDate();
-            setSelectedDate(randomDate);
             setSearchParams({ date: randomDate?.format('YYYY-MM-DD') ?? '' });
-            fetchAPODWithDate(randomDate);
-
             return;
         }
 
