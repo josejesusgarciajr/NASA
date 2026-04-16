@@ -1,9 +1,13 @@
-import { useState } from 'react' 
+// nasa
 import type { APOD } from '../../types/NASA/APOD'
 
+// react
 import { Dayjs } from 'dayjs'
+import { useState } from 'react' 
+import { useSearchParams } from 'react-router-dom';
 
 export function useAPOD() {
+    const [searchParams, setSearchParams] = useSearchParams();
     const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
     const [apod, setApod] = useState<APOD | null>(null)
     const [loadingAPOD, setLoadingAPOD] = useState<boolean>(false)
@@ -66,5 +70,5 @@ export function useAPOD() {
         .finally(() => setLoadingAPOD(false))
     }
 
-    return { apod, loadingAPOD, errorAPOD, selectedDate, setSelectedDate, fetchAPOD, fetchAPODWithDate};
+    return { apod, loadingAPOD, errorAPOD, setErrorAPOD, selectedDate, setSelectedDate, fetchAPOD, fetchAPODWithDate, searchParams, setSearchParams };
 }

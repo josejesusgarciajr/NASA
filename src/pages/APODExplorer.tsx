@@ -15,46 +15,47 @@ import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 
 // react
 import { useEffect } from 'react';
-import { useNavigate, useSearchParams} from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
 
 // APOD
 import { useAPOD } from '../hooks/APOD/useAPOD';
 import { getRandomAPODDate } from '../utils/dateUtils'
 
 export const APODExplorer = () => {
-    const { apod, loadingAPOD, errorAPOD, selectedDate, setSelectedDate, fetchAPODWithDate } = useAPOD();
-    const [searchParams, setSearchParams] = useSearchParams();
+    const { apod, loadingAPOD, errorAPOD, setErrorAPOD, selectedDate, fetchAPODWithDate, setSelectedDate, searchParams, setSearchParams } = useAPOD();
     const navigate = useNavigate();
-
-    // on intial load, check if URL has date send (url shared)
-    useEffect(() => {
-        const dateParam = searchParams.get('date');
-        if (!dateParam) {
-            return;
-        }
-
-        const date = dayjs(dateParam);
-        if (!date.isValid()) {
-            return;
-        }
-
-        setSelectedDate(date);
-        fetchAPODWithDate(date);
-    }, [])
 
     // on rocket launch, show random apod
     useEffect(() => {
+        // clear errors
+        setErrorAPOD('')
+
         if (searchParams.get('random') === 'true') {
             const randomDate = getRandomAPODDate();
-            fetchAPODWithDate(randomDate);
+            setSelectedDate(randomDate);
             setSearchParams({ date: randomDate?.format('YYYY-MM-DD') ?? '' });
+            fetchAPODWithDate(randomDate);
+
+            return;
+        }
+
+        const dateParam = searchParams.get('date');
+
+        if (dateParam) {
+            const dateFromURL = dayjs(dateParam, 'YYYY-MM-DD');
+            if (!dateFromURL.isValid()) return;
+
+            setSelectedDate(dateFromURL);
+            fetchAPODWithDate(dateFromURL);
         }
     }, [searchParams]);
 
+    // date picker handler
     function handleDateChange(newDate: dayjs.Dayjs | null) {
+        // clear errors
+        setErrorAPOD('')
+
         if (newDate) {
-            setSelectedDate(newDate)
-            fetchAPODWithDate(newDate)
             setSearchParams({ date: newDate.format('YYYY-MM-DD') });
         }
     }
