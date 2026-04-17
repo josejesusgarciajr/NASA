@@ -41,6 +41,15 @@ export const DOME = () => {
         : []
     const astrophageMode  = selectedSystem?.toLowerCase() === 'sun' && searchParams.get('astrophage') === 'true'
 
+    // Block trackpad/mouse-wheel zoom at the native level during any overlay transition.
+    useEffect(() => {
+        const block = (e: WheelEvent) => { e.preventDefault() }
+        if (overlayActive) {
+            document.addEventListener('wheel', block, { passive: false })
+        }
+        return () => { document.removeEventListener('wheel', block) }
+    }, [overlayActive])
+
     useEffect(() => {
         const link = document.querySelector<HTMLLinkElement>("link[rel='icon']")
         if (!link) return

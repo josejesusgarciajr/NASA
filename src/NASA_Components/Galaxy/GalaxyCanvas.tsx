@@ -314,8 +314,23 @@ export const GalaxyCanvas = ({ exoplanets, onEnterSystem }: GalaxyCanvasProps) =
         registerZoomToSun(() => setSoftZoomActive(true))
     }, [sun])
 
+    const containerRef = useRef<HTMLDivElement>(null)
+
+    // Block trackpad/mouse-wheel zoom at the native level during any camera transition.
+    // Must be non-passive so preventDefault() is honoured before the canvas sees the event.
+    useEffect(() => {
+        const el = containerRef.current
+        if (!el) return
+        const block = (e: WheelEvent) => { e.preventDefault() }
+        if (zoomTarget !== null || softZoomActive) {
+            el.addEventListener('wheel', block, { passive: false })
+        }
+        return () => { el.removeEventListener('wheel', block) }
+    }, [zoomTarget, softZoomActive])
+
     return (
         <div
+            ref={containerRef}
             style={{ width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0 }}
             onMouseMove={handleMouseMove}
         >

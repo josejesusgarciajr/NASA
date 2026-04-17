@@ -157,17 +157,18 @@ export const SystemCanvas = ({ hostname, planets, onBack, astrophageMode }: Syst
     const positionRefs = useRef(positionRefsArray)
     const containerRef = useRef<HTMLDivElement>(null)
 
-    // Block trackpad/mouse-wheel zoom at the native level when a planet is focused.
+    // Block trackpad/mouse-wheel zoom at the native level whenever the camera is not
+    // under user control (planet focused, returning to overview, or zooming out to galaxy).
     // Must be non-passive so preventDefault() is honoured before the canvas sees the event.
     useEffect(() => {
         const el = containerRef.current
         if (!el) return
         const block = (e: WheelEvent) => { e.preventDefault() }
-        if (focusedPlanet !== null) {
+        if (focusedPlanet !== null || zoomingOut || returningToOverview) {
             el.addEventListener('wheel', block, { passive: false })
         }
         return () => { el.removeEventListener('wheel', block) }
-    }, [focusedPlanet])
+    }, [focusedPlanet, zoomingOut, returningToOverview])
 
     const handleBack = () => {
         setZoomingOut(true)
