@@ -1,7 +1,7 @@
 // three
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
-import React, { useRef, useState, useMemo } from 'react'
+import React, { useRef, useState, useMemo, useEffect } from 'react'
 import * as THREE from 'three'
 
 // nasa
@@ -155,6 +155,19 @@ export const SystemCanvas = ({ hostname, planets, onBack, astrophageMode }: Syst
         [planets.length]
     )
     const positionRefs = useRef(positionRefsArray)
+    const containerRef = useRef<HTMLDivElement>(null)
+
+    // Block trackpad/mouse-wheel zoom at the native level when a planet is focused.
+    // Must be non-passive so preventDefault() is honoured before the canvas sees the event.
+    useEffect(() => {
+        const el = containerRef.current
+        if (!el) return
+        const block = (e: WheelEvent) => { e.preventDefault() }
+        if (focusedPlanet !== null) {
+            el.addEventListener('wheel', block, { passive: false })
+        }
+        return () => { el.removeEventListener('wheel', block) }
+    }, [focusedPlanet])
 
     const handleBack = () => {
         setZoomingOut(true)
@@ -175,7 +188,10 @@ export const SystemCanvas = ({ hostname, planets, onBack, astrophageMode }: Syst
     const orbitControlsEnabled = !zoomingOut && focusedPlanet === null && !returningToOverview
 
     return (
-        <div style={{ width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0, background: 'black' }}>
+        <div
+            ref={containerRef}
+            style={{ width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0, background: 'black' }}
+        >
             <Canvas
                 camera={{ position: [0, camDist * 0.4, camDist * 0.9], fov: 55, near: 0.1, far: 100000 }}
                 style={{ width: '100%', height: '100%' }}
