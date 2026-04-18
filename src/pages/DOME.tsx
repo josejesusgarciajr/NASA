@@ -5,6 +5,8 @@ import { SystemCanvas } from '../NASA_Components/Galaxy/SystemCanvas'
 import { NeonLinearProgress } from '../NASA_Components/shared/NeonLinearProgress'
 import { CosmicLoader } from '../NASA_Components/shared/CosmicLoader'
 import type { Exoplanet } from '../types/NASA/Exoplanets'
+import { triggerZoomToSun } from '../utils/galaxyTransitionStore'
+import { ArchiveTerminal } from '../NASA_Components/Galaxy/ArchiveTerminal'
 
 // react
 import { useEffect, useState, useCallback } from 'react'
@@ -36,10 +38,11 @@ export const DOME = () => {
         }
     }, [searchParams])
 
-    const systemPlanets   = selectedSystem
+    const systemPlanets    = selectedSystem
         ? exoplanets.filter(e => e.hostname === selectedSystem)
         : []
-    const astrophageMode  = selectedSystem?.toLowerCase() === 'sun' && searchParams.get('astrophage') === 'true'
+    const astrophageMode   = selectedSystem?.toLowerCase() === 'sun' && searchParams.get('astrophage') === 'true'
+    const solarSystemOnly  = !loadingExoplanets && exoplanets.length > 0 && exoplanets.every(e => e.hostname.toLowerCase() === 'sun')
 
     // Block trackpad/mouse-wheel zoom at the native level during any overlay transition.
     useEffect(() => {
@@ -56,6 +59,14 @@ export const DOME = () => {
         link.href = astrophageMode ? '/favicon-astrophage.svg' : '/favicon.svg'
         return () => { link.href = '/favicon.svg' }
     }, [astrophageMode])
+
+    // When the backend falls back to solar-system-only data, auto-zoom to Sol
+    // after a short pause so the user can read the banner before the camera moves.
+    useEffect(() => {
+        if (!solarSystemOnly) return
+        const timer = setTimeout(() => triggerZoomToSun(), 1800)
+        return () => clearTimeout(timer)
+    }, [solarSystemOnly])
 
     const handleEnterSystem = useCallback((star: Exoplanet) => {
         setOverlayActive(true)
@@ -119,6 +130,8 @@ export const DOME = () => {
                     {errorExoplanets}
                 </Alert>
             )}
+
+            {solarSystemOnly && view === 'galaxy' && <ArchiveTerminal />}
         </>
     )
 }
