@@ -9,7 +9,7 @@ const LINES: { text: string; color: string; speed: number; pauseAfter: number }[
 
 const FONT = "'Share Tech Mono', 'Courier New', monospace"
 
-export const ArchiveTerminal = () => {
+export const ArchiveTerminal = ({ onComplete }: { onComplete?: () => void }) => {
     // revealed[i] = chars shown so far on line i
     const [revealed, setRevealed] = useState<string[]>([''])
     const [done, setDone]         = useState(false)
@@ -57,6 +57,12 @@ export const ArchiveTerminal = () => {
         timerId = setTimeout(typeNext, 420)
         return () => clearTimeout(timerId)
     }, [])
+
+    useEffect(() => {
+        if (!done || !onComplete) return
+        const timer = setTimeout(onComplete, 500)
+        return () => clearTimeout(timer)
+    }, [done, onComplete])
 
     const activeLine = revealed.length - 1
 

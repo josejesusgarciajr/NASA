@@ -9,7 +9,7 @@ import { useRef, useCallback, useState, useEffect } from 'react'
 // nasa
 import { StarField } from './StarField'
 import type { Exoplanet } from '../../types/NASA/Exoplanets'
-import { saveGalaxyCamera, getSavedGalaxyCamera, registerZoomToSun } from '../../utils/galaxyTransitionStore'
+import { saveGalaxyCamera, getSavedGalaxyCamera, registerZoomToSun, registerClickSun } from '../../utils/galaxyTransitionStore'
 import { toCartesian } from '../../utils/coordinateUtils'
 
 type GalaxyCanvasProps = {
@@ -312,7 +312,15 @@ export const GalaxyCanvas = ({ exoplanets, onEnterSystem }: GalaxyCanvasProps) =
     useEffect(() => {
         if (!sun) return
         registerZoomToSun(() => setSoftZoomActive(true))
-    }, [sun])
+        registerClickSun(() => {
+            saveGalaxyCamera(
+                cameraStateRef.current.position.clone(),
+                cameraStateRef.current.target.clone(),
+            )
+            setZoomTarget(new THREE.Vector3(0, 0, 0))
+            onEnterSystem(sun)
+        })
+    }, [sun, onEnterSystem])
 
     const containerRef = useRef<HTMLDivElement>(null)
 

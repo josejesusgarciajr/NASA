@@ -20,3 +20,11 @@ let _zoomToSunFn: (() => void) | null = null
 
 export const registerZoomToSun = (fn: () => void): void => { _zoomToSunFn = fn }
 export const triggerZoomToSun  = (): void => { _zoomToSunFn?.() }
+
+// ── Click-Sun shortcut ───────────────────────────────────────────────────────
+// Replicates a real star-click on the Sun: saves camera, starts the Three.js
+// zoom animation, and fires onEnterSystem — so the full pan-zoom-fade plays.
+let _clickSunFn: (() => void) | null = null
+
+export const registerClickSun = (fn: () => void): void => { _clickSunFn = fn }
+export const triggerClickSun  = (): void => { _clickSunFn?.() }

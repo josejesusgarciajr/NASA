@@ -5,7 +5,7 @@ import { SystemCanvas } from '../NASA_Components/Galaxy/SystemCanvas'
 import { NeonLinearProgress } from '../NASA_Components/shared/NeonLinearProgress'
 import { CosmicLoader } from '../NASA_Components/shared/CosmicLoader'
 import type { Exoplanet } from '../types/NASA/Exoplanets'
-import { triggerZoomToSun } from '../utils/galaxyTransitionStore'
+import { triggerZoomToSun, triggerClickSun } from '../utils/galaxyTransitionStore'
 import { ArchiveTerminal } from '../NASA_Components/Galaxy/ArchiveTerminal'
 
 // react
@@ -131,7 +131,9 @@ export const DOME = () => {
                 </Alert>
             )}
 
-            {solarSystemOnly && view === 'galaxy' && <ArchiveTerminal />}
+            {solarSystemOnly && view === 'galaxy' && (
+                <ArchiveTerminal onComplete={triggerClickSun} />
+            )}
         </>
     )
 }
