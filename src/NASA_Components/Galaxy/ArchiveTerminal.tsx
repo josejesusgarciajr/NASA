@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 
 const LINES: { text: string; color: string; speed: number; pauseAfter: number }[] = [
     { text: '> init exoplanet-archive connection...', color: '#38bdf8',  speed: 35, pauseAfter: 420 },
