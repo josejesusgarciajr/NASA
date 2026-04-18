@@ -1,8 +1,9 @@
 // nasa
-import type { APOD } from '../types/NASA/APOD'
 import { APODCard } from '../NASA_Components/APOD/APODCard'
+import { APODDisplay } from '../NASA_Components/APOD/APODDisplay'
 import { NASAServiceDisplay } from '../NASA_Components/shared/NASAServiceDisplay'
 import { useAPODGallery } from '../hooks/APOD/useAPODGallery'
+import { getSavedAPODS } from '../utils/apods'
 
 // material ui
 import Grid from '@mui/material/Grid'
@@ -12,28 +13,35 @@ import IconButton from '@mui/material/IconButton'
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd'
 
 // react
-import { useState, useRef } from 'react'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { APODDisplay } from '../NASA_Components/APOD/APODDisplay'
 
 export const APODGallery = () => {
-    const { savedAPODS, removeAPOD } = useAPODGallery()
-    const [clickedAPOD, setClickedAPOD] = useState<APOD | null>(null)
-    const scrollPositionRef  = useRef(0);
-    const navigate = useNavigate();
+    const { 
+        savedAPODS,
+        removeAPOD, handleCardClicked, handleBack,
+        clickedAPOD, setClickedAPOD,
+        searchParam
+    } = useAPODGallery()
 
-    function handleCardClicked(apod: APOD) {
-        scrollPositionRef.current = window.scrollY;
-        setClickedAPOD(apod)
-    }
+    const navigate = useNavigate()
 
-    function handleBack() {
-        setClickedAPOD(null)
-        // Wait for gallery to re-render before restoring scroll
-        requestAnimationFrame(() => {
-            window.scrollTo({ top: scrollPositionRef.current, behavior: 'instant' });
-        });
-    }
+    // on mount, check if there's a date query param and open that APOD if found
+    // if not found, redirect to apod explorer with that date to display apod
+    useEffect(() => {
+        if (searchParam.has('date')) {
+            const date = searchParam.get('date')!
+            const apod = getSavedAPODS().find(a => a.date === date)
+
+            if (!apod) {
+                // navigate to explorer with date param to show apod not in gallery
+                navigate(`/apod-explorer?date=${date}`)
+                return
+            }
+            
+            setClickedAPOD(apod)
+        }
+    }, [])
 
     return (
         <>

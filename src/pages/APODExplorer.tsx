@@ -22,7 +22,13 @@ import { useAPOD } from '../hooks/APOD/useAPOD';
 import { getRandomAPODDate } from '../utils/dateUtils'
 
 export const APODExplorer = () => {
-    const { apod, loadingAPOD, errorAPOD, setErrorAPOD, selectedDate, fetchAPODWithDate, setSelectedDate, searchParams, setSearchParams } = useAPOD();
+    const { 
+        apod, loadingAPOD, 
+        errorAPOD, setErrorAPOD, 
+        selectedDate, fetchAPODWithDate, 
+        setSelectedDate, 
+        searchParams, setSearchParams 
+    } = useAPOD();
     const navigate = useNavigate();
 
     // on rocket launch, show random apod

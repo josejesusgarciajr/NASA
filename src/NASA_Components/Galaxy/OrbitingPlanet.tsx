@@ -151,7 +151,7 @@ export const OrbitingPlanet = ({ planet, index, orbitRadius, solarRadiusInUnits,
                     </mesh>
                 )}
 
-                {cfg.hasRings && (
+                {cfg.hasRings && !(isSolarSystem && planetName === 'jupiter') && (
                     <PlanetRings
                         planetSize={planetSize}
                         type={type}
