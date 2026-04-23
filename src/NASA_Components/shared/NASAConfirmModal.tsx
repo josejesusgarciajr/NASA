@@ -22,7 +22,7 @@ type NASAConfirmModalProps = {
     open: boolean;
     dialogText: string;
     onCancel: () => void;
-    onConfirm?: () => void;
+    onConfirm: () => void;
 }
 
 export const NASAConfirmModal = ({ open, dialogText, onCancel, onConfirm }: NASAConfirmModalProps) => {
