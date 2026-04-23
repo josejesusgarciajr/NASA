@@ -5,6 +5,7 @@ import { STORAGE_KEY, getSavedAPODS } from '../../utils/apods'
 export function useFavoriteAPODS(apod: APOD) {
     const isSavedAPOD = getSavedAPODS().some(a => a.date === apod.date)
     const [savedAPOD, setSavedAPOD] = useState<boolean>(isSavedAPOD)
+    const [confirmingDelete, setConfirmingDelete] = useState<boolean>(false)
 
     function saveAPOD() {
         const current = getSavedAPODS()
@@ -19,7 +20,18 @@ export function useFavoriteAPODS(apod: APOD) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
         
         setSavedAPOD(false)
+        setConfirmingDelete(false)
     }
 
-    return { savedAPOD, saveAPOD, removeAPOD }
+    function handleRemoveAPOD() {
+        setConfirmingDelete(true)
+    }
+
+    function cancelDelete() {
+        setConfirmingDelete(false)
+    }
+
+    return { 
+        savedAPOD, saveAPOD, removeAPOD, confirmingDelete, handleRemoveAPOD, cancelDelete
+    }
 }

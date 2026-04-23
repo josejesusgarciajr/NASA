@@ -9,15 +9,31 @@ import { useSearchParams } from 'react-router-dom'
 export function useAPODGallery() {
     const [savedAPODS, setSavedAPODS] = useState<APOD[]>(getSavedAPODS())
     const [clickedAPOD, setClickedAPOD] = useState<APOD | null>(null)
+    const [confirmingDelete, setConfirmingDelete] = useState<boolean>(false)
+    const [apodToDelete, setApodToDelete] = useState<APOD | null>(null)
     const [searchParam, setSearchParam] = useSearchParams()
 
     const scrollPositionRef  = useRef(0);
 
-    function removeAPOD(apod: APOD) {
-        const updated = getSavedAPODS().filter(a => a.date !== apod.date)
+    function removeAPOD() {
+        if (!apodToDelete) return;
+
+        const updated = getSavedAPODS().filter(a => a.date !== apodToDelete.date)
         localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
 
         setSavedAPODS(updated)
+        setConfirmingDelete(false)
+        setApodToDelete(null)
+    }
+
+    function handleRemoveAPOD(apod: APOD) {
+        setConfirmingDelete(true)
+        setApodToDelete(apod)
+    }
+
+    function cancelDelete() {
+        setConfirmingDelete(false)
+        setApodToDelete(null)
     }
 
     function handleCardClicked(apod: APOD) {
@@ -37,7 +53,8 @@ export function useAPODGallery() {
 
     return { 
         savedAPODS,
-        removeAPOD, handleCardClicked, handleBack,
+        handleRemoveAPOD, removeAPOD, cancelDelete, confirmingDelete,
+        handleCardClicked, handleBack,
         clickedAPOD, setClickedAPOD,
         searchParam
     }

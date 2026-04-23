@@ -2,6 +2,7 @@
 import type { APOD } from '../../types/NASA/APOD'
 import { APODMediaContent } from './APODMediaContent'
 import { useFavoriteAPODS } from '../../hooks/APOD/useFavoriteAPODS'
+import { NASAConfirmModal } from '../shared/NASAConfirmModal'
 
 // help components
 import { BackButton } from '../../components/BackButton'
@@ -22,7 +23,9 @@ type APODDisplayProps = {
 
 export const APODDisplay = ({apod, onBack, backButtonText = '← Back'} : APODDisplayProps) => {
     // saved favorite apods
-    const { savedAPOD, saveAPOD, removeAPOD } = useFavoriteAPODS(apod);
+    const { 
+        savedAPOD, saveAPOD, removeAPOD, confirmingDelete, handleRemoveAPOD,cancelDelete
+     } = useFavoriteAPODS(apod);
 
     useEffect(() => {
         window.scrollTo({ top: 0 });
@@ -33,6 +36,13 @@ export const APODDisplay = ({apod, onBack, backButtonText = '← Back'} : APODDi
             {onBack && (
                 <BackButton text={backButtonText} handleBack={onBack}/>
             )}
+
+            <NASAConfirmModal 
+                open={confirmingDelete}
+                dialogText='Are you sure you want to remove this APOD from your favorites?'
+                onCancel={cancelDelete}
+                onConfirm={removeAPOD}
+            />
 
             <Typography
                 variant="h5"
@@ -50,7 +60,7 @@ export const APODDisplay = ({apod, onBack, backButtonText = '← Back'} : APODDi
                         <FavoriteBorderIcon fontSize="small" />
                     </IconButton>
                 ) : (
-                    <IconButton onClick={removeAPOD} size="small" sx={{ ml: 0.5, color: '#f472b6' }}>
+                    <IconButton onClick={handleRemoveAPOD} size="small" sx={{ ml: 0.5, color: '#f472b6' }}>
                         <FavoriteIcon fontSize="small" />
                     </IconButton>
                 )}

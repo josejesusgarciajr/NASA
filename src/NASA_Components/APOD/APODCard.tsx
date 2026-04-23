@@ -14,10 +14,10 @@ import FavoriteIcon from '@mui/icons-material/Favorite'
 type APODCardProps = {
     apod: APOD;
     cardClicked: (apod: APOD) => void;
-    removeAPOD: (apod: APOD) => void;
+    handleRemoveAPOD: (apod: APOD) => void;
 }
 
-export const APODCard = ({ apod, cardClicked, removeAPOD }: APODCardProps) => {
+export const APODCard = ({ apod, cardClicked, handleRemoveAPOD }: APODCardProps) => {
     const shortDescription = apod.explanation?.length > 100
         ? apod.explanation.substring(0, 100) + '...'
         : apod.explanation
@@ -52,7 +52,7 @@ export const APODCard = ({ apod, cardClicked, removeAPOD }: APODCardProps) => {
             <CardActions sx={{ justifyContent: 'flex-end' }}>
                 <IconButton
                     size="small"
-                    onClick={() => removeAPOD(apod)}
+                    onClick={() => handleRemoveAPOD(apod)}
                 >
                     <FavoriteIcon sx={{ fontSize: '1rem' }} />
                 </IconButton>

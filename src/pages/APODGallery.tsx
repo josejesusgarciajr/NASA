@@ -4,6 +4,7 @@ import { APODDisplay } from '../NASA_Components/APOD/APODDisplay'
 import { NASAServiceDisplay } from '../NASA_Components/shared/NASAServiceDisplay'
 import { useAPODGallery } from '../hooks/APOD/useAPODGallery'
 import { getSavedAPODS } from '../utils/apods'
+import { NASAConfirmModal } from '../NASA_Components/shared/NASAConfirmModal'
 
 // material ui
 import Grid from '@mui/material/Grid'
@@ -19,7 +20,8 @@ import { useNavigate } from 'react-router-dom'
 export const APODGallery = () => {
     const { 
         savedAPODS,
-        removeAPOD, handleCardClicked, handleBack,
+        handleRemoveAPOD, removeAPOD, cancelDelete, confirmingDelete,
+        handleCardClicked, handleBack,
         clickedAPOD, setClickedAPOD,
         searchParam
     } = useAPODGallery()
@@ -77,15 +79,23 @@ export const APODGallery = () => {
                             No saved APODs yet. Go explore and save some!
                         </Typography>
                     ) : (
-                        <Box sx={{ px: { xs: 2, sm: 4 }, pb: 4 }}>
-                            <Grid container spacing={2} columns={{ xs: 1, sm: 2, md: 4 }}>
-                                {savedAPODS.map(apod => (
-                                    <Grid key={apod.date} size={1}>
-                                        <APODCard apod={apod} cardClicked={handleCardClicked} removeAPOD={removeAPOD} />
-                                    </Grid>
-                                ))}
-                            </Grid>
-                        </Box>
+                        <>
+                            <NASAConfirmModal 
+                                open={confirmingDelete}
+                                dialogText='Are you sure you want to remove this APOD from your favorites?'
+                                onCancel={cancelDelete}
+                                onConfirm={removeAPOD}
+                            />
+                            <Box sx={{ px: { xs: 2, sm: 4 }, pb: 4 }}>
+                                <Grid container spacing={2} columns={{ xs: 1, sm: 2, md: 4 }}>
+                                    {savedAPODS.map(apod => (
+                                        <Grid key={apod.date} size={1}>
+                                            <APODCard apod={apod} cardClicked={handleCardClicked} handleRemoveAPOD={handleRemoveAPOD} />
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            </Box>
+                        </>
                     )}
                 </>
             )}
