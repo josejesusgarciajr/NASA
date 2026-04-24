@@ -17,8 +17,10 @@ export function useAPODDelete(onDeleted: (updatedAPODS: APOD[]) => void) {
 
     function removeAPOD() {
         if (!apodToDelete) return
+
         const updated = getSavedAPODS().filter(a => a.date !== apodToDelete.date)
         localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+        
         setConfirmingDelete(false)
         setApodToDelete(null)
         onDeleted(updated)
