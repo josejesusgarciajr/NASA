@@ -1,40 +1,21 @@
 // nasa
-import { STORAGE_KEY, getSavedAPODS } from '../../utils/apods'
+import { getSavedAPODS } from '../../utils/apods'
 import type { APOD } from '../../types/NASA/APOD'
 
 // react
 import { useState, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { useAPODDelete } from './useAPODDelete'
 
 export function useAPODGallery() {
     const [savedAPODS, setSavedAPODS] = useState<APOD[]>(getSavedAPODS())
     const [clickedAPOD, setClickedAPOD] = useState<APOD | null>(null)
-    const [confirmingDelete, setConfirmingDelete] = useState<boolean>(false)
-    const [apodToDelete, setApodToDelete] = useState<APOD | null>(null)
+    const { 
+        confirmingDelete, handleRemoveAPOD, removeAPOD, cancelDelete 
+    } = useAPODDelete(setSavedAPODS)
     const [searchParam, setSearchParam] = useSearchParams()
 
     const scrollPositionRef  = useRef(0);
-
-    function removeAPOD() {
-        if (!apodToDelete) return;
-
-        const updated = getSavedAPODS().filter(a => a.date !== apodToDelete.date)
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
-
-        setSavedAPODS(updated)
-        setConfirmingDelete(false)
-        setApodToDelete(null)
-    }
-
-    function handleRemoveAPOD(apod: APOD) {
-        setConfirmingDelete(true)
-        setApodToDelete(apod)
-    }
-
-    function cancelDelete() {
-        setConfirmingDelete(false)
-        setApodToDelete(null)
-    }
 
     function handleCardClicked(apod: APOD) {
         scrollPositionRef.current = window.scrollY;

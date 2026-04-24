@@ -1,11 +1,14 @@
 import { useState } from 'react'
 import type { APOD } from '../../types/NASA/APOD'
 import { STORAGE_KEY, getSavedAPODS } from '../../utils/apods'
+import { useAPODDelete } from './useAPODDelete'
 
 export function useFavoriteAPODS(apod: APOD) {
     const isSavedAPOD = getSavedAPODS().some(a => a.date === apod.date)
     const [savedAPOD, setSavedAPOD] = useState<boolean>(isSavedAPOD)
-    const [confirmingDelete, setConfirmingDelete] = useState<boolean>(false)
+    const { confirmingDelete, handleRemoveAPOD, removeAPOD, cancelDelete } = useAPODDelete(
+        (updated) => setSavedAPOD(updated.some((a) => a.date === apod.date))
+    )
 
     function saveAPOD() {
         const current = getSavedAPODS()
@@ -15,23 +18,9 @@ export function useFavoriteAPODS(apod: APOD) {
         setSavedAPOD(true)
     }
 
-    function removeAPOD() {
-        const updated = getSavedAPODS().filter(a => a.date != apod.date)
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
-        
-        setSavedAPOD(false)
-        setConfirmingDelete(false)
-    }
-
-    function handleRemoveAPOD() {
-        setConfirmingDelete(true)
-    }
-
-    function cancelDelete() {
-        setConfirmingDelete(false)
-    }
-
     return { 
-        savedAPOD, saveAPOD, removeAPOD, confirmingDelete, handleRemoveAPOD, cancelDelete
+        savedAPOD, saveAPOD, removeAPOD, confirmingDelete, 
+        handleRemoveAPOD: () => handleRemoveAPOD(apod), 
+        cancelDelete
     }
 }
