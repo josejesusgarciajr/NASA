@@ -116,6 +116,31 @@ const CameraReturnToOverview = ({
     return null
 }
 
+// Updates system coordinate DOM spans directly every frame — no React re-renders per tick
+const SystemCameraCoords = ({ auScale, refs }: {
+    auScale: number
+    refs: {
+        x: React.RefObject<HTMLSpanElement | null>
+        y: React.RefObject<HTMLSpanElement | null>
+        z: React.RefObject<HTMLSpanElement | null>
+        dist: React.RefObject<HTMLSpanElement | null>
+    }
+}) => {
+    const { camera } = useThree()
+    useFrame(() => {
+        const x = camera.position.x / auScale
+        const y = camera.position.y / auScale
+        const z = camera.position.z / auScale
+        const d = camera.position.length() / auScale
+        const fmt = (v: number) => (v >= 0 ? '+' : '') + v.toFixed(2)
+        if (refs.x.current)    refs.x.current.textContent    = fmt(x)
+        if (refs.y.current)    refs.y.current.textContent    = fmt(y)
+        if (refs.z.current)    refs.z.current.textContent    = fmt(z)
+        if (refs.dist.current) refs.dist.current.textContent = d.toFixed(2)
+    })
+    return null
+}
+
 export const SystemCanvas = ({ hostname, planets, onBack, astrophageMode }: SystemCanvasProps) => {
     // Mirror SystemScene's orbit clamping so camDist reflects the actual rendered layout.
     // A large star pushes all orbits out to starClearance regardless of pl_orbsmax, so
@@ -143,6 +168,10 @@ export const SystemCanvas = ({ hostname, planets, onBack, astrophageMode }: Syst
     const [focusedPlanet, setFocusedPlanet]         = useState<{ index: number; orbitRadius: number; planetSize: number } | null>(null)
     const [returningToOverview, setReturningToOverview] = useState(false)
     const [hudOpen, setHudOpen]                     = useState(false)
+    const coordXRef    = useRef<HTMLSpanElement>(null)
+    const coordYRef    = useRef<HTMLSpanElement>(null)
+    const coordZRef    = useRef<HTMLSpanElement>(null)
+    const coordDistRef = useRef<HTMLSpanElement>(null)
 
     // Check once at mount — used to swap between always-visible (desktop) and toggle (mobile)
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 600
@@ -205,6 +234,7 @@ export const SystemCanvas = ({ hostname, planets, onBack, astrophageMode }: Syst
                     onPlanetClick={handlePlanetClick}
                 />
                 <OrbitControls enableZoom enableRotate enablePan enabled={orbitControlsEnabled} />
+                <SystemCameraCoords auScale={AU} refs={{ x: coordXRef, y: coordYRef, z: coordZRef, dist: coordDistRef }} />
                 <SystemZoomOuter active={zoomingOut} />
                 <PlanetFollowCamera
                     focusedIndex={focusedPlanet?.index ?? null}
@@ -231,6 +261,46 @@ export const SystemCanvas = ({ hostname, planets, onBack, astrophageMode }: Syst
             )}
 
             <BackButton text={'← Back to Galaxy'} handleBack={handleBack} />
+
+            {/* Coordinate readout */}
+            <div style={{
+                position: 'fixed',
+                bottom: '16px',
+                left: '16px',
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'baseline',
+                columnGap: '16px',
+                rowGap: '4px',
+                fontFamily: "'Courier New', monospace",
+                fontSize: isMobile ? '10px' : '11px',
+                zIndex: 1000,
+                pointerEvents: 'none',
+                userSelect: 'none',
+                textShadow: '0 1px 5px rgba(0,0,0,1)',
+            }}>
+                <span>
+                    <span style={{ color: '#38bdf8', marginRight: '4px' }}>X</span>
+                    <span ref={coordXRef} style={{ color: '#e2e8f0' }}>+0.00</span>
+                    <span style={{ color: 'rgba(148,163,184,0.5)', marginLeft: '2px', fontSize: '9px' }}>au</span>
+                </span>
+                <span>
+                    <span style={{ color: '#a78bfa', marginRight: '4px' }}>Y</span>
+                    <span ref={coordYRef} style={{ color: '#e2e8f0' }}>+0.00</span>
+                    <span style={{ color: 'rgba(148,163,184,0.5)', marginLeft: '2px', fontSize: '9px' }}>au</span>
+                </span>
+                <span>
+                    <span style={{ color: '#7dd3fc', marginRight: '4px' }}>Z</span>
+                    <span ref={coordZRef} style={{ color: '#e2e8f0' }}>+0.00</span>
+                    <span style={{ color: 'rgba(148,163,184,0.5)', marginLeft: '2px', fontSize: '9px' }}>au</span>
+                </span>
+                <span style={{ color: 'rgba(56,189,248,0.2)' }}>·</span>
+                <span>
+                    <span style={{ color: 'rgba(148,163,184,0.45)', marginRight: '4px', fontSize: '9px', letterSpacing: '0.5px' }}>DST</span>
+                    <span ref={coordDistRef} style={{ color: '#94a3b8' }}>0.00</span>
+                    <span style={{ color: 'rgba(148,163,184,0.4)', marginLeft: '2px', fontSize: '9px' }}>au</span>
+                </span>
+            </div>
 
             {focusedPlanet !== null && (
                 <button

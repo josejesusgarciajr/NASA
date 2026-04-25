@@ -257,11 +257,37 @@ const HoverRing = ({ star }: { star: Exoplanet | null }) => {
     )
 }
 
+// Updates galaxy coordinate DOM spans directly every frame — no React re-renders per tick
+const GalaxyCameraCoords = ({ refs }: {
+    refs: {
+        x: React.RefObject<HTMLSpanElement | null>
+        y: React.RefObject<HTMLSpanElement | null>
+        z: React.RefObject<HTMLSpanElement | null>
+        dist: React.RefObject<HTMLSpanElement | null>
+    }
+}) => {
+    const { camera } = useThree()
+    useFrame(() => {
+        const { x, y, z } = camera.position
+        const d = camera.position.length()
+        const fmt = (v: number) => (v >= 0 ? '+' : '') + v.toFixed(1)
+        if (refs.x.current)    refs.x.current.textContent    = fmt(x)
+        if (refs.y.current)    refs.y.current.textContent    = fmt(y)
+        if (refs.z.current)    refs.z.current.textContent    = fmt(z)
+        if (refs.dist.current) refs.dist.current.textContent = d.toFixed(1)
+    })
+    return null
+}
+
 export const GalaxyCanvas = ({ exoplanets, onEnterSystem }: GalaxyCanvasProps) => {
     const tooltipRef        = useRef<HTMLDivElement>(null)
     const tooltipNameRef    = useRef<HTMLSpanElement>(null)
     const tooltipPlanetsRef = useRef<HTMLSpanElement>(null)
     const controlsRef       = useRef<any>(null)
+    const coordXRef         = useRef<HTMLSpanElement>(null)
+    const coordYRef         = useRef<HTMLSpanElement>(null)
+    const coordZRef         = useRef<HTMLSpanElement>(null)
+    const coordDistRef      = useRef<HTMLSpanElement>(null)
     const [zoomTarget, setZoomTarget]     = useState<THREE.Vector3 | null>(null)
     const [hoveredStar, setHoveredStar]   = useState<Exoplanet | null>(null)
     const [softZoomActive, setSoftZoomActive] = useState(false)
@@ -362,6 +388,7 @@ export const GalaxyCanvas = ({ exoplanets, onEnterSystem }: GalaxyCanvasProps) =
                 <SunPulseRing sun={sun} />
                 <HoverRing star={hoveredStar} />
                 <CameraTracker stateRef={cameraStateRef} controlsRef={controlsRef} />
+                <GalaxyCameraCoords refs={{ x: coordXRef, y: coordYRef, z: coordZRef, dist: coordDistRef }} />
                 <CameraRestorer controlsRef={controlsRef} />
                 <GalaxyZoomer target={zoomTarget} controlsRef={controlsRef} />
                 <SoftZoomer
@@ -391,6 +418,46 @@ export const GalaxyCanvas = ({ exoplanets, onEnterSystem }: GalaxyCanvasProps) =
             >
                 <span ref={tooltipNameRef} />
                 <span ref={tooltipPlanetsRef} style={{ color: 'rgba(255,255,255,0.5)', marginLeft: '6px' }} />
+            </div>
+
+            {/* Coordinate readout */}
+            <div style={{
+                position: 'fixed',
+                bottom: '16px',
+                left: '16px',
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'baseline',
+                columnGap: '16px',
+                rowGap: '4px',
+                fontFamily: "'Courier New', monospace",
+                fontSize: '11px',
+                zIndex: 1000,
+                pointerEvents: 'none',
+                userSelect: 'none',
+                textShadow: '0 1px 5px rgba(0,0,0,1)',
+            }}>
+                <span>
+                    <span style={{ color: '#38bdf8', marginRight: '4px' }}>X</span>
+                    <span ref={coordXRef} style={{ color: '#e2e8f0' }}>+0.0</span>
+                    <span style={{ color: 'rgba(148,163,184,0.5)', marginLeft: '2px', fontSize: '10px' }}>pc</span>
+                </span>
+                <span>
+                    <span style={{ color: '#a78bfa', marginRight: '4px' }}>Y</span>
+                    <span ref={coordYRef} style={{ color: '#e2e8f0' }}>+0.0</span>
+                    <span style={{ color: 'rgba(148,163,184,0.5)', marginLeft: '2px', fontSize: '10px' }}>pc</span>
+                </span>
+                <span>
+                    <span style={{ color: '#7dd3fc', marginRight: '4px' }}>Z</span>
+                    <span ref={coordZRef} style={{ color: '#e2e8f0' }}>+0.0</span>
+                    <span style={{ color: 'rgba(148,163,184,0.5)', marginLeft: '2px', fontSize: '10px' }}>pc</span>
+                </span>
+                <span style={{ color: 'rgba(56,189,248,0.2)' }}>·</span>
+                <span>
+                    <span style={{ color: 'rgba(148,163,184,0.45)', marginRight: '4px', fontSize: '9px', letterSpacing: '0.5px' }}>DST</span>
+                    <span ref={coordDistRef} style={{ color: '#94a3b8' }}>0.0</span>
+                    <span style={{ color: 'rgba(148,163,184,0.4)', marginLeft: '2px', fontSize: '10px' }}>pc</span>
+                </span>
             </div>
         </div>
     )
