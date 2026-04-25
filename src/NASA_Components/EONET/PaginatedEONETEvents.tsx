@@ -73,7 +73,7 @@ export const PaginatedEONETEvents = ({ eonetEvents, page, setPage, rowsPerPage,
                                     sx={{
                                         minWidth: { xs: 70, md: column.minWidth },
                                         fontSize: { xs: '0.6rem', md: '0.875rem' },
-                                        backgroundColor: 'rgba(3, 105, 161, 0.35)',
+                                        backgroundColor: '#0a3352',
                                         color: '#e2e8f0',
                                         fontWeight: 'bold',
                                         letterSpacing: '0.07em',
