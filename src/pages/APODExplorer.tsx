@@ -20,6 +20,7 @@ import { useNavigate} from 'react-router-dom';
 // APOD
 import { useAPOD } from '../hooks/APOD/useAPOD';
 import { getRandomAPODDate } from '../utils/dateUtils'
+import { useAPODDelete } from '../hooks/APOD/useAPODDelete';
 
 export const APODExplorer = () => {
     const { 
@@ -29,6 +30,7 @@ export const APODExplorer = () => {
         setSelectedDate, 
         searchParams, setSearchParams 
     } = useAPOD();
+    const { confirmingDelete, handleRemoveAPOD, removeAPOD, cancelDelete } = useAPODDelete()
     const navigate = useNavigate();
 
     // on rocket launch, show random apod
@@ -140,7 +142,13 @@ export const APODExplorer = () => {
             )}
             
             {apod && (
-                <APODDisplay apod={apod} />
+                <APODDisplay 
+                    apod={apod}
+                    handleRemoveAPOD={handleRemoveAPOD}
+                    removeAPOD={removeAPOD}
+                    cancelDelete={cancelDelete}
+                    confirmingDelete={confirmingDelete}
+                />
             )}
 
             {loadingAPOD && <CosmicLoader />}

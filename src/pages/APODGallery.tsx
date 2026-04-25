@@ -53,7 +53,15 @@ export const APODGallery = () => {
                         serviceAcronym='APOD'
                         serviceName='Your saved APOD'
                     />
-                    <APODDisplay apod={clickedAPOD} onBack={handleBack} backButtonText='← Back to Gallery' />
+                    <APODDisplay 
+                        apod={clickedAPOD} 
+                        onBack={handleBack}
+                        handleRemoveAPOD={handleRemoveAPOD}
+                        removeAPOD={removeAPOD}
+                        cancelDelete={cancelDelete}
+                        confirmingDelete={confirmingDelete}
+                        backButtonText='← Back to Gallery'
+                    />
                 </>
             ) : (
                 <>

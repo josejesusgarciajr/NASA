@@ -1,14 +1,13 @@
-import { useState } from 'react'
+// nasa
 import type { APOD } from '../../types/NASA/APOD'
 import { STORAGE_KEY, getSavedAPODS } from '../../utils/apods'
-import { useAPODDelete } from './useAPODDelete'
+
+// react
+import { useState } from 'react'
 
 export function useFavoriteAPODS(apod: APOD) {
     const isSavedAPOD = getSavedAPODS().some(a => a.date === apod.date)
     const [savedAPOD, setSavedAPOD] = useState<boolean>(isSavedAPOD)
-    const { confirmingDelete, handleRemoveAPOD, removeAPOD, cancelDelete } = useAPODDelete(
-        (updated) => setSavedAPOD(updated.some((a) => a.date === apod.date))
-    )
 
     function saveAPOD() {
         const current = getSavedAPODS()
@@ -19,8 +18,6 @@ export function useFavoriteAPODS(apod: APOD) {
     }
 
     return { 
-        savedAPOD, saveAPOD, removeAPOD, confirmingDelete, 
-        handleRemoveAPOD: () => handleRemoveAPOD(apod), 
-        cancelDelete
+        savedAPOD, setSavedAPOD, saveAPOD
     }
 }

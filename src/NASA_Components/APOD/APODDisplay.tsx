@@ -18,14 +18,26 @@ import { useEffect } from 'react'
 type APODDisplayProps = {
     apod: APOD;
     onBack?: () => void;
+    handleRemoveAPOD: (apod: APOD) => void;
+    removeAPOD: () => void;
+    cancelDelete: () => void;
+    confirmingDelete: boolean;
     backButtonText?: string;
 }
 
-export const APODDisplay = ({apod, onBack, backButtonText = '← Back'} : APODDisplayProps) => {
+export const APODDisplay = (
+    { 
+        apod, onBack, 
+        handleRemoveAPOD, removeAPOD, cancelDelete, confirmingDelete,
+        backButtonText = '← Back'
+    } : APODDisplayProps) => {
     // saved favorite apods
-    const { 
-        savedAPOD, saveAPOD, removeAPOD, confirmingDelete, handleRemoveAPOD,cancelDelete
-     } = useFavoriteAPODS(apod);
+    const { savedAPOD, setSavedAPOD, saveAPOD } = useFavoriteAPODS(apod);
+
+    function removeCurrentAPOD() {
+        removeAPOD()
+        setSavedAPOD(false)
+    }
 
     useEffect(() => {
         window.scrollTo({ top: 0 });
@@ -41,7 +53,7 @@ export const APODDisplay = ({apod, onBack, backButtonText = '← Back'} : APODDi
                 open={confirmingDelete}
                 dialogText='Are you sure you want to remove this APOD from your favorites?'
                 onCancel={cancelDelete}
-                onConfirm={removeAPOD}
+                onConfirm={removeCurrentAPOD}
             />
 
             <Typography
@@ -60,7 +72,7 @@ export const APODDisplay = ({apod, onBack, backButtonText = '← Back'} : APODDi
                         <FavoriteBorderIcon fontSize="small" />
                     </IconButton>
                 ) : (
-                    <IconButton onClick={handleRemoveAPOD} size="small" sx={{ ml: 0.5, color: '#f472b6' }}>
+                    <IconButton onClick={() => handleRemoveAPOD(apod)} size="small" sx={{ ml: 0.5, color: '#f472b6' }}>
                         <FavoriteIcon fontSize="small" />
                     </IconButton>
                 )}

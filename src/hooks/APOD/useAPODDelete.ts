@@ -6,7 +6,7 @@ import type { APOD } from '../../types/NASA/APOD'
 import { STORAGE_KEY, getSavedAPODS } from '../../utils/apods'
 
 
-export function useAPODDelete(onDeleted: (updatedAPODS: APOD[]) => void) {
+export function useAPODDelete(onDeleted?: (updatedAPODS: APOD[]) => void) {
     const [confirmingDelete, setConfirmingDelete] = useState(false)
     const [apodToDelete, setApodToDelete] = useState<APOD | null>(null)
 
@@ -23,6 +23,9 @@ export function useAPODDelete(onDeleted: (updatedAPODS: APOD[]) => void) {
         
         setConfirmingDelete(false)
         setApodToDelete(null)
+
+        if (!onDeleted) return;
+        
         onDeleted(updated)
     }
 

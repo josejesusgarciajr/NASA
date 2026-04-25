@@ -13,9 +13,11 @@ import Alert from '@mui/material/Alert'
 
 // APOD
 import { useAPOD } from '../hooks/APOD/useAPOD'
+import { useAPODDelete } from '../hooks/APOD/useAPODDelete'
 
 export function Home() {
   const { apod, loadingAPOD, fetchAPOD, errorAPOD } = useAPOD();
+  const { confirmingDelete, handleRemoveAPOD, removeAPOD, cancelDelete } = useAPODDelete()
 
   useEffect(() => {
     fetchAPOD();
@@ -32,7 +34,13 @@ export function Home() {
       {apod && (
         <>
           <NASAServiceDisplay serviceAcronym='APOD' serviceName='Astronomy Picture of the Day' />
-          <APODDisplay apod={apod} />
+          <APODDisplay
+            apod={apod}
+            handleRemoveAPOD={handleRemoveAPOD}
+            removeAPOD={removeAPOD}
+            cancelDelete={cancelDelete}
+            confirmingDelete={confirmingDelete}
+          />
         </>
       )}
 
